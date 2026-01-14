@@ -1,0 +1,16 @@
+{
+    "operators": [
+        {
+            "name": "operator1",
+            "permissions": [
+                "all"
+            ]
+        },
+        {
+            "name": "operator2",
+            "permissions": [
+                "shopsy_only"
+            ]
+        }
+    ]
+}

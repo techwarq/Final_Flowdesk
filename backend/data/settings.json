@@ -1,0 +1,12 @@
+{
+  "masterEmail": {
+    "user": "enquiryforogbuilds@gmail.com",
+    "passEncrypted": "",
+    "host": "imap.gmail.com"
+  },
+  "cloudConfig": {
+    "enabled": true,
+    "url": "https://hzvlqssomzsbdrzcocsm.supabase.co",
+    "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6dmxxc3NvbXpzYmRyemNvY3NtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Nzc1ODc2NywiZXhwIjoyMDgzMzM0NzY3fQ.7-qxeUXLvz47nLGmFu4X3lHguRq_Yhyq97Rh9DAlbUQ"
+  }
+}

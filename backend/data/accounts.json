@@ -1,0 +1,121 @@
+{
+  "accounts": [
+    {
+      "loginType": "mobile",
+      "identifier": "rohan",
+      "status": "Error",
+      "createdAt": "2026-01-13T10:01:01.593Z",
+      "updatedAt": "2026-01-14T20:21:47.976Z",
+      "id": "rohanagarwal6@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "admin",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/rohanagarwal6@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "sonalinayak0804@gmail.com",
+      "status": "NeedsRefresh",
+      "createdAt": "2026-01-14T18:55:36.026Z",
+      "updatedAt": "2026-01-14T21:43:36.801Z",
+      "id": "sonalinayak0804@gmail.com",
+      "platform": "flipkart",
+      "assignedTo": "Sonali",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/sonalinayak0804@gmail.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "KaranMalhotra5@emobilee.com",
+      "status": "Error",
+      "createdAt": "2026-01-14T19:05:38.974Z",
+      "updatedAt": "2026-01-14T19:20:24.262Z",
+      "id": "karanmalhotra5@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "KaranMalhotra5@emobilee.com",
+      "errorCode": "TimeoutError: page.waitForSelector: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Account') to be visible\u001b[22m\n"
+    },
+    {
+      "loginType": "email",
+      "identifier": "SureshIyer13@emobilee.com",
+      "status": "New",
+      "createdAt": "2026-01-14T19:51:43.383Z",
+      "updatedAt": "2026-01-14T19:51:43.383Z",
+      "id": "sureshiyer13@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "SureshIyer"
+    },
+    {
+      "loginType": "email",
+      "identifier": "AnkitBansal10@emobilee.com",
+      "status": "New",
+      "createdAt": "2026-01-14T20:25:13.529Z",
+      "updatedAt": "2026-01-14T20:25:13.529Z",
+      "id": "ankitbansal10@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "AnkitBansal10@emobilee.com"
+    },
+    {
+      "loginType": "email",
+      "identifier": "AdityaGupta3@emobilee.com",
+      "status": "New",
+      "createdAt": "2026-01-14T20:52:31.927Z",
+      "updatedAt": "2026-01-14T20:52:31.927Z",
+      "id": "adityagupta3@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "AdityaGupta3@emobilee.com"
+    },
+    {
+      "loginType": "email",
+      "identifier": "GaneshKulkarni15@emobilee.com",
+      "status": "NeedsRefresh",
+      "createdAt": "2026-01-14T21:02:13.281Z",
+      "updatedAt": "2026-01-14T21:37:19.012Z",
+      "id": "ganeshkulkarni15@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "GaneshKulkarni15@emobilee.com",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/ganeshkulkarni15@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "DeepakDas29@emobilee.com",
+      "status": "New",
+      "createdAt": "2026-01-14T21:53:35.017Z",
+      "updatedAt": "2026-01-14T21:53:35.018Z",
+      "id": "deepakdas29@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "DeepakDas29@emobilee.com"
+    },
+    {
+      "loginType": "mobile",
+      "identifier": "RajeshMenon27@emobilee.com",
+      "status": "Error",
+      "createdAt": "2026-01-14T22:00:45.010Z",
+      "updatedAt": "2026-01-14T22:00:52.272Z",
+      "id": "rajeshmenon27@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "RajeshMenon27@emobilee.com",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/rajeshmenon27@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "VijayNair26@emobilee.com",
+      "status": "Error",
+      "createdAt": "2026-01-14T22:11:10.101Z",
+      "updatedAt": "2026-01-14T22:11:20.074Z",
+      "id": "vijaynair26@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "VijayNair26@emobilee.com",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/vijaynair26@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "PankajTripathi21@emobilee.com",
+      "status": "Error",
+      "createdAt": "2026-01-14T22:47:23.788Z",
+      "updatedAt": "2026-01-14T22:47:31.471Z",
+      "id": "PankajTripathi21@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "PankajTripathi21@emobilee.com",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/pankajtripathi21@emobilee.com/userDataDir/RunningChromeVersion'"
+    }
+  ]
+}

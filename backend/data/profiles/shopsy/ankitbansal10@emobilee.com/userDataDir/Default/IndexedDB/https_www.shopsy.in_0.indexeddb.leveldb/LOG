@@ -1,0 +1,6 @@
+2026/01/15-02:14:47.726 4f9448 Creating DB /Users/sonalinayak/flowdesk-app/backend/data/profiles/shopsy/ankitbansal10@emobilee.com/userDataDir/Default/IndexedDB/https_www.shopsy.in_0.indexeddb.leveldb since it was missing.
+2026/01/15-02:14:47.728 4f9448 Reusing MANIFEST /Users/sonalinayak/flowdesk-app/backend/data/profiles/shopsy/ankitbansal10@emobilee.com/userDataDir/Default/IndexedDB/https_www.shopsy.in_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/15-02:14:47.732 4f944a Level-0 table #5: started
+2026/01/15-02:14:47.733 4f944a Level-0 table #5: 760 bytes OK
+2026/01/15-02:14:47.734 4f944a Delete type=0 #3
+2026/01/15-02:14:47.734 4f9447 Manual compaction at level-0 from '\x00\x01\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x02\x00\x00\x00' @ 0 : 0; will stop at (end)

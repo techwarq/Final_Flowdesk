@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "passwordHash": "cc1b4f110c597c6af72e06b6597d6fd0a81557da0f5b8ff56bd328e1c3f335e8",
+      "role": "admin",
+      "allowedAccounts": 9999,
+      "createdAt": 1767710871638
+    }
+  ]
+}

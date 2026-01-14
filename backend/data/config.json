@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "maxConcurrency": 5,
+  "healthCheckIntervalHours": 24,
+  "jitterMs": {
+    "min": 500,
+    "max": 2000
+  }
+}
