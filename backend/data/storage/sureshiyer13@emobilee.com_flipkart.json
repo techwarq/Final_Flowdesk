@@ -1,4 +1,7 @@
 {
-  "NRBA_SESSION": "{\"value\":\"7ff970f9c95b9259\",\"inactiveAt\":1768433471374,\"expiresAt\":1768446064933,\"updatedAt\":1768431671374,\"sessionReplay\":0,\"sessionTraceMode\":0,\"custom\":{}}",
-  "isLoggedIn": "false"
+  "isLoggedIn": "false",
+  "lastBTCallTime": "\"1768492683347\"",
+  "HPLWShownSessionsCount": "1",
+  "sessionCount": "1",
+  "NRBA_SESSION": "{\"value\":\"4b011eab8e4cf2e4\",\"inactiveAt\":1768494491198,\"expiresAt\":1768507076433,\"updatedAt\":1768492691198,\"sessionReplay\":0,\"sessionTraceMode\":0,\"custom\":{}}"
 }
