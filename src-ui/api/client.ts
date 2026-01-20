@@ -93,6 +93,57 @@ export const api = {
         return res.json();
     },
 
+    fetchOrders: async (accountId: string, platform: Platform): Promise<any> => {
+        const res = await fetch(`${API_BASE}/orders/${encodeURIComponent(accountId)}/fetch`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ platform })
+        });
+        return res.json();
+    },
+
+    fetchGVBalance: async (accountId: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/orders/${encodeURIComponent(accountId)}/fetch-gv`, {
+            method: 'POST',
+            headers: getHeaders()
+        });
+        return res.json();
+    },
+
+    // Batch order fetching for scalability
+    batchFetchOrders: async (accountIds: string[], platform: Platform, concurrency: number = 5): Promise<any> => {
+        const res = await fetch(`${API_BASE}/orders/batch`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ accountIds, platform, concurrency, headless: true })
+        });
+        return res.json();
+    },
+
+    getBatchJobStatus: async (jobId: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/orders/batch/${encodeURIComponent(jobId)}`, {
+            headers: getHeaders()
+        });
+        return res.json();
+    },
+
+    cancelBatchJob: async (jobId: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/orders/batch/${encodeURIComponent(jobId)}/cancel`, {
+            method: 'POST',
+            headers: getHeaders()
+        });
+        return res.json();
+    },
+
+    pollOrders: async (accountIds: string[], platform: Platform): Promise<any> => {
+        const res = await fetch(`${API_BASE}/orders/poll`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ accountIds, platform })
+        });
+        return res.json();
+    },
+
     addAccount: async (data: any): Promise<any> => {
         const res = await fetch(`${API_BASE}/accounts`, {
             method: 'POST',
@@ -176,11 +227,31 @@ export const api = {
         return res.json();
     },
 
+
     getCookies: async (id: string, platform: Platform): Promise<any[]> => {
         const res = await fetch(`${API_BASE}/accounts/${encodeURIComponent(id)}/${platform}/cookies`, {
             headers: getHeaders()
         });
         if (!res.ok) return [];
         return res.json();
+    },
+
+    // Chat
+    syncChat: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/chat/sync`, {
+            method: 'POST',
+            headers: getHeaders()
+        });
+        return res.json();
+    },
+
+    askChat: async (query: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/chat/ask`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ query })
+        });
+        return res.json();
     }
 };
+

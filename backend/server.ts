@@ -1,4 +1,13 @@
 
+import dotenv from 'dotenv';
+dotenv.config();
+
+if (process.env.OPENAI_API_KEY) {
+    console.log('OpenAI API Key loaded.');
+} else {
+    console.warn('OpenAI API Key NOT found in environment.');
+}
+
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { loadAccounts, getAccount, upsertAccount, deleteAccount, updateAccountStatus } from './src/accounts.js';
@@ -246,6 +255,8 @@ fastify.post('/api/login', async (request, reply) => {
 
 // Session View - Opens browser with saved cookies
 import { openSession } from './src/session.js';
+import { fetchOrders } from './src/orders.js';
+import { startBatchFetch, getJobStatus, cancelJob, pollRecentOrders, BatchJob, BatchProgress } from './src/batchOrders.js';
 
 fastify.post('/api/session', async (request, reply) => {
     const body = request.body as any;
@@ -257,6 +268,138 @@ fastify.post('/api/session', async (request, reply) => {
     } catch (error) {
         console.error('[Session Error Detail]:', error);
         return { status: 'error', message: String(error) };
+    }
+});
+
+fastify.post('/api/orders/:id/fetch', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const { platform } = request.body as { platform: 'flipkart' | 'shopsy' };
+
+    // Add auth check similar to other endpoints if needed, skipping for dev speed/consistency with session
+    try {
+        const result = await fetchOrders(id, platform);
+        return result;
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+});
+
+fastify.post('/api/orders/:id/fetch-gv', async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    // Import the new function dynamically to ensure it uses the latest file
+    const { fetchGiftCardBalance } = await import('./src/orders.js');
+
+    try {
+        const result = await fetchGiftCardBalance(id);
+        return result;
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+});
+
+// ============================================
+// BATCH ORDER FETCHING
+// ============================================
+
+// Start batch fetch for multiple accounts
+fastify.post('/api/orders/batch', async (request, reply) => {
+    const { accountIds, platform, concurrency, headless } = request.body as {
+        accountIds: string[];
+        platform: 'flipkart' | 'shopsy';
+        concurrency?: number;
+        headless?: boolean;
+    };
+
+    if (!accountIds || accountIds.length === 0) {
+        return reply.status(400).send({ success: false, message: 'accountIds array is required' });
+    }
+
+    if (!platform) {
+        return reply.status(400).send({ success: false, message: 'platform is required' });
+    }
+
+    console.log(`[Batch] Starting batch fetch for ${accountIds.length} accounts on ${platform}`);
+
+    // Start batch job - returns job ID immediately (synchronous)
+    const jobId = startBatchFetch(accountIds, platform, {
+        concurrency: concurrency || 5,
+        headless: headless !== false,
+        onProgress: (progress: BatchProgress) => {
+            console.log(`[Batch] Progress: ${progress.completed}/${progress.total} - ${progress.type}`);
+        }
+    });
+
+    return {
+        success: true,
+        jobId,
+        message: `Batch job started for ${accountIds.length} accounts`,
+        total: accountIds.length
+    };
+});
+
+// Get batch job status
+fastify.get('/api/orders/batch/:jobId', async (request, reply) => {
+    const { jobId } = request.params as { jobId: string };
+    const job = getJobStatus(jobId);
+
+    if (!job) {
+        return reply.status(404).send({ success: false, message: 'Job not found' });
+    }
+
+    return {
+        success: true,
+        job: {
+            jobId: job.jobId,
+            status: job.status,
+            total: job.total,
+            completed: job.completed,
+            failed: job.failed,
+            startedAt: job.startedAt,
+            completedAt: job.completedAt,
+            results: job.results,
+            errors: job.errors
+        }
+    };
+});
+
+// Cancel batch job
+fastify.post('/api/orders/batch/:jobId/cancel', async (request, reply) => {
+    const { jobId } = request.params as { jobId: string };
+    const cancelled = cancelJob(jobId);
+
+    if (!cancelled) {
+        return reply.status(400).send({ success: false, message: 'Job not found or not running' });
+    }
+
+    return { success: true, message: 'Job cancellation requested' };
+});
+
+// Poll for recent orders (lightweight, for checking new orders)
+fastify.post('/api/orders/poll', async (request, reply) => {
+    const { accountIds, platform } = request.body as {
+        accountIds: string[];
+        platform: 'flipkart' | 'shopsy';
+    };
+
+    if (!accountIds || accountIds.length === 0) {
+        return reply.status(400).send({ success: false, message: 'accountIds array is required' });
+    }
+
+    try {
+        const results = await pollRecentOrders(accountIds, platform, {
+            concurrency: 5,
+            headless: true
+        });
+
+        return {
+            success: true,
+            accountsPolled: accountIds.length,
+            accountsWithOrders: results.size,
+            orders: Object.fromEntries(results)
+        };
+    } catch (error) {
+        return { success: false, error: String(error) };
     }
 });
 
@@ -352,10 +495,66 @@ fastify.delete('/api/admin/users/:username', async (request, reply) => {
     }
 });
 
+
+// Chat / AI
+import { ingestOrdersForUser, chatWithContext } from './src/chat.js';
+
+fastify.post('/api/chat/sync', async (request, reply) => {
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session) {
+        return reply.status(401).send({ success: false, message: 'Invalid session' });
+    }
+
+
+    try {
+        const result = await ingestOrdersForUser(session.id);
+        return {
+            success: true,
+            count: result.count,
+            orderIds: result.orderIds,
+            message: `Synced ${result.count} orders to knowledge base.`
+        };
+    } catch (e: any) {
+        fastify.log.error(e);
+        return { success: false, error: e.message };
+    }
+});
+
+fastify.post('/api/chat/ask', async (request, reply) => {
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session) {
+        return reply.status(401).send({ success: false, message: 'Invalid session' });
+    }
+
+    const { query } = request.body as { query: string };
+    if (!query) {
+        return reply.status(400).send({ success: false, message: 'Query is required' });
+    }
+
+    try {
+        const answer = await chatWithContext(session.id, query);
+        return { success: true, answer };
+    } catch (e: any) {
+        fastify.log.error(e);
+        return { success: false, error: e.message };
+    }
+});
+
 // Cloud Sync health check
 fastify.get('/api/cloud/status', async (request, reply) => {
     return checkCloudConnection();
 });
+
 
 const start = async () => {
     try {

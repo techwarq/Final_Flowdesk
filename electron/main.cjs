@@ -39,7 +39,8 @@ const BACKEND_URL = `http://127.0.0.1:${BACKEND_PORT}`;
 
 function startBackend() {
   logToFile('Starting backend function called');
-  if (isDev) {
+  // Use app.isPackaged for reliable check in built executables
+  if (!app.isPackaged) {
     logToFile('Mode: Development');
     console.log('Starting backend in DEV mode...');
     // In dev, we spawn npm run start which uses tsx
@@ -47,7 +48,11 @@ function startBackend() {
 
     backendProcess = spawn('npm', ['run', 'start'], {
       cwd: backendPath,
-      env: { ...process.env, PORT: BACKEND_PORT },
+      env: {
+        ...process.env,
+        PORT: BACKEND_PORT,
+        PLAYWRIGHT_BROWSERS_PATH: path.join(backendPath, 'browsers')
+      },
       shell: true,
       stdio: 'inherit'
     });
@@ -77,6 +82,7 @@ function startBackend() {
           ...process.env,
           PORT: BACKEND_PORT,
           NODE_ENV: 'production',
+          ELECTRON_RUN_AS_NODE: '1',
           PLAYWRIGHT_BROWSERS_PATH: browsersPath
         },
         stdio: 'pipe'
@@ -124,8 +130,8 @@ function createWindow() {
     },
   });
 
-  const frontendUrl = isDev
-    ? 'http://localhost:5173'
+  const frontendUrl = !app.isPackaged
+    ? 'http://localhost:5174'
     : `file://${path.join(__dirname, '..', 'dist', 'index.html')}`;
 
   logToFile(`Loading frontend from: ${frontendUrl}`);
@@ -134,7 +140,7 @@ function createWindow() {
   // Resources to wait for
   const resources = [`tcp:${BACKEND_PORT}`];
   if (isDev) {
-    resources.push('tcp:5173');
+    resources.push('tcp:5174');
   }
 
   // Waiting for services

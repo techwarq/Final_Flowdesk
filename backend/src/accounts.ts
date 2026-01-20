@@ -35,6 +35,29 @@ export interface Account {
         passEncrypted: string;
         host: string;
     };
+    details?: {
+        name?: string;
+        mobile?: string;
+        email?: string;
+        superCoins?: string;
+        isPlus?: boolean;
+        gvBalance?: string;
+    };
+    orders?: Order[];
+}
+
+export interface Order {
+    orderId: string;
+    productName: string;
+    status: string; // e.g., 'Delivered', 'Cancelled', 'On the way'
+    deliveryDate: string; // or expected date
+    imageUrl?: string;
+    price?: string;
+    orderUrl: string;
+    otp?: string;
+    receiverName?: string;
+    trackingId?: string;
+    deliveryDetails?: string;
 }
 
 export interface AccountsData {

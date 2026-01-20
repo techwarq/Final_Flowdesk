@@ -39,12 +39,28 @@
       "identifier": "DineshPandey17@emobilee.com",
       "status": "Error",
       "createdAt": "2026-01-15T15:44:34.834Z",
-      "updatedAt": "2026-01-15T15:44:52.458Z",
+      "updatedAt": "2026-01-20T08:21:10.442Z",
       "id": "dineshpandey17@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "DineshPandey17@emobilee.com",
       "userId": "fc42f086-ede9-42c1-aa23-5dcdd5fa22d1",
-      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/dineshpandey17@emobilee.com/userDataDir/RunningChromeVersion'"
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/dineshpandey17@emobilee.com/userDataDir/RunningChromeVersion'",
+      "orders": [
+        {
+          "orderId": "OD436401445123230200",
+          "productName": "4 More Items",
+          "price": "₹276",
+          "status": "5 Delivered",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/chocolate/o/4/m/-original-imahjjwfgzxsvrtw.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": "",
+          "receiverName": "Other"
+        }
+      ],
+      "details": {
+        "gvBalance": "₹0"
+      }
     },
     {
       "loginType": "email",
@@ -57,6 +73,58 @@
       "assignedTo": "SureshIyer13@emobilee.com",
       "userId": "3dc36b93-9f8c-4e26-9f26-025b78b8b661",
       "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/sureshiyer13@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "sunil806upadhyay@emobilee.com",
+      "status": "Error",
+      "createdAt": "2026-01-19T09:03:35.249Z",
+      "updatedAt": "2026-01-20T09:02:41.223Z",
+      "id": "sunil806upadhyay@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "sunil806upadhyay@emobilee.com",
+      "userId": "fc42f086-ede9-42c1-aa23-5dcdd5fa22d1",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/Downloads/flowdesk/backend/data/profiles/flipkart/sunil806upadhyay@emobilee.com/userDataDir/RunningChromeVersion'",
+      "orders": [
+        {
+          "orderId": "OD436561239670613100",
+          "productName": "OnePlus Nord Buds 3r TWS Earbud, 10min c...",
+          "price": "₹1,518",
+          "status": "Ordered",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/headphone/7/n/o/-original-imahfsg7chmgrugu.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD436561239670613100&item_id=436561239670613100&unit_id=436561239670613100000",
+          "otp": "",
+          "receiverName": "Work",
+          "deliveryDetails": "Explore PlusMy AccountBecome a Seller More CartElectronicsTVs & AppliancesMenWomenBaby & KidsHome & FurnitureSports, Books & MoreFlightsOffer ZoneHomeMy AccountMy OrdersOD436561239670613100\nPay online for a smooth doorstep experiencePay ₹1518OnePlus Nord Buds 3r TWS Earbud, 10min charge for 8hr Music, 3D Audio, 2-mic call BluetoothBlackSeller: SVPeripherals₹1,518Order ConfirmedYour Order has been placed., Sun 18th JanShipped, Expected by Jan 22Out for deliveryDelivery, Sat Jan 24 by 11 PMSee All Updates Delivery Executive details will be available once the order is out for deliveryCancelChat with usKeep in mind at doorstepOpen box deliveryVerify item before sharing OTPRate your experienceDid you find this page helpful?Send Order DetailsOrder #OD436561239670613100Delivery detailsWorkSham nursing home and heart centre Railway road, moga,  New Delhi Delhi 110085Renu 7986360147Price detailsListing price₹1,999Special price₹1,499Total fees₹19Total amount₹1,518Payment methodCash On DeliveryABOUTContact UsAbout UsCareersFlipkart StoriesPressCorporate InformationGROUP COMPANIESMyntraCleartripShopsyHELPPaymentsShippingCancellation & ReturnsFAQCONSUMER POLICYCancellation & ReturnsTerms Of UseSecurityPrivacySitemapGrievance RedressalEPR ComplianceFSSAI Food Safety Connect AppMail Us:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India\nSocialRegistered Office Address:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India \n CIN : U51109KA2012PTC066107 \n Telephone: 044-45614700 / 044-67415800\nBecome a SellerAdvertiseGift CardsHelp Center© 2007-2026 Flipkart.comBack to top"
+        },
+        {
+          "orderId": "OD125070937550702000",
+          "productName": "Kriti shared this order with you.",
+          "price": "₹288",
+          "status": "You returned this order because the quality was not as expected.",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/ki4w0i80-0/sling-bag/n/b/i/women-s-girls-sling-bag-roll-sl0708roll-sling-bag-astir-colleen-original-imafyyfs5j673sn4.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD125070937550702000&item_id=12507093755070200&unit_id=12507093755070200000&share_token=SH22053001301197843297.D08966F1A9B9D14E46D8F1D6296F4D32ECB57D4B",
+          "otp": "",
+          "receiverName": "Work",
+          "deliveryDetails": "Explore PlusMy AccountBecome a Seller More CartElectronicsTVs & AppliancesMenWomenBaby & KidsHome & FurnitureSports, Books & MoreFlightsOffer ZoneHomeMy AccountMy OrdersOD125070937550702000\nKriti shared this order with you.Total refund - ₹288₹288CompletedSorry, refund is taking longer than expected. Your money is safe and an SMS will be shared once it's added to your  Bank Account ending with *********053. You can then check refund in your updated bank statement(Bank app/passbook).If you can’t see the refund in your bank statement(bank app/passbook), contact your bank and share refund reference number 216019127312 to track it.How do I check my bank account?ASTIR COLLEEN Black Sling Bag Women's & Girls' Sling Bag - RollBlackSeller: MakerStuff₹288Return, Jun 03, 2022Refund, Jun 10, 2022See All Updates Rate your experienceDid you find this page helpful?Other Items In This OrderPUMMY LUGGAGE Women White Hand-held BagDelivered on Jun 02, 2022Order #OD125070937550702000Delivery detailsWorkSham nursing home and heart centre Railway road, Moga,  Moga Punjab 142001Kriti 7986360147Price detailsListing price₹1,199Selling price₹288Total amount₹288Payment methodCash On DeliveryABOUTContact UsAbout UsCareersFlipkart StoriesPressCorporate InformationGROUP COMPANIESMyntraCleartripShopsyHELPPaymentsShippingCancellation & ReturnsFAQCONSUMER POLICYCancellation & ReturnsTerms Of UseSecurityPrivacySitemapGrievance RedressalEPR ComplianceFSSAI Food Safety Connect AppMail Us:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India\nSocialRegistered Office Address:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India \n CIN : U51109KA2012PTC066107 \n Telephone: 044-45614700 / 044-67415800\nBecome a SellerAdvertiseGift CardsHelp Center© 2007-2026 Flipkart.comBack to top"
+        },
+        {
+          "orderId": "OD225048376660078000",
+          "productName": "MEGHDOOT Satreetha Shampoo 500ml (Pack o...",
+          "price": "₹145",
+          "status": "Delivered on May 31, 2022",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/shampoo/q/n/g/400-ayurvedic-satreetha-shampoo-for-dandruff-and-scalp-acne-original-imahek2zg9cje6qx.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD225048376660078000&item_id=22504837666007800&unit_id=22504837666007800000",
+          "otp": "",
+          "receiverName": "Work"
+        }
+      ],
+      "details": {
+        "gvBalance": "₹50"
+      }
     }
   ]
 }

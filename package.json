@@ -23,9 +23,10 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "portable"
-      ]
+        "nsis"
+      ],
+      "verifyUpdateCodeSignature": false,
+      "forceCodeSigning": false
     },
     "nsis": {
       "oneClick": false,
@@ -42,19 +43,24 @@
     ],
     "extraResources": [
       {
-        "from": "backend",
-        "to": "backend",
-        "filter": [
-          "**/*",
-          "!src",
-          "!tsconfig.json",
-          "!*.ts",
-          "dist/**/*",
-          "node_modules/**/*",
-          "browsers/**/*",
-          "package.json",
-          ".env"
-        ]
+        "from": "backend/dist",
+        "to": "backend/dist"
+      },
+      {
+        "from": "backend/node_modules",
+        "to": "backend/node_modules"
+      },
+      {
+        "from": "backend/browsers",
+        "to": "backend/browsers"
+      },
+      {
+        "from": "backend/package.json",
+        "to": "backend/package.json"
+      },
+      {
+        "from": "backend/.env",
+        "to": "backend/.env"
       }
     ]
   },
