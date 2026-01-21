@@ -10,13 +10,19 @@ export interface VectorDocument {
     embedding: number[];
 }
 
+// Per-user vector store instances cache
+const userStores: Map<string, LocalVectorStore> = new Map();
+
 export class LocalVectorStore {
     private filePath: string;
+    private userId: string;
     private documents: VectorDocument[] = [];
     private loaded = false;
 
-    constructor() {
-        this.filePath = path.join(DATA_DIR, 'vectors.json');
+    constructor(userId: string = 'default') {
+        this.userId = userId;
+        // Per-user vector file
+        this.filePath = path.join(DATA_DIR, `vectors_${userId}.json`);
     }
 
     async load() {
@@ -24,6 +30,7 @@ export class LocalVectorStore {
         try {
             if (await fs.pathExists(this.filePath)) {
                 this.documents = await fs.readJSON(this.filePath);
+                console.log(`[VectorStore] Loaded ${this.documents.length} vectors for user ${this.userId}`);
             }
         } catch (e) {
             console.error('[VectorStore] Failed to load vectors', e);
@@ -35,6 +42,7 @@ export class LocalVectorStore {
     async save() {
         try {
             await fs.writeJSON(this.filePath, this.documents);
+            console.log(`[VectorStore] Saved ${this.documents.length} vectors for user ${this.userId}`);
         } catch (e) {
             console.error('[VectorStore] Failed to save vectors', e);
         }
@@ -63,6 +71,27 @@ export class LocalVectorStore {
         scores.sort((a, b) => b.score - a.score);
         return scores.slice(0, k).map(s => s.doc);
     }
+
+    async clear() {
+        this.documents = [];
+        await this.save();
+    }
+
+    getDocumentCount() {
+        return this.documents.length;
+    }
+
+    hasDocument(id: string): boolean {
+        return this.documents.some(d => d.id === id);
+    }
+}
+
+// Get or create a vector store for a user
+export function getVectorStoreForUser(userId: string): LocalVectorStore {
+    if (!userStores.has(userId)) {
+        userStores.set(userId, new LocalVectorStore(userId));
+    }
+    return userStores.get(userId)!;
 }
 
 function cosineSimilarity(a: number[], b: number[]): number {

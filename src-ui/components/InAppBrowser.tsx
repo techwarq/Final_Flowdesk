@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { api } from '../api/client';
 import {
     X,
     Plus,
@@ -25,6 +26,7 @@ interface BrowserTab {
     accountId?: string;
     platform?: Platform;
     actualIp?: string;
+    initialUrl: string;
 }
 
 interface InAppBrowserProps {
@@ -36,19 +38,46 @@ interface InAppBrowserProps {
 const START_URL = 'about:blank';
 
 // Grouping saved accounts by Platform for the "Tree View" effect
+// Flipkart and Shopsy share same auth, so show accounts under both platforms
 const groupAccountsByPlatform = (accounts: Account[]) => {
-    return accounts.reduce((acc, account) => {
+    const grouped = accounts.reduce((acc, account) => {
         const p = account.platform;
         if (!acc[p]) acc[p] = [];
         acc[p].push(account);
         return acc;
     }, {} as Record<string, Account[]>);
+
+    // Flipkart and Shopsy share authentication - merge them
+    const flipkartAccounts = grouped['flipkart'] || [];
+    const shopsyAccounts = grouped['shopsy'] || [];
+
+    // Add Flipkart accounts to Shopsy (if they don't exist)
+    if (flipkartAccounts.length > 0) {
+        if (!grouped['shopsy']) grouped['shopsy'] = [];
+        flipkartAccounts.forEach(acc => {
+            if (!grouped['shopsy'].find(s => s.id === acc.id)) {
+                grouped['shopsy'].push({ ...acc, platform: 'shopsy' as Platform });
+            }
+        });
+    }
+
+    // Add Shopsy accounts to Flipkart (if they don't exist)
+    if (shopsyAccounts.length > 0) {
+        if (!grouped['flipkart']) grouped['flipkart'] = [];
+        shopsyAccounts.forEach(acc => {
+            if (!grouped['flipkart'].find(s => s.id === acc.id)) {
+                grouped['flipkart'].push({ ...acc, platform: 'flipkart' as Platform });
+            }
+        });
+    }
+
+    return grouped;
 };
 
 export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClose }) => {
 
     const [tabs, setTabs] = useState<BrowserTab[]>([
-        { id: 'start', title: 'New Tab', url: START_URL, loading: false }
+        { id: 'start', title: 'New Tab', url: START_URL, initialUrl: START_URL, loading: false }
     ]);
     const [activeTabId, setActiveTabId] = useState<string>('start');
     const [urlInput, setUrlInput] = useState('');
@@ -84,20 +113,50 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
                 const onStart = () => updateTab(tab.id, { loading: true });
                 const onStop = () => updateTab(tab.id, { loading: false, title: wv.getTitle() || tab.title, url: wv.getURL() });
 
-                // Remove potential duplicate listeners involves tracking reference, 
-                // but for this simple cases, just adding them might be okay if we cleanup?
-                // Webview events in React are tricky.
-                // Best practice: Check if listener attached.
-                // For now, let's just Try-Catch the inline handlers in the previous step? 
-                // No, inline handlers on Custom Elements in React are notoriously flaky.
-                // Let's use the ref.
+                // Handle new window requests (target="_blank" links) - open in new tab instead of system browser
+                const onNewWindow = (e: any) => {
+                    e.preventDefault();
+                    const newUrl = e.url;
+                    if (newUrl && newUrl !== 'about:blank') {
+                        // Create a new tab with the same partition (same account session)
+                        const newTabId = `tab-${Date.now()}`;
+                        const newTab: BrowserTab = {
+                            id: newTabId,
+                            title: 'Loading...',
+                            url: newUrl,
+                            initialUrl: newUrl,
+                            loading: true,
+                            partition: tab.partition, // Keep same session/cookies
+                            accountId: tab.accountId,
+                            platform: tab.platform,
+                            actualIp: tab.actualIp
+                        };
+                        setTabs(prev => [...prev, newTab]);
+                        setActiveTabId(newTabId);
+                    }
+                };
+
+                // Handle loading errors gracefully (ERR_ABORTED is common during HMR/quick navigation)
+                const onFailLoad = (e: any) => {
+                    // ERR_ABORTED (-3) is common when navigation is interrupted - don't log as error
+                    if (e.errorCode === -3) {
+                        console.log(`[Webview] Navigation aborted for ${tab.id} (normal during quick navigation)`);
+                    } else if (e.errorCode !== 0) {
+                        console.warn(`[Webview] Load failed for ${tab.id}: ${e.errorDescription} (${e.errorCode})`);
+                    }
+                    updateTab(tab.id, { loading: false });
+                };
 
                 try {
                     wv.removeEventListener('did-start-loading', onStart);
                     wv.removeEventListener('did-stop-loading', onStop);
+                    wv.removeEventListener('new-window', onNewWindow);
+                    wv.removeEventListener('did-fail-load', onFailLoad);
 
                     wv.addEventListener('did-start-loading', onStart);
                     wv.addEventListener('did-stop-loading', onStop);
+                    wv.addEventListener('new-window', onNewWindow);
+                    wv.addEventListener('did-fail-load', onFailLoad);
                 } catch (e) { console.error(e); }
             }
         });
@@ -117,14 +176,31 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
         const newTabId = `tab-${Date.now()}`;
         const isSpecificSession = !!account;
         let partition = undefined;
+
         if (isSpecificSession && account) {
             partition = `persist:${account.id}`;
+
+            // Inject cookies before opening functionality
+            if ((window as any).electron && platform) {
+                try {
+                    const cookies = await api.getCookies(account.id, platform);
+                    if (cookies && cookies.length > 0) {
+                        console.log(`[InAppBrowser] Injecting ${cookies.length} cookies for ${partition}`);
+                        (window as any).electron.setCookies(partition, cookies);
+                        // Small buffer to ensure Main process applies cookies
+                        await new Promise(r => setTimeout(r, 200));
+                    }
+                } catch (e) {
+                    console.error('[InAppBrowser] Failed to inject cookies:', e);
+                }
+            }
         }
 
         const newTab: BrowserTab = {
             id: newTabId,
             title: isSpecificSession ? `${platform} - ${account.identifier}` : 'New Tab',
             url: isSpecificSession ? getPlatformUrl(platform!) : START_URL,
+            initialUrl: isSpecificSession ? getPlatformUrl(platform!) : START_URL,
             loading: true,
             partition: partition,
             accountId: account?.id,
@@ -141,7 +217,7 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
         e.stopPropagation();
         const newTabs = tabs.filter(t => t.id !== tabId);
         if (newTabs.length === 0) {
-            setTabs([{ id: `tab-${Date.now()}`, title: 'New Tab', url: START_URL, loading: false }]);
+            setTabs([{ id: `tab-${Date.now()}`, title: 'New Tab', url: START_URL, initialUrl: START_URL, loading: false }]);
             setActiveTabId(newTabs[0]?.id || `tab-${Date.now()}`);
         } else {
             setTabs(newTabs);
@@ -333,10 +409,11 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
                         ) : (
                             <webview
                                 ref={el => { if (el) webviewRefs.current[tab.id] = el; }}
-                                src={tab.url}
+                                src={tab.initialUrl}
                                 partition={tab.partition}
                                 className="w-full h-full"
-                                allowpopups={true as any}
+                                // @ts-ignore - Electron webview attribute
+                                allowpopups="true"
                             />
                         )}
                     </div>

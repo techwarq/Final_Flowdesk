@@ -39,7 +39,7 @@
       "identifier": "DineshPandey17@emobilee.com",
       "status": "Error",
       "createdAt": "2026-01-15T15:44:34.834Z",
-      "updatedAt": "2026-01-20T08:21:10.442Z",
+      "updatedAt": "2026-01-21T18:52:37.971Z",
       "id": "dineshpandey17@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "DineshPandey17@emobilee.com",
@@ -47,15 +47,14 @@
       "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/dineshpandey17@emobilee.com/userDataDir/RunningChromeVersion'",
       "orders": [
         {
-          "orderId": "OD436401445123230200",
+          "orderId": "gen_4_More_Items_276_5 Delivered",
           "productName": "4 More Items",
           "price": "₹276",
           "status": "5 Delivered",
           "deliveryDate": "",
           "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/chocolate/o/4/m/-original-imahjjwfgzxsvrtw.jpeg?q=90",
           "orderUrl": "https://www.flipkart.com/account/orders",
-          "otp": "",
-          "receiverName": "Other"
+          "otp": ""
         }
       ],
       "details": {
@@ -79,7 +78,7 @@
       "identifier": "sunil806upadhyay@emobilee.com",
       "status": "Error",
       "createdAt": "2026-01-19T09:03:35.249Z",
-      "updatedAt": "2026-01-20T09:02:41.223Z",
+      "updatedAt": "2026-01-21T18:52:48.852Z",
       "id": "sunil806upadhyay@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "sunil806upadhyay@emobilee.com",
@@ -90,13 +89,11 @@
           "orderId": "OD436561239670613100",
           "productName": "OnePlus Nord Buds 3r TWS Earbud, 10min c...",
           "price": "₹1,518",
-          "status": "Ordered",
+          "status": "Delivery expected by Sat Jan 24",
           "deliveryDate": "",
           "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/headphone/7/n/o/-original-imahfsg7chmgrugu.jpeg?q=90",
           "orderUrl": "https://www.flipkart.com/order_details?order_id=OD436561239670613100&item_id=436561239670613100&unit_id=436561239670613100000",
-          "otp": "",
-          "receiverName": "Work",
-          "deliveryDetails": "Explore PlusMy AccountBecome a Seller More CartElectronicsTVs & AppliancesMenWomenBaby & KidsHome & FurnitureSports, Books & MoreFlightsOffer ZoneHomeMy AccountMy OrdersOD436561239670613100\nPay online for a smooth doorstep experiencePay ₹1518OnePlus Nord Buds 3r TWS Earbud, 10min charge for 8hr Music, 3D Audio, 2-mic call BluetoothBlackSeller: SVPeripherals₹1,518Order ConfirmedYour Order has been placed., Sun 18th JanShipped, Expected by Jan 22Out for deliveryDelivery, Sat Jan 24 by 11 PMSee All Updates Delivery Executive details will be available once the order is out for deliveryCancelChat with usKeep in mind at doorstepOpen box deliveryVerify item before sharing OTPRate your experienceDid you find this page helpful?Send Order DetailsOrder #OD436561239670613100Delivery detailsWorkSham nursing home and heart centre Railway road, moga,  New Delhi Delhi 110085Renu 7986360147Price detailsListing price₹1,999Special price₹1,499Total fees₹19Total amount₹1,518Payment methodCash On DeliveryABOUTContact UsAbout UsCareersFlipkart StoriesPressCorporate InformationGROUP COMPANIESMyntraCleartripShopsyHELPPaymentsShippingCancellation & ReturnsFAQCONSUMER POLICYCancellation & ReturnsTerms Of UseSecurityPrivacySitemapGrievance RedressalEPR ComplianceFSSAI Food Safety Connect AppMail Us:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India\nSocialRegistered Office Address:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India \n CIN : U51109KA2012PTC066107 \n Telephone: 044-45614700 / 044-67415800\nBecome a SellerAdvertiseGift CardsHelp Center© 2007-2026 Flipkart.comBack to top"
+          "otp": ""
         },
         {
           "orderId": "OD125070937550702000",
@@ -106,25 +103,275 @@
           "deliveryDate": "",
           "imageUrl": "https://rukminim2.flixcart.com/image/200/200/ki4w0i80-0/sling-bag/n/b/i/women-s-girls-sling-bag-roll-sl0708roll-sling-bag-astir-colleen-original-imafyyfs5j673sn4.jpeg?q=90",
           "orderUrl": "https://www.flipkart.com/order_details?order_id=OD125070937550702000&item_id=12507093755070200&unit_id=12507093755070200000&share_token=SH22053001301197843297.D08966F1A9B9D14E46D8F1D6296F4D32ECB57D4B",
-          "otp": "",
-          "receiverName": "Work",
-          "deliveryDetails": "Explore PlusMy AccountBecome a Seller More CartElectronicsTVs & AppliancesMenWomenBaby & KidsHome & FurnitureSports, Books & MoreFlightsOffer ZoneHomeMy AccountMy OrdersOD125070937550702000\nKriti shared this order with you.Total refund - ₹288₹288CompletedSorry, refund is taking longer than expected. Your money is safe and an SMS will be shared once it's added to your  Bank Account ending with *********053. You can then check refund in your updated bank statement(Bank app/passbook).If you can’t see the refund in your bank statement(bank app/passbook), contact your bank and share refund reference number 216019127312 to track it.How do I check my bank account?ASTIR COLLEEN Black Sling Bag Women's & Girls' Sling Bag - RollBlackSeller: MakerStuff₹288Return, Jun 03, 2022Refund, Jun 10, 2022See All Updates Rate your experienceDid you find this page helpful?Other Items In This OrderPUMMY LUGGAGE Women White Hand-held BagDelivered on Jun 02, 2022Order #OD125070937550702000Delivery detailsWorkSham nursing home and heart centre Railway road, Moga,  Moga Punjab 142001Kriti 7986360147Price detailsListing price₹1,199Selling price₹288Total amount₹288Payment methodCash On DeliveryABOUTContact UsAbout UsCareersFlipkart StoriesPressCorporate InformationGROUP COMPANIESMyntraCleartripShopsyHELPPaymentsShippingCancellation & ReturnsFAQCONSUMER POLICYCancellation & ReturnsTerms Of UseSecurityPrivacySitemapGrievance RedressalEPR ComplianceFSSAI Food Safety Connect AppMail Us:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India\nSocialRegistered Office Address:Flipkart Internet Private Limited, \n Buildings Alyssa, Begonia & \n Clove Embassy Tech Village, \n Outer Ring Road, Devarabeesanahalli Village, \n Bengaluru, 560103, \n Karnataka, India \n CIN : U51109KA2012PTC066107 \n Telephone: 044-45614700 / 044-67415800\nBecome a SellerAdvertiseGift CardsHelp Center© 2007-2026 Flipkart.comBack to top"
+          "otp": ""
         },
         {
           "orderId": "OD225048376660078000",
           "productName": "MEGHDOOT Satreetha Shampoo 500ml (Pack o...",
           "price": "₹145",
           "status": "Delivered on May 31, 2022",
-          "deliveryDate": "",
+          "deliveryDate": "May 31, 2022",
           "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/shampoo/q/n/g/400-ayurvedic-satreetha-shampoo-for-dandruff-and-scalp-acne-original-imahek2zg9cje6qx.jpeg?q=90",
           "orderUrl": "https://www.flipkart.com/order_details?order_id=OD225048376660078000&item_id=22504837666007800&unit_id=22504837666007800000",
-          "otp": "",
-          "receiverName": "Work"
+          "otp": ""
         }
       ],
       "details": {
         "gvBalance": "₹50"
       }
+    },
+    {
+      "loginType": "mobile",
+      "identifier": "8895660698",
+      "status": "Error",
+      "createdAt": "2026-01-21T17:49:23.764Z",
+      "updatedAt": "2026-01-21T17:54:22.972Z",
+      "id": "sonalinayak0804@gmail.com",
+      "platform": "flipkart",
+      "assignedTo": "Sonali",
+      "userId": "3dc36b93-9f8c-4e26-9f26-025b78b8b661",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/Downloads/flowdesk/backend/data/profiles/flipkart/sonalinayak0804@gmail.com/userDataDir/RunningChromeVersion'",
+      "details": {
+        "gvBalance": "₹0"
+      },
+      "orders": [
+        {
+          "orderId": "OD435550287133069100",
+          "productName": "MILTON Plastic Utility Container - 750 ...",
+          "price": "₹190",
+          "status": "Delivered on Sep 27, 2025",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/container/s/t/t/3-ej066trsp0001-milton-original-imahaxzue3b6adnn.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD435550287133069100&item_id=435550287133069100&unit_id=435550287133069100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD435550287133069100\n\nOrder can be tracked by 8917551238.\nTracking link is shared via SMS.\nManage who can access\nMILTON Plastic Utility Container - 750 ml\nClear\nSeller: MYTHANGLORYRetail\n₹190\n1 offer\n\nOrder Confirmed, Sep 23, 2025\nDelivered, Sep 27, 2025\nSee All Updates\nChat with us\nRate your experience\nRate the product\nOrder #OD435550287133069100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8917551238, 7978021206\nPrice details\nListing price\n₹430\nSpecial price\n₹238\nTotal fees\n₹12\nOther discount\n−₹60\nTotal amount\n₹190\nPayment method\nCash On Delivery\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD434323460273409100",
+          "productName": "Alexa Plastic Grocery Container - 1200 ...",
+          "price": "₹756",
+          "status": "Delivered on May 12, 2025",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/container/t/7/k/12-square-12-black-alexa-original-imah734tqng7rszt.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD434323460273409100&item_id=434323460273409100&unit_id=434323460273409100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD434323460273409100\n\nOrder can be tracked by 8917551238. + 1 more\nTracking link is shared via SMS.\nManage who can access\nAlexa Plastic Grocery Container - 1200 ml\nBlack\nSeller: RetailShop-India\n₹756\n1 offer\n\nOrder Confirmed, May 04, 2025\nDelivered, May 12, 2025\nSee All Updates\nChat with us\nOther Items In This Order\nMILTON Plastic Utility Container - 1 L\nDelivered on May 07, 2025\nOrder #OD434323460273409100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8917551238, 7978021206\nPrice details\nListing price\n₹1,499\nSelling price\n₹781\nTotal fees\n₹5\nOther discount\n−₹30\nTotal amount\n₹756\nPayment method\nUPI\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD434292770538103200",
+          "productName": "3 More Items",
+          "price": "₹1,702",
+          "status": "4 Delivered",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/cleanser/b/j/y/-original-imahcqarbzc6nqfa.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD434292770538103200\n\nDelivered before time!\nAll items have been delivered\nSee all items\nChat with us\nOrder Details\nOrder Id\nOD434292770538103200\nOrder Date\nMay 01, 2025\nDelivery details\nHome\n2024 Vanganahalli, 22nd C Main Road, 1st Sector, HSR Layout, Bengaluru Karnataka 560102\nSonali Nayak\n8895660698\nPrice details\nListing price\n₹6,288\nSelling price\n₹1,776\nTotal fees\n₹24\nOther discount\n−₹98\nTotal amount\n₹1,702\nPayment method\nUPI\nDownload Invoice\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD431359669724214100",
+          "productName": "SAMSUNG Galaxy F34 5G (Mystic Green, 128...",
+          "price": "₹13,058",
+          "status": "Delivered on May 27, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/mobile/n/w/e/-original-imagtyw9fdfnsune.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD431359669724214100&item_id=431359669724214100&unit_id=431359669724214100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD431359669724214100\n\nSAMSUNG Galaxy F34 5G (Mystic Green, 128 GB)\nMystic Green\nSeller: BTPLD\n₹13,058\n6 offers\n\nOrder Confirmed, May 26, 2024\nDelivered, May 27, 2024\nSee All Updates\nChat with us\nOrder #OD431359669724214100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹24,499\nSpecial price\n₹12,999\nTotal fees\n₹59\nTotal amount\n₹13,058\nPayment method\nEMI\nDownload Invoice\nOffers earned\nAttached Product\nFlat 15% off on Hotels upto Rs 3999 + 500 supercoins on cashback\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAHC68ZG9, claim before Jun 5, 2026\nHow to claim?\nAttached Product\nFree Coupon to get the 12 months Spotify Premium at a discounted rate of Rs. 699/-\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - Bq59Rt6AkZ, claim before Oct 31, 2024\nHow to claim?\nAttached Product\nFlat Rs 1500 off on Cleartrip hotels booking along with 500 supercoins on booking\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAFI1MKH5, claim before Apr 30, 2024\nHow to claim?\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "gen_Flat_Rs_650_off_on_Cleartrip_flights_booking_along_with_500_supercoins_on_booking__Delivered on May 27, 2024",
+          "productName": "Flat Rs 650 off on Cleartrip flights booking along with 500 supercoins on booking",
+          "price": "",
+          "status": "Delivered on May 27, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/digital-voucher-code/z/j/y/-original-imagys6vkczygmxm.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD431359669724214100\n\nSAMSUNG Galaxy F34 5G (Mystic Green, 128 GB)\nMystic Green\nSeller: BTPLD\n₹13,058\n6 offers\n\nOrder Confirmed, May 26, 2024\nDelivered, May 27, 2024\nSee All Updates\nChat with us\nOrder #OD431359669724214100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹24,499\nSpecial price\n₹12,999\nTotal fees\n₹59\nTotal amount\n₹13,058\nPayment method\nEMI\nDownload Invoice\nOffers earned\nAttached Product\nFlat 15% off on Hotels upto Rs 3999 + 500 supercoins on cashback\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAHC68ZG9, claim before Jun 5, 2026\nHow to claim?\nAttached Product\nFree Coupon to get the 12 months Spotify Premium at a discounted rate of Rs. 699/-\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - Bq59Rt6AkZ, claim before Oct 31, 2024\nHow to claim?\nAttached Product\nFlat Rs 1500 off on Cleartrip hotels booking along with 500 supercoins on booking\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAFI1MKH5, claim before Apr 30, 2024\nHow to claim?\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "gen_Free_Coupon_to_get_the_12_months_Spotify_Premium_at_a_discounted_rate_of_Rs__699____Delivered on May 27, 2024",
+          "productName": "Free Coupon to get the 12 months Spotify Premium at a discounted rate of Rs. 699/-",
+          "price": "",
+          "status": "Delivered on May 27, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/digital-voucher-code/r/i/k/-original-imagrfhwvn4dfest.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD431359669724214100\n\nSAMSUNG Galaxy F34 5G (Mystic Green, 128 GB)\nMystic Green\nSeller: BTPLD\n₹13,058\n6 offers\n\nOrder Confirmed, May 26, 2024\nDelivered, May 27, 2024\nSee All Updates\nChat with us\nOrder #OD431359669724214100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹24,499\nSpecial price\n₹12,999\nTotal fees\n₹59\nTotal amount\n₹13,058\nPayment method\nEMI\nDownload Invoice\nOffers earned\nAttached Product\nFlat 15% off on Hotels upto Rs 3999 + 500 supercoins on cashback\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAHC68ZG9, claim before Jun 5, 2026\nHow to claim?\nAttached Product\nFree Coupon to get the 12 months Spotify Premium at a discounted rate of Rs. 699/-\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - Bq59Rt6AkZ, claim before Oct 31, 2024\nHow to claim?\nAttached Product\nFlat Rs 1500 off on Cleartrip hotels booking along with 500 supercoins on booking\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAFI1MKH5, claim before Apr 30, 2024\nHow to claim?\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "gen_Flat_Rs_1000_off_on_Cleartrip_hotels_booking_along_with_500_supercoins_on_booking__Delivered on May 27, 2024",
+          "productName": "Flat Rs 1000 off on Cleartrip hotels booking along with 500 supercoins on booking",
+          "price": "",
+          "status": "Delivered on May 27, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/digital-voucher-code/d/t/f/-original-imah3hpqvry9h8gv.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD431359669724214100\n\nSAMSUNG Galaxy F34 5G (Mystic Green, 128 GB)\nMystic Green\nSeller: BTPLD\n₹13,058\n6 offers\n\nOrder Confirmed, May 26, 2024\nDelivered, May 27, 2024\nSee All Updates\nChat with us\nOrder #OD431359669724214100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹24,499\nSpecial price\n₹12,999\nTotal fees\n₹59\nTotal amount\n₹13,058\nPayment method\nEMI\nDownload Invoice\nOffers earned\nAttached Product\nFlat 15% off on Hotels upto Rs 3999 + 500 supercoins on cashback\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAHC68ZG9, claim before Jun 5, 2026\nHow to claim?\nAttached Product\nFree Coupon to get the 12 months Spotify Premium at a discounted rate of Rs. 699/-\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - Bq59Rt6AkZ, claim before Oct 31, 2024\nHow to claim?\nAttached Product\nFlat Rs 1500 off on Cleartrip hotels booking along with 500 supercoins on booking\nSeller: Fair Value Retail\n₹0\n₹1\nFree\n1 offer\nCoupon code - CTEFKMAFI1MKH5, claim before Apr 30, 2024\nHow to claim?\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD431238132528172100",
+          "productName": "Fastrack Pulse I Analog Watch - For Wom...",
+          "price": "₹3,060",
+          "status": "Delivered on May 14, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/watch/o/h/w/-original-imahexnhfskgxcjs.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD431238132528172100&item_id=431238132528172100&unit_id=431238132528172100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD431238132528172100\n\nFastrack Pulse I Analog Watch - For Women\nSeller: Wizrob Fashion\n₹3,060\n3 offers\n\nOrder Confirmed, May 12, 2024\nDelivered, May 14, 2024\nSee All Updates\nChat with us\nOrder #OD431238132528172100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹3,395\nSpecial price\n₹3,050\nTotal fees\n₹10\nTotal amount\n₹3,060\nPayment method\nCash On Delivery\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD430979748116618100",
+          "productName": "Optimus Plastic Grocery Container - 300...",
+          "price": "₹504",
+          "status": "Delivered on Apr 20, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/keg02a80/container/h/m/j/con-pizza-pink12-sedulous-original-imafv469smedt3sh.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430979748116618100&item_id=430979748116618100&unit_id=430979748116618100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD430979748116618100\n\nOptimus Plastic Grocery Container - 300 ml\nPink,White\nSeller: Optimus Housewares\n₹504\n2 offers\n\nOrder Confirmed, Apr 12, 2024\nDelivered, Apr 20, 2024\nSee All Updates\nChat with us\nOrder #OD430979748116618100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹1,299\nSpecial price\n₹499\nTotal fees\n₹5\nTotal amount\n₹504\nPayment method\nCash On Delivery\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD430711532049820100",
+          "productName": "rudrama Women Kurta Pant Dupatta Set",
+          "price": "₹654",
+          "status": "Delivered on Mar 17, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/ethnic-set/w/p/l/xl-rd-new-style-women-rayon-kurta-pant-with-dupatta-rudrama-original-imagy3qqertbtzhp.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430711532049820100&item_id=430711532049820100&unit_id=430711532049820100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD430711532049820100\n\nrudrama Women Kurta Pant Dupatta Set\nL, Black\nSeller: PICHAWAI\n₹654\n3 offers\n\nOrder Confirmed, Mar 12, 2024\nDelivered, Mar 17, 2024\nSee All Updates\nChat with us\nOther Items In This Order\nrudrama Women Kurta Pant Dupatta Set\nDelivered on Mar 17, 2024\nOrder #OD430711532049820100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹2,999\nSelling price\n₹649\nTotal fees\n₹5\nTotal amount\n₹654\nPayment method\nCash On Delivery\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD430569476671566100",
+          "productName": "Sandeep Enterprises Women Kurta Pant Set",
+          "price": "₹554",
+          "status": "Delivered on Feb 29, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/ethnic-set/r/f/m/l-kurtiwith-pants-sandeep-enterprises-original-imagtdpxrjct52mp.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430569476671566100&item_id=430569476671566100&unit_id=430569476671566100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD430569476671566100\n\nSandeep Enterprises Women Kurta Pant Set\nL, Black\nSeller: ShreeFabandFashion\n₹554\n2 offers\n\nOrder Confirmed, Feb 25, 2024\nDelivered, Feb 29, 2024\nSee All Updates\nChat with us\nOrder #OD430569476671566100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹1,199\nSpecial price\n₹549\nTotal fees\n₹5\nTotal amount\n₹554\nPayment method\nCash On Delivery\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD430518698440122100",
+          "productName": "Somapah Women Kurta Palazzo Set",
+          "price": "₹655",
+          "status": "Delivered on Feb 24, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/ethnic-set/h/0/7/m-co-ord-set-somapah-original-imagu5cppxtashhu.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430518698440122100&item_id=430518698440122100&unit_id=430518698440122100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD430518698440122100\n\nSomapah Women Kurta Palazzo Set\nL, Purple\nSeller: ShashwatFashion\n₹655\n1 offer\n\nOrder Confirmed, Feb 19, 2024\nDelivered, Feb 24, 2024\nSee All Updates\nChat with us\nOther Items In This Order\nteena fashion Women Kurta Pant Set\nDelivered on Feb 24, 2024\nOrder #OD430518698440122100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹1,999\nSpecial price\n₹649\nTotal fees\n₹6\nTotal amount\n₹655\nPayment method\nCash On Delivery\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD430483495020859100",
+          "productName": "Tokyo Talkies Full Sleeve Printed Women ...",
+          "price": "₹399",
+          "status": "Delivered on Feb 19, 2024",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/sweatshirt/o/v/m/s-ttss001309-tokyo-talkies-original-imagwam7fuecezfz.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430483495020859100&item_id=430483495020859100&unit_id=430483495020859100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD430483495020859100\n\nTokyo Talkies Full Sleeve Printed Women Sweatshirt\nM, Brown\nSeller: SandSMarketing\n₹399\n1 offer\n\nOrder Confirmed, Feb 15, 2024\nDelivered, Feb 19, 2024\nSee All Updates\nChat with us\nOrder #OD430483495020859100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹1,749\nSpecial price\n₹399\nTotal amount\n₹399\nPayment method\nUPI\nDownload Invoice\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD429502598836367100",
+          "productName": "Wings Phantom 315 Earbuds with 40 hrs Ba...",
+          "price": "₹709",
+          "status": "Delivered on Oct 26, 2023",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/headphone/z/b/s/315-wings-original-imahgcchqhtr87z3.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD429502598836367100&item_id=429502598836367100&unit_id=429502598836367100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD429502598836367100\n\nWings Phantom 315 Earbuds with 40 hrs Battery Backup, ENC Mic Game Mode Bluetooth Headset\nBlack\nSeller: BUZZINDIA\n₹709\n\nOrder Confirmed, Oct 24, 2023\nDelivered, Oct 26, 2023\nSee All Updates\nChat with us\nOrder #OD429502598836367100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹1,999\nSelling price\n₹699\nTotal fees\n₹10\nTotal amount\n₹709\nPayment method\nCredit Card\nDownload Invoice\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD429424057495424100",
+          "productName": "SAMSUNG Watch 4 Classic LTE 46mm Super A...",
+          "price": "₹10,300",
+          "status": "Delivered on Oct 17, 2023",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/smartwatch/4/r/y/-original-imagxp8vvheu76xg.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD429424057495424100&item_id=429424057495424100&unit_id=429424057495424100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD429424057495424100\n\nSAMSUNG Watch 4 Classic LTE 46mm Super AMOLED LTE Calling with Body Composition Tracking\n1.4, Black\nSeller: BTPLD\n₹10,300\n\nOrder Confirmed, Oct 15, 2023\nDelivered, Oct 17, 2023\nSee All Updates\nChat with us\nOrder #OD429424057495424100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹42,999\nSelling price\n₹10,999\nOther discount\n−₹699\nTotal amount\n₹10,300\nPayment method\nEMI\nDownload Invoice\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD427437472832397100",
+          "productName": "DIVINE 36 Pair Mix Design Earrings with ...",
+          "price": "₹299",
+          "status": "Delivered on Mar 04, 2023",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kzygpzk0/earring/m/q/m/na-combo-pack-set-of-36-pair-multicolor-colorful-mix-design-original-imagbukyg4pgmurj.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD427437472832397100&item_id=427437472832397100&unit_id=427437472832397100000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD427437472832397100\n\nDIVINE 36 Pair Mix Design Earrings with Heart Box for Girls, Women and Ladies (1 Box) Alloy Stud Earring\nMulticolor\nSeller: Blessings Traders 99\n₹299\n\nOrder Confirmed, Feb 27, 2023\nDelivered, Mar 04, 2023\nSee All Updates\nChat with us\nOther Items In This Order\nYELLOW CHIMES Shawl Sweater Clip Deer Crystal Brooch for Women and Girls Brooch\nDelivered on Mar 04, 2023\nOrder #OD427437472832397100\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹799\nSelling price\n₹299\nTotal amount\n₹299\nPayment method\nPhonePe\nDownload Invoice\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD225838593517237000",
+          "productName": "Syska 10000 mAh Power Bank",
+          "price": "₹799",
+          "status": "Delivered on Sep 05, 2022",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kmp7ngw0/power-bank/e/v/y/power-pocket-100-10000-p1016b-bk-syska-original-imagfjh3xgh6dgdb.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD225838593517237000&item_id=22583859351723700&unit_id=22583859351723700000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD225838593517237000\n\nSyska 10000 mAh Power Bank\nBlack\nSeller: TreasureEVERretailer\n₹799\n\nOrder Confirmed, Aug 26, 2022\nDelivered, Sep 05, 2022\nSee All Updates\nChat with us\nRecent issues\nView All\nI have an issue with the delivery of my item\nResolved | Sep 20, 2022\nOrder #OD225838593517237000\nDelivery details\nHome\nLane 3, plot no. 17/7629 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹1,599\nSelling price\n₹799\nTotal amount\n₹799\nPayment method\nDebit Card\nDownload Invoice\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "OD224153955342737000",
+          "productName": "realme C25_Y (Metal Grey, 64 GB)",
+          "price": "₹9,499",
+          "status": "Delivered on Feb 15, 2022",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kwgpz0w0/mobile/c/6/l/-original-imag95yfawvtzbdw.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD224153955342737000&item_id=22415395534273700&unit_id=22415395534273700000",
+          "otp": "",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nSonali\nBecome a Seller\nMore\n3\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD224153955342737000\n\nrealme C25_Y (Metal Grey, 64 GB)\nMetal Grey\nSeller: SUGSHAANnet\n₹9,499\n\nOrder Confirmed, Feb 12, 2022\nDelivered, Feb 15, 2022\nSee All Updates\nChat with us\nOrder #OD224153955342737000\nDelivery details\nHome\nPlot no 17/1789 Oscar city, Laxmisagar canal road, Bhubaneswar Odisha 751006\nSonali Nayak\n8895660698, 7978021206\nPrice details\nListing price\n₹12,999\nSelling price\n₹10,999\nOther discount\n−₹1,500\nTotal amount\n₹9,499\nPayment method\nCredit Card\nDownload Invoice\nAttached Product\nPharmEasy Upto 25% off on medicine orders\nSeller: Fair Value Retail\n₹0\n₹300\nFree\nCoupon code - FK22VH93Q, claim before Apr 1, 2022\nHow to claim?\nAttached Product\nZebPay Wallet Cashback on First Trade\nSeller: Fair Value Retail\n₹0\n₹100\nFree\nCoupon code - ZPF0E6786C, claim before Mar 1, 2022\nHow to claim?\nAttached Product\nBalleBaazi Get Rs.500 cash�bonus + free entry ticket to Mega League\nSeller: Fair Value Retail\n₹0\n₹549\nFree\nCoupon code - FK8wSIdb, claim before Jul 31, 2022\nHow to claim?\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
+        {
+          "orderId": "gen_PharmEasy_Upto_25__off_on_medicine_orders__Delivered on Feb 15, 2022",
+          "productName": "PharmEasy Upto 25% off on medicine orders",
+          "price": "",
+          "status": "Delivered on Feb 15, 2022",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kz1lle80/digital-voucher-code/q/s/u/-original-imagb569sbaeu7er.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": ""
+        },
+        {
+          "orderId": "gen_BalleBaazi_Get_Rs_500_cash_bonus___free_entry_ticket_to_Mega_League__Delivered on Feb 15, 2022",
+          "productName": "BalleBaazi Get Rs.500 cash�bonus + free entry ticket to Mega League",
+          "price": "",
+          "status": "Delivered on Feb 15, 2022",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kz3118w0/digital-voucher-code/u/q/h/-original-imagb5w6ggx9chds.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": ""
+        }
+      ]
     }
   ]
 }

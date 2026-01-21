@@ -6,7 +6,7 @@ import { generateFingerprint } from '../fingerprint.js';
 import logger, { getAccountLogger } from '../log.js';
 import { saveProfileToDisk } from '../profiles/store.js';
 import { injectOverlay } from '../overlay.js';
-import { extractAndSaveCookies, loadCookiesFromDisk } from '../cookies.js';
+import { extractAndSaveCookies, loadCookiesFromDB } from '../cookies.js';
 // IMAP OTP automation removed - manual OTP entry only
 import { getAccount, updateLastLogin, updateAccountStatus } from '../accounts.js';
 import { getSettings } from '../settings.js';
@@ -143,7 +143,7 @@ export async function loginFlipkart(options: LoginOptions) {
             log.info('New account detected - skipping cookie injection for fresh login flow.');
         } else {
             console.log(`[DEBUG-ANTIGRAVITY] Attempting to load cookies for ${accountId}...`);
-            const cookies = await loadCookiesFromDisk(accountId, platform);
+            const cookies = await loadCookiesFromDB(accountId, platform);
             if (cookies.length > 0) {
                 log.info(`Injecting ${cookies.length} cookies from storage...`);
                 console.log(`[DEBUG-ANTIGRAVITY] Cookies to inject: ${cookies.map((c: { name: any; }) => c.name).join(', ')}`);

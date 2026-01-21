@@ -40,17 +40,21 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isAdminOpen, setIsAdminOpen] = useState(false);
     const [adminUsers, setAdminUsers] = useState<any[]>([]);
+    const [activityLogs, setActivityLogs] = useState<any[]>([]);
 
     const load = async () => {
         setLoading(true);
         try {
             const data = await api.getAccounts();
             setAccounts(data.accounts || []);
-            // Also load users for stats
-            const users = await api.getAdminUsers();
-            if (Array.isArray(users)) {
-                setAdminUsers(users);
-            }
+            // Also load users and logs
+            const [users, logs] = await Promise.all([
+                api.getAdminUsers(),
+                api.getActivityLogs()
+            ]);
+
+            if (Array.isArray(users)) setAdminUsers(users);
+            if (Array.isArray(logs)) setActivityLogs(logs);
         } catch (e) {
             console.error(e);
         } finally {
@@ -357,39 +361,20 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
-                        {/* Mock Users if adminUsers is empty or basic list */}
-                        {adminUsers.length > 0 ? adminUsers.map((user: any, i) => (
-                            <tr key={i}>
-                                <td className="px-6 py-4 font-bold text-slate-900">{user.username}</td>
-                                <td className="px-6 py-4 capitalize">{user.role}</td>
-                                <td className="px-6 py-4 text-slate-500">Just now</td>
-                                <td className="px-6 py-4"><span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold">Active</span></td>
-                                <td className="px-6 py-4 text-right"><span className="text-indigo-600 font-bold cursor-pointer">Edit</span></td>
-                            </tr>
-                        )) : (
-                            [1, 2, 3].map((_, i) => (
-                                <tr key={i} className="hover:bg-slate-50">
-                                    <td className="px-6 py-4 font-bold text-slate-900">
-                                        {i === 0 ? 'admin' : i === 1 ? 'manager' : 'staff_01'}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-md text-xs font-bold uppercase ${i === 0 ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'
-                                            }`}>
-                                            {i === 0 ? 'Admin' : 'User'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-slate-500">2 mins ago</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                            <span className="text-sm font-medium text-slate-700">Active</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="text-slate-400 hover:text-slate-900 font-bold text-xs">Manage</button>
-                                    </td>
+                        {adminUsers.length > 0 ? (
+                            adminUsers.map((user: any, i) => (
+                                <tr key={i}>
+                                    <td className="px-6 py-4 font-bold text-slate-900">{user.username}</td>
+                                    <td className="px-6 py-4 capitalize">{user.role}</td>
+                                    <td className="px-6 py-4 text-slate-500">Just now</td>
+                                    <td className="px-6 py-4"><span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold">Active</span></td>
+                                    <td className="px-6 py-4 text-right"><span className="text-indigo-600 font-bold cursor-pointer">Edit</span></td>
                                 </tr>
                             ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-8 text-center text-slate-500 font-medium">No users found</td>
+                            </tr>
                         )}
                     </tbody>
                 </table>
@@ -408,26 +393,24 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
             </div>
 
             <div className="space-y-4">
-                {[1, 2, 3, 4, 5, 6].map((_, i) => (
-                    <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 flex items-start gap-4">
-                        <div className={`p-2 rounded-full shrink-0 ${i % 3 === 0 ? 'bg-indigo-50 text-indigo-600' :
-                            i % 3 === 1 ? 'bg-emerald-50 text-emerald-600' :
-                                'bg-amber-50 text-amber-600'
-                            }`}>
-                            {i % 3 === 0 ? <Users size={16} /> :
-                                i % 3 === 1 ? <CheckCircle2 size={16} /> :
-                                    <Activity size={16} />}
+                {activityLogs.length > 0 ? (
+                    activityLogs.map((log: any, i) => (
+                        <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 flex items-start gap-4">
+                            <div className={`p-2 rounded-full shrink-0 ${log.type === 'error' ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                                <Activity size={16} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-slate-900">{log.message || 'System Event'}</p>
+                                <p className="text-xs text-slate-500 mt-1">{new Date(log.timestamp).toLocaleString()}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-bold text-slate-900">
-                                {i % 3 === 0 ? 'User "staff_01" logged in' :
-                                    i % 3 === 1 ? 'Account "Flipkart_Main" sync completed' :
-                                        'System update check performed'}
-                            </p>
-                            <p className="text-xs text-slate-500 mt-1">Today, {10 + i}:30 AM • IP: 192.168.1.{100 + i}</p>
-                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-12 text-slate-400">
+                        <Activity size={32} className="mx-auto mb-2 opacity-50" />
+                        <p>No activity logs found</p>
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );

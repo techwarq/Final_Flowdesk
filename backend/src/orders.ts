@@ -4,8 +4,9 @@ import fs from 'fs-extra';
 import { PROFILES_DIR } from './config.js';
 import { generateFingerprint } from './fingerprint.js';
 import { getAccountLogger } from './log.js';
-import { loadCookiesFromDisk } from './cookies.js';
+import { loadCookiesFromDB } from './cookies.js';
 import { upsertAccount, getAccount } from './accounts.js';
+import { updateOrdersInContext } from './chat.js';
 
 // Helper for human-like pauses
 // Helper for human-like pauses
@@ -94,7 +95,7 @@ export async function fetchGiftCardBalance(accountId: string) {
 
     log.info(`[GV] Starting GV Fetch for ${accountId}`);
 
-    const cookies = await loadCookiesFromDisk(accountId, platform);
+    const cookies = await loadCookiesFromDB(accountId, platform);
     if (cookies.length === 0) {
         throw new Error('No saved cookies found. Please log in first.');
     }
@@ -181,7 +182,7 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
     try {
         // Shopsy uses the same auth as Flipkart - always load Flipkart cookies
         const cookiePlatform = 'flipkart'; // Shopsy shares auth with Flipkart
-        const cookies = await loadCookiesFromDisk(accountId, cookiePlatform);
+        const cookies = await loadCookiesFromDB(accountId, cookiePlatform);
         if (cookies.length === 0) {
             throw new Error('No saved cookies found. Please log in first.');
         }
@@ -255,10 +256,17 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
         const page = await context.newPage();
         log.info('[Orders] Navigating to orders page...');
 
-        // DEBUG: Wait to let user see
-        await page.waitForTimeout(4000);
+        // Actually navigate to orders page!
+        const ordersUrl = platform === 'shopsy'
+            ? 'https://www.shopsy.in/mobile-view-page?url=%2Frv%2Forders'
+            : 'https://www.flipkart.com/account/orders';
 
-        const currentUrl = page.url(); // Restore variable
+        await page.goto(ordersUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+        // Brief wait for lazy content to start loading
+        await page.waitForTimeout(2000);
+
+        const currentUrl = page.url();
         const currentTitle = await page.title();
         log.info(`[Orders] Current URL: ${currentUrl}`);
         log.info(`[Orders] Current Title: ${currentTitle}`);
@@ -432,12 +440,18 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
                     let name = '';
                     let status = '';
                     let otp = '';
+                    let deliveryDate = '';
 
                     const priceMatch = textLines.find(s => s.includes('₹'));
                     if (priceMatch) price = priceMatch;
 
-                    const statusMatch = textLines.find(s => /(Delivered|Cancelled|Returned|Shipped|Out for delivery)/i.test(s));
-                    if (statusMatch) status = statusMatch;
+                    const statusMatch = textLines.find(s => /(Delivered|Cancelled|Returned|Shipped|Out for delivery|Arriving|Expected)/i.test(s));
+                    if (statusMatch) {
+                        status = statusMatch;
+                        // Extract delivery date from status text like "Delivered on Jan 15, 2024" or "Arriving by Jan 20"
+                        const dateMatch = statusMatch.match(/(?:on|by|Arriving|Expected)\s+([A-Za-z]+\s+\d{1,2}(?:,?\s*\d{4})?)/i);
+                        if (dateMatch) deliveryDate = dateMatch[1];
+                    }
 
                     // OTP in list view?
                     const otpMatch = cardEl.innerText.match(/OTP\s*[:\-]?\s*(\d{4,6})/i);
@@ -449,6 +463,14 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
                     // Fallback selectors relative to card
                     const explicitName = cardEl.querySelector('.KzDlHZ, ._213eRC, div[class*="product-name"]');
                     if (explicitName) name = explicitName.textContent?.trim() || name;
+
+                    // FILTER: Skip promotional/coupon items (they don't have real order IDs)
+                    const promoKeywords = ['coupon', 'discount', 'off on', 'cashback', 'bonus', 'spotify', 'cleartrip', 'pharmeasy', 'ballebaazi', 'supercoins', 'premium at', 'free entry'];
+                    const isPromoItem = promoKeywords.some(kw => name.toLowerCase().includes(kw));
+                    if (isPromoItem && !orderId) {
+                        // Skip promotional items that don't have a real order ID
+                        return;
+                    }
 
                     // If still no ID, generate one so we don't lose the item
                     // (Common for Grocery/Minutes items that might not have a link exposed simply)
@@ -471,7 +493,7 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
                             productName: name || 'Unknown Product',
                             price: price,
                             status: status || 'Ordered',
-                            deliveryDate: '',
+                            deliveryDate: deliveryDate,
                             imageUrl: cardEl.querySelector('img')?.src || '',
                             orderUrl: fullUrl || 'https://www.flipkart.com/account/orders',
                             otp: otp,
@@ -485,11 +507,22 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
 
         log.info(`[Orders] List scraping done. Found ${orders.length} items. Starting deep scrape...`);
 
-        for (let i = 0; i < orders.length; i++) {
-            const order = orders[i];
+        // OPTIMIZATION: Only deep scrape the first 5 "in-transit" orders (not delivered/cancelled)
+        // This dramatically speeds up response time (from ~2min to ~30sec)
+        const inTransitStatuses = ['ordered', 'shipped', 'out for delivery', 'arriving', 'processing'];
+        const ordersToDeepScrape = orders.filter(o => {
+            const statusLower = (o.status || '').toLowerCase();
+            return inTransitStatuses.some(s => statusLower.includes(s)) && !o.orderId.startsWith('gen_');
+        }).slice(0, 5);
+
+        log.info(`[Orders] Deep scraping ${ordersToDeepScrape.length} in-transit orders (skipping delivered/cancelled)`);
+
+        for (let i = 0; i < ordersToDeepScrape.length; i++) {
+            const order = ordersToDeepScrape[i];
+            const orderIndex = orders.findIndex(o => o.orderId === order.orderId);
 
             // Artificial delay between processing orders
-            if (i > 0) await humanDelay(page, 2000, 5000);
+            if (i > 0) await humanDelay(page, 1500, 3000);
 
             // Case 1: We have a valid URL (Standard Orders)
             if (order.orderUrl && !order.orderUrl.includes('account/orders') && !order.orderId.startsWith('gen_')) {
@@ -566,6 +599,14 @@ export async function fetchOrders(accountId: string, platform: 'flipkart' | 'sho
                 platform: platform,
                 orders: orders
             });
+
+            // Update chat context with new orders (async, non-blocking)
+            const acc = await getAccount(accountId);
+            if (acc?.userId) {
+                updateOrdersInContext(acc.userId, accountId, platform, orders).catch(e => {
+                    log.warn(`[Orders] Failed to update chat context: ${e.message}`);
+                });
+            }
         }
 
         return { success: true, count: orders.length, orders };

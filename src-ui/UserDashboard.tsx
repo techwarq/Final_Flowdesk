@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { useDataFetcher } from './hooks/useDataFetcher';
 import { api } from './api/client';
 import { Account, Platform } from './types';
 import { Layout } from './components/Layout';
@@ -15,7 +16,7 @@ import {
     Monitor,
     Settings,
     ShoppingBag,
-    ShieldCheck
+    Trash2
 } from 'lucide-react';
 import { Support } from './pages/Support';
 import {
@@ -48,6 +49,20 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
     const [selectedAvatar, setSelectedAvatar] = useState<string>('Default');
     const [isEditingProfile, setIsEditingProfile] = useState(false);
 
+    // Async data fetcher for orders and GV balance
+    const {
+        ordersData,
+        gvData,
+        orderStates,
+        gvStates,
+        isOrdersFetching,
+        isGVFetching,
+        currentOrderAccountId,
+        currentGVAccountId,
+        triggerOrdersFetch,
+        triggerGVFetch
+    } = useDataFetcher();
+
     const AVATARS = [
         { id: 'Default', icon: <div className="w-full h-full bg-brand-primary text-white flex items-center justify-center font-bold text-3xl">{username.charAt(0).toUpperCase()}</div> },
         { id: 'Robot', icon: <div className="w-full h-full bg-slate-900 text-white flex items-center justify-center"><Monitor size={32} /></div> },
@@ -55,6 +70,18 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
         { id: 'Ghost', icon: <div className="w-full h-full bg-purple-600 text-white flex items-center justify-center"><div className="text-3xl font-bold">👻</div></div> },
         { id: 'Ninja', icon: <div className="w-full h-full bg-red-600 text-white flex items-center justify-center"><div className="text-3xl font-bold">🐱</div></div> },
     ];
+
+    // Enriched accounts with fetched orders and GV data
+    const enrichedAccounts = useMemo(() => {
+        return accounts.map(acc => ({
+            ...acc,
+            orders: ordersData[acc.id] || acc.orders || [],
+            details: {
+                ...acc.details,
+                gvBalance: gvData[acc.id] || acc.details?.gvBalance
+            }
+        }));
+    }, [accounts, ordersData, gvData]);
 
     const filteredAccounts = accounts.filter(acc =>
         acc.identifier.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -80,6 +107,18 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
     useEffect(() => {
         loadAccounts();
     }, []);
+
+    // Ref to prevent re-triggering fetch on HMR or re-renders
+    const hasFetchedRef = useRef(false);
+
+    // Trigger data fetching when accounts are loaded (only once per session)
+    useEffect(() => {
+        if (accounts.length > 0 && !loading && !hasFetchedRef.current) {
+            hasFetchedRef.current = true;
+            triggerOrdersFetch(accounts);
+            triggerGVFetch(accounts);
+        }
+    }, [accounts, loading]);
 
     const handleOpenBrowser = async (platform: Platform) => {
         if (!activeAccountId) {
@@ -112,6 +151,18 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
         } catch (e) {
             alert('Failed to remove account');
         }
+    };
+
+    const handleInitializeNewAccount = (newAccount: Account) => {
+        // Refresh account list
+        loadAccounts();
+
+        // AUTO-LAUNCH LOGIC:
+        // 1. Set this new account as active
+        setActiveAccountId(newAccount.id);
+
+        // 2. Switch to browser view to start session
+        setCurrentView('browser_1');
     };
 
     const activeAccount = accounts.find(a => a.id === activeAccountId);
@@ -192,18 +243,31 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
             case 'id_portal':
                 return renderIDPortalView();
             case 'orders':
-                return <Orders accounts={accounts} />;
+                return <Orders
+                    accounts={enrichedAccounts}
+                    isLoading={isOrdersFetching}
+                    fetchingAccountId={currentOrderAccountId}
+                    orderStates={orderStates}
+                />;
             case 'wallet':
-                return <Wallet accounts={accounts} />;
+                return <Wallet
+                    accounts={enrichedAccounts}
+                    onRefresh={() => {
+                        loadAccounts();
+                        triggerGVFetch(accounts);
+                    }}
+                    isLoading={isGVFetching}
+                    fetchingAccountId={currentGVAccountId}
+                    gvStates={gvStates}
+                />;
             case 'support':
                 return <Support />;
             case 'settings':
                 return renderSettingsView();
             case 'browser_1':
-                // Pass all accounts so user can quick-launch any of them
-                return <InAppBrowser key="b1" savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />;
             case 'browser_2':
-                return <InAppBrowser key="b2" savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />;
+                // Browsers are rendered separately to preserve state - this just returns null
+                return null;
             case 'notifications':
                 return renderNotificationsView();
             default:
@@ -292,6 +356,13 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
                                                         className="flex-1 py-2 bg-bg-surface-hover text-text-secondary text-xs font-bold uppercase rounded-lg hover:bg-brand-primary hover:text-white transition-all border border-border-subtle hover:border-transparent"
                                                     >
                                                         Launch Session
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRemoveAccount(acc.id)}
+                                                        className="py-2 px-3 bg-red-50 text-red-500 text-xs font-bold uppercase rounded-lg hover:bg-red-500 hover:text-white transition-all border border-red-200 hover:border-transparent flex items-center gap-1"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                        Delete
                                                     </button>
                                                 </div>
                                             </div>
@@ -753,69 +824,12 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
         <div className="p-8 max-w-4xl mx-auto space-y-8">
             <h3 className="text-3xl font-bold text-text-primary tracking-tight">Notifications</h3>
 
-            {/* Notification List */}
-            <div className="space-y-4">
-                <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card flex items-start gap-4">
-                    <div className="w-10 h-10 bg-bg-surface-hover text-brand-primary rounded-full flex items-center justify-center shrink-0">
-                        <ShoppingBag size={20} />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                            <h4 className="text-sm font-bold text-text-primary">Order #OD3298293829 Delivered</h4>
-                            <span className="text-[10px] font-bold text-text-tertiary">2 mins ago</span>
-                        </div>
-                        <p className="text-sm text-text-secondary mt-1">Order for Apple iPhone 15 (Blue, 128 GB) has been delivered successfully.</p>
-                        <div className="mt-3 flex gap-2">
-                            <button
-                                onClick={() => { setCurrentView('orders'); }}
-                                className="px-3 py-1.5 bg-bg-surface-hover text-text-secondary text-xs font-bold rounded-lg hover:bg-bg-canvas border border-border-subtle hover:text-text-primary transition-colors"
-                            >
-                                View Order
-                            </button>
-                        </div>
-                    </div>
+            <div className="flex flex-col items-center justify-center py-20 bg-bg-surface rounded-card border border-border-subtle shadow-sm">
+                <div className="w-16 h-16 bg-bg-surface-hover rounded-full flex items-center justify-center mb-4 text-text-tertiary">
+                    <Bell size={24} />
                 </div>
-
-                <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card flex items-start gap-4">
-                    <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center shrink-0">
-                        <AlertTriangle size={20} />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                            <h4 className="text-sm font-bold text-text-primary">OTP Required</h4>
-                            <span className="text-[10px] font-bold text-text-tertiary">10 mins ago</span>
-                        </div>
-                        <p className="text-sm text-text-secondary mt-1">Platform <strong>Flipkart (SureshIyer)</strong> is requesting login verification.</p>
-                        <div className="mt-3 flex gap-2">
-                            <div className="px-3 py-1.5 bg-bg-surface-hover border border-border-subtle text-text-primary text-xs font-mono font-bold rounded-lg tracking-widest">
-                                8273
-                            </div>
-                            <button
-                                onClick={() => { navigator.clipboard.writeText('8273'); alert('OTP copied to clipboard!'); }}
-                                className="px-3 py-1.5 bg-brand-accent/5 text-brand-accent text-xs font-bold rounded-lg hover:bg-brand-accent/10 transition-colors"
-                            >
-                                Copy OTP
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card flex items-start gap-4">
-                    <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
-                        <CheckCircle2 size={20} />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                            <h4 className="text-sm font-bold text-text-primary">Wallet Top-up Successful</h4>
-                            <span className="text-[10px] font-bold text-text-tertiary">1 hour ago</span>
-                        </div>
-                        <p className="text-sm text-text-secondary mt-1">₹5,000 has been added to your main wallet.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="text-center pt-8">
-                <p className="text-xs font-bold text-text-tertiary uppercase tracking-widest">No more notifications</p>
+                <h4 className="text-lg font-bold text-text-primary">No new notifications</h4>
+                <p className="text-text-secondary mt-1">We'll let you know when something important happens.</p>
             </div>
         </div>
     );
@@ -839,6 +853,14 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
                 onSearch={setSearchQuery}
             >
                 {renderContent()}
+
+                {/* Persistent Browsers - Hidden when not active, preserves state */}
+                <div className={`absolute inset-0 z-50 ${currentView === 'browser_1' ? 'block' : 'hidden'}`}>
+                    <InAppBrowser savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />
+                </div>
+                <div className={`absolute inset-0 z-50 ${currentView === 'browser_2' ? 'block' : 'hidden'}`}>
+                    <InAppBrowser savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />
+                </div>
             </Layout>
 
 
@@ -851,6 +873,7 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSuccess={loadAccounts}
+                onInitialize={handleInitializeNewAccount}
             />
         </>
     );

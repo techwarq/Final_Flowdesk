@@ -10,6 +10,8 @@ function App() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<'auth' | 'support'>('auth');
+  // State to track which dashboard view is active for Admins
+  const [adminViewMode, setAdminViewMode] = useState<'admin' | 'user'>('admin');
 
   const checkAuth = async () => {
     try {
@@ -56,8 +58,7 @@ function App() {
     );
   }
 
-  // State to track which dashboard view is active for Admins
-  const [adminViewMode, setAdminViewMode] = useState<'admin' | 'user'>('admin');
+
 
   // Admin access with View Switching
   if (profile.role === 'admin') {

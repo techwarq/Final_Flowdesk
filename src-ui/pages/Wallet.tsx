@@ -1,49 +1,67 @@
-import React, { useMemo } from 'react';
-import { Wallet as WalletIcon, RefreshCw, ArrowUpRight, ArrowDownLeft, ChevronRight } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Wallet as WalletIcon, RefreshCw, ArrowUpRight, ChevronRight, Loader } from 'lucide-react';
 import { Account, Platform } from '../types';
 import { FlipkartIcon, ShopsyIcon, AmazonIcon, GenericPlatformIcon } from '../components/Icons';
 
+import { FetchState } from '../hooks/useDataFetcher';
+
 interface WalletProps {
     accounts: Account[];
+    onRefresh: () => void;
+    isLoading?: boolean;
+    fetchingAccountId?: string | null;
+    gvStates?: Record<string, FetchState>;
 }
 
-// Mock helper to generate stable random balance based on ID
-const getMockBalance = (id: string): number => {
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) {
-        hash = id.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    // Return distinct stable values for realism (e.g., 500, 1200, 5000)
-    const base = Math.abs(hash) % 10000;
-    return base > 100 ? base : base + 500;
-};
-
-export const Wallet: React.FC<WalletProps> = ({ accounts }) => {
+export const Wallet: React.FC<WalletProps> = ({ accounts, onRefresh, isLoading, fetchingAccountId, gvStates }) => {
+    const [refreshing] = useState(false);
 
     // Aggregate Data Calculation
     const walletData = useMemo(() => {
         const platformBalances: Record<string, number> = {};
-        const accountBalances: Array<{ id: string; identifier: string; platform: Platform; balance: number }> = [];
+        const accountBalances: Array<{ id: string; identifier: string; platform: Platform; balance: number; fetchState?: FetchState }> = [];
         let total = 0;
 
         accounts.forEach(acc => {
-            const bal = getMockBalance(acc.id);
+            // Parse balance from string "₹500.00" or similar, or default to 0
+            let bal = 0;
+            if (acc.details?.gvBalance) {
+                const numericString = acc.details.gvBalance.replace(/[^0-9.]/g, '');
+                bal = parseFloat(numericString);
+                if (isNaN(bal)) bal = 0;
+            }
             total += bal;
 
             // Platform aggregation
             platformBalances[acc.platform] = (platformBalances[acc.platform] || 0) + bal;
 
-            // Individual account data
+            // Individual account data with fetch state
             accountBalances.push({
                 id: acc.id,
                 identifier: acc.identifier,
                 platform: acc.platform,
-                balance: bal
+                balance: bal,
+                fetchState: gvStates?.[acc.id]
             });
         });
 
         return { total, platformBalances, accountBalances };
-    }, [accounts]);
+    }, [accounts, gvStates]);
+
+    // Calculate fetch progress
+    const fetchProgress = useMemo(() => {
+        if (!gvStates) return { done: 0, total: 0 };
+        const total = Object.keys(gvStates).length;
+        const done = Object.values(gvStates).filter(s => s.status === 'done' || s.status === 'error').length;
+        return { done, total };
+    }, [gvStates]);
+
+    const currentAccount = accounts.find(a => a.id === fetchingAccountId);
+
+    const handleRefresh = async () => {
+        if (refreshing || isLoading) return;
+        onRefresh();
+    };
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-IN', {
@@ -55,15 +73,42 @@ export const Wallet: React.FC<WalletProps> = ({ accounts }) => {
 
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">
+            {/* Loading Banner */}
+            {isLoading && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center gap-4">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent"></div>
+                    <div className="flex-1">
+                        <p className="text-sm font-bold text-text-primary">
+                            Fetching GV balances... ({fetchProgress.done}/{fetchProgress.total} accounts)
+                        </p>
+                        {currentAccount && (
+                            <p className="text-xs text-text-secondary mt-0.5">
+                                Currently fetching: <span className="font-medium">{currentAccount.identifier}</span> ({currentAccount.platform})
+                            </p>
+                        )}
+                    </div>
+                    <div className="w-32 h-2 bg-bg-surface-hover rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-emerald-500 transition-all duration-300 rounded-full"
+                            style={{ width: `${fetchProgress.total > 0 ? (fetchProgress.done / fetchProgress.total) * 100 : 0}%` }}
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-text-primary tracking-tight">Wallet & GV</h2>
                     <p className="text-text-secondary text-sm mt-1">Aggregated Gift Voucher balances across {accounts.length} connected accounts.</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-bg-surface border border-border-subtle rounded-xl text-xs font-bold text-text-secondary hover:bg-bg-surface-hover transition-colors shadow-sm">
-                    <RefreshCw size={14} />
-                    Refresh Balances
+                <button
+                    onClick={handleRefresh}
+                    disabled={refreshing || isLoading}
+                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white border border-transparent rounded-xl text-xs font-bold hover:opacity-90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {(refreshing || isLoading) ? <Loader size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                    {(refreshing || isLoading) ? 'Refreshing...' : 'Refresh Balances'}
                 </button>
             </div>
 
@@ -163,7 +208,7 @@ export const Wallet: React.FC<WalletProps> = ({ accounts }) => {
                     </div>
                 </div>
 
-                {/* Right Sidebar: Recent Activity (Mocked) */}
+                {/* Right Sidebar: Recent Activity */}
                 <div className="space-y-6">
                     <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card h-full">
                         <div className="flex items-center justify-between mb-6">
@@ -174,22 +219,39 @@ export const Wallet: React.FC<WalletProps> = ({ accounts }) => {
                             {/* Connector Line */}
                             <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-border-subtle -z-10"></div>
 
-                            {[1, 2, 3, 4, 5].map((_, i) => (
-                                <div key={i} className="flex gap-4">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-4 border-bg-surface shadow-sm ${i % 2 === 0 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
-                                        {i % 2 === 0 ? <ArrowUpRight size={16} /> : <ArrowDownLeft size={16} />}
-                                    </div>
-                                    <div className="flex-1 pt-1">
-                                        <div className="flex justify-between items-start">
-                                            <p className="text-sm font-bold text-text-primary">{i % 2 === 0 ? 'Order Debit' : 'Gift Card Credit'}</p>
-                                            <span className={`text-xs font-black ${i % 2 === 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                                                {i % 2 === 0 ? '-₹1,200' : '+₹500'}
-                                            </span>
+                            {(() => {
+                                const allOrders = accounts.flatMap(a => (a.orders || []).map(o => ({ ...o, platform: a.platform })))
+                                    .sort((a, b) => {
+                                        // Simple string comparison for now if ISO-ish, or just rely on order
+                                        return (b.deliveryDate || '').localeCompare(a.deliveryDate || '');
+                                    })
+                                    .slice(0, 5);
+
+                                if (allOrders.length === 0) {
+                                    return <div className="text-center text-text-tertiary text-xs py-10">No recent activity.</div>;
+                                }
+
+                                return allOrders.map((order, i) => (
+                                    <div key={i} className="flex gap-4">
+                                        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-4 border-bg-surface shadow-sm bg-red-50 text-red-500">
+                                            <ArrowUpRight size={16} />
                                         </div>
-                                        <p className="text-xs text-text-tertiary mt-0.5">Flipkart (StartTech) • Today</p>
+                                        <div className="flex-1 pt-1">
+                                            <div className="flex justify-between items-start">
+                                                <p className="text-sm font-bold text-text-primary truncate max-w-[120px]" title={order.productName}>
+                                                    {order.productName || 'Order Debit'}
+                                                </p>
+                                                <span className="text-xs font-black text-red-500 whitespace-nowrap">
+                                                    -{order.price || '₹0'}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-text-tertiary mt-0.5 capitalize">
+                                                {order.platform} • {order.status}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ));
+                            })()}
                         </div>
                     </div>
                 </div>

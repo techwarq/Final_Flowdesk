@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import { PROFILES_DIR } from './config.js';
 import { generateFingerprint } from './fingerprint.js';
 import logger, { getAccountLogger } from './log.js';
-import { loadCookiesFromDisk, extractAndSaveCookies, adaptCookiesForShopsy } from './cookies.js';
+import { loadCookiesFromDB, extractAndSaveCookies, adaptCookiesForShopsy } from './cookies.js';
 import { browsers } from './browserManager.js';
 import { pushCookies, fetchCookiesFromCloud, fetchLocalStorage, pushLocalStorage, getSupabase } from './cloud.js';
 import { loadLocalStorage, saveLocalStorage } from './localStorage.js';
@@ -119,7 +119,7 @@ export async function openSession(options: SessionOptions) {
 
             if (cookies.length === 0) {
                 // Try local disk
-                cookies = await loadCookiesFromDisk(accountId, 'shopsy');
+                cookies = await loadCookiesFromDB(accountId, 'shopsy');
             }
 
             if (cookies.length === 0) {
@@ -130,7 +130,7 @@ export async function openSession(options: SessionOptions) {
                     log.info(`Adapted ${cookies.length} Flipkart cookies from cloud for Shopsy`);
                 } else {
                     // Final fallback: local Flipkart cookies
-                    const localFlipkart = await loadCookiesFromDisk(accountId, 'flipkart');
+                    const localFlipkart = await loadCookiesFromDB(accountId, 'flipkart');
                     if (localFlipkart.length > 0) {
                         cookies = adaptCookiesForShopsy(localFlipkart);
                         log.info(`Adapted ${cookies.length} local Flipkart cookies for Shopsy`);
@@ -147,7 +147,7 @@ export async function openSession(options: SessionOptions) {
 
             if (cookies.length === 0) {
                 // Fallback to local disk
-                cookies = await loadCookiesFromDisk(accountId, 'flipkart');
+                cookies = await loadCookiesFromDB(accountId, 'flipkart');
                 log.info(`Loaded ${cookies.length} Flipkart cookies from local disk (backend/data)`);
             } else {
                 log.info(`Loaded ${cookies.length} Flipkart cookies from cloud DB`);

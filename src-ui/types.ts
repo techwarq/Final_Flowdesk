@@ -26,6 +26,20 @@ export type AccountStatus =
 
 export type UserRole = 'admin' | 'staff' | 'user';
 
+export interface Order {
+    orderId: string;
+    productName: string;
+    status: string;
+    deliveryDate: string;
+    imageUrl?: string;
+    price?: string;
+    orderUrl: string;
+    otp?: string;
+    receiverName?: string;
+    trackingId?: string;
+    deliveryDetails?: string;
+}
+
 export interface Account {
     id: string;
     platform: Platform;
@@ -38,6 +52,11 @@ export interface Account {
     errorCode?: string;
     createdAt: string;
     updatedAt: string;
+    orders?: Order[];
+    details?: {
+        gvBalance?: string;
+        [key: string]: any;
+    };
 }
 
 export interface UserProfile {

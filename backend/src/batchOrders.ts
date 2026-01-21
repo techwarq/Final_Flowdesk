@@ -15,7 +15,7 @@ import fs from 'fs-extra';
 import { PROFILES_DIR } from './config.js';
 import { generateFingerprint } from './fingerprint.js';
 import { getAccountLogger } from './log.js';
-import { loadCookiesFromDisk } from './cookies.js';
+import { loadCookiesFromDB } from './cookies.js';
 import { upsertAccount, getAccount, loadAccounts } from './accounts.js';
 
 // ============================================
@@ -156,7 +156,7 @@ async function fetchOrdersListOnly(
 
     // Shopsy uses the same auth as Flipkart - load Flipkart cookies for both
     const cookiePlatform = 'flipkart'; // Always use flipkart cookies as Shopsy shares auth
-    const cookies = await loadCookiesFromDisk(accountId, cookiePlatform);
+    const cookies = await loadCookiesFromDB(accountId, cookiePlatform);
     if (cookies.length === 0) {
         throw new Error('No saved cookies found - please login to Flipkart first');
     }

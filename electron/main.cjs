@@ -157,7 +157,12 @@ function createWindow() {
   });
 
   if (isDev) {
-    // mainWindow.webContents.openDevTools(); // Disabled as per user request
+    mainWindow.webContents.openDevTools();
+
+    // Pipe renderer console logs to terminal
+    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+      console.log(`[Renderer]: ${message}`);
+    });
   }
 
   mainWindow.on('closed', () => {
@@ -216,6 +221,50 @@ app.on('ready', () => {
       // This is a helper to verify IP from the main process side if needed, 
       // but we can also just do it in the renderer via fetch() if proxy is set correctly.
       // For now we just ack.
+    });
+
+    ipcMain.on('set-cookies', async (event, { partition, cookies }) => {
+      // logToFile(`Setting ${cookies.length} cookies for partition ${partition}`);
+      if (!cookies || !Array.isArray(cookies)) return;
+
+      const ses = session.fromPartition(partition);
+
+      for (const cookie of cookies) {
+        try {
+          // Electron requires URL for setting cookies usually
+          let url = '';
+          if (cookie.url) {
+            url = cookie.url;
+          } else if (cookie.domain) {
+            // Remove leading dot
+            const cleanDomain = cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain;
+            url = (cookie.secure ? 'https://' : 'http://') + cleanDomain;
+          }
+
+          const details = {
+            url: url,
+            name: cookie.name,
+            value: cookie.value,
+            domain: cookie.domain,
+            path: cookie.path,
+            secure: cookie.secure,
+            httpOnly: cookie.httpOnly,
+            expirationDate: cookie.expires || cookie.expirationDate,
+            sameSite: cookie.sameSite === 'None' ? 'no_restriction' : cookie.sameSite === 'Lax' ? 'lax' : 'strict'
+          };
+
+          // Fix SameSite for Electron (no_restriction must be used with secure)
+          if (details.sameSite === 'no_restriction' && !details.secure) {
+            details.sameSite = 'unspecified';
+          }
+
+          await ses.cookies.set(details);
+        } catch (e) {
+          // logToFile(`Failed to set cookie ${cookie.name}: ${e.message}`);
+        }
+      }
+      // logToFile(`Cookies set for ${partition}`);
+      event.sender.send('cookies-set', { partition, success: true });
     });
   });
 });

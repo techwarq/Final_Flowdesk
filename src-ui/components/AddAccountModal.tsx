@@ -7,9 +7,10 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    onInitialize: (account: any) => void;
 }
 
-export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, onInitialize }) => {
     const [platform, setPlatform] = useState<Platform>('flipkart');
     const [loginType, setLoginType] = useState<LoginType>('mobile');
     const [accountId, setAccountId] = useState('');
@@ -25,7 +26,7 @@ export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess })
         setLoading(true);
         setStatusText('Saving account...');
         try {
-            await api.addAccount({
+            const newAccount = {
                 id: accountId,
                 platform,
                 loginType,
@@ -34,42 +35,20 @@ export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess })
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 status: 'New'
-            });
+            };
 
-            onSuccess(); // Refresh list
+            await api.addAccount(newAccount);
+
+            onSuccess(); // Refresh list list
 
             setStatusText('Opening browser...');
 
-            // Auto-launch login - THIS WAITS FOR LOGIN TO COMPLETE
-            try {
-                setStatusText('Browser open - Complete login manually...');
-                const res = await api.login(accountId, identifier, platform);
-
-                if (res && res.status === 'error') {
-                    throw new Error(res.message || 'Unknown backend error');
-                }
-
-                if (res && res.status === 'success') {
-                    setStatusText('✓ Login complete!');
-                } else if (res && res.status === 'cancelled') {
-                    setStatusText('Browser closed by user.');
-                } else if (res && res.status === 'warning') {
-                    setStatusText('⚠ ' + res.message);
-                }
-
-                // Refresh account list again after login
-                onSuccess();
-
-            } catch (loginErr: any) {
-                console.error('Login failed:', loginErr);
-                setStatusText('⚠ ' + (loginErr.message || 'Login failed'));
-            }
-
-            // Short delay to let user see status then close
+            // Hand off to parent for In-App Browser initialization
+            // Short delay to let the animation play
             setTimeout(() => {
-                setLoading(false);
+                onInitialize(newAccount);
                 onClose();
-            }, 2000);
+            }, 800);
 
         } catch (err) {
             alert('Failed to add account');
@@ -200,7 +179,7 @@ export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess })
                                 </>
                             ) : (
                                 <>
-                                    <span>INITIALIZE SESSION</span>
+                                    <span>ADD & START SESSION</span>
                                     <ArrowRight size={18} />
                                 </>
                             )}
