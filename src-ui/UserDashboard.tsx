@@ -1,192 +1,77 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from './api/client';
-import { Account, Platform, Order, BatchJob } from './types';
-
+import { Account, Platform } from './types';
 import { Layout } from './components/Layout';
 import { AddAccountModal } from './components/AddAccountModal';
+import {
+    Activity,
+    AlertTriangle,
+    Bell,
+    CheckCircle2,
+    ChevronDown,
+    Globe,
+    Info,
+    LayoutDashboard,
+    Monitor,
+    Settings,
+    ShoppingBag,
+    ShieldCheck
+} from 'lucide-react';
+import { Support } from './pages/Support';
+import {
+    FlipkartIcon, ShopsyIcon, AmazonIcon, BlinkitIcon, RelianceIcon,
+    ZeptoIcon, SamsungIcon, OnePlusIcon, VivoIcon, OppoIcon,
+    RedmiIcon, RealmeIcon, IQOOIcon, VijaySalesIcon, GenericPlatformIcon
+} from './components/Icons';
+import { Orders } from './pages/Orders';
+import { Wallet } from './pages/Wallet';
+import { InAppBrowser } from './components/InAppBrowser';
 import { ChatWidget } from './components/ChatWidget';
-
-
-// Icons for navigation
-const DashboardIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-    </svg>
-);
-
-const BrowseIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-    </svg>
-);
-
-const OrdersIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-    </svg>
-);
-
-const ActivityIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-    </svg>
-);
-
-const SettingsIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-);
 
 interface Props {
     username: string;
     onLogout: () => void;
+    isAdmin?: boolean;
+    onSwitchToAdmin?: () => void;
 }
 
-type ViewMode = 'dashboard' | 'browse' | 'orders' | 'activity' | 'settings';
+type ViewMode = 'dashboard' | 'browse' | 'id_portal' | 'orders' | 'wallet' | 'settings' | 'browser_1' | 'browser_2' | 'notifications' | 'support';
 
-const OrderDetailsModal: React.FC<{ order: Order; details: any; onClose: () => void }> = ({ order, details, onClose }) => {
-    if (!order) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                {/* Header */}
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                    <div>
-                        <h3 className="font-bold text-lg text-slate-900">Order Details</h3>
-                        <p className="text-xs text-slate-500">ID: {order.orderId}</p>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-                        <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="p-6 space-y-8">
-                    {/* Status Header */}
-                    <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 bg-slate-50 rounded-lg p-2 flex items-center justify-center border border-slate-100 flex-shrink-0">
-                            {order.imageUrl ? (
-                                <img src={order.imageUrl} alt="" className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                            ) : (
-                                <div className="text-slate-200 text-2xl">📦</div>
-                            )}
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-slate-900 leading-tight">{order.productName}</h4>
-                            <p className="text-sm text-green-600 font-bold mt-1">{details?.deliveryDetails?.split(' | ')[0] || order.status}</p>
-                            <p className="text-xs text-slate-500 mt-0.5">Seller: {details?.seller || 'Flipkart Seller'}</p>
-                        </div>
-                    </div>
-
-                    {/* Timeline */}
-                    <div className="relative pl-2">
-                        <div className="absolute top-2 bottom-2 left-[19px] w-[2px] bg-slate-100"></div>
-                        {/* Active line filler */}
-                        {details?.timeline && (() => {
-                            const lastActiveIdx = details.timeline.reduce((acc: number, step: any, idx: number) => step.active ? idx : acc, -1);
-                            if (lastActiveIdx > 0) {
-                                const h = (lastActiveIdx / (details.timeline.length - 1)) * 100;
-                                return <div className="absolute top-2 left-[19px] w-[2px] bg-green-500 transition-all" style={{ height: `${h}%` }}></div>
-                            }
-                            return null;
-                        })()}
-
-                        <div className="space-y-6 relative z-10">
-                            {details?.timeline?.map((step: any, idx: number) => (
-                                <div key={idx} className="flex gap-4 group">
-                                    <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center border-2 ${step.active ? 'bg-green-500 border-green-500' : 'bg-white border-slate-300'
-                                        }`}>
-                                        {step.active && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                    </div>
-                                    <div className={`flex-1 ${step.active ? 'opacity-100' : 'opacity-50'}`}>
-                                        <h5 className="text-sm font-bold text-slate-900">{step.status}</h5>
-                                        {step.date && <p className="text-xs text-slate-500">{step.date}</p>}
-                                        {step.active && idx === details.timeline.length - 1 && (
-                                            <p className="text-[10px] text-slate-400 mt-1">
-                                                Your item is on the way.
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Open Box Delivery / OTP Section */}
-                    {(details?.otp || order.otp) && (
-                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                            <h5 className="font-bold text-slate-900 mb-3 text-sm">Keep in mind at doorstep</h5>
-
-                            <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white">
-                                        📦
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-slate-900">Open box delivery</p>
-                                        <p className="text-[10px] text-slate-500">Verify item before sharing OTP</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">OTP</div>
-                                    <div className="text-xl font-black text-slate-900">{details?.otp || order.otp}</div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Price and Nav */}
-                    <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
-                        <div>
-                            <p className="text-xs text-slate-500">Total Amount</p>
-                            <p className="text-lg font-bold text-slate-900">{details?.priceInfo?.finalAmount || order.price}</p>
-                        </div>
-                        {order.orderUrl && (
-                            <a href={order.orderUrl} target="_blank" rel="noreferrer" className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-black transition-colors">
-                                View Invoice
-                            </a>
-                        )}
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export const UserDashboard: React.FC<Props> = ({ username, onLogout }) => {
+export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, onSwitchToAdmin }) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [activeAccountId, setActiveAccountId] = useState<string | undefined>();
     const [loading, setLoading] = useState(true);
     const [currentView, setCurrentView] = useState<ViewMode>('dashboard');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [browserLoading, setBrowserLoading] = useState(false);
-    const [isFetchingOrders, setIsFetchingOrders] = useState(false);
-    const [activeTab, setActiveTab] = useState<'active' | 'past'>('active');
-    const [isFetchingGV, setIsFetchingGV] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedAvatar, setSelectedAvatar] = useState<string>('Default');
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
 
-    // Batch fetch state
-    const [batchJob, setBatchJob] = useState<BatchJob | null>(null);
-    const [isBatchFetching, setIsBatchFetching] = useState(false);
-    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const AVATARS = [
+        { id: 'Default', icon: <div className="w-full h-full bg-brand-primary text-white flex items-center justify-center font-bold text-3xl">{username.charAt(0).toUpperCase()}</div> },
+        { id: 'Robot', icon: <div className="w-full h-full bg-slate-900 text-white flex items-center justify-center"><Monitor size={32} /></div> },
+        { id: 'Smile', icon: <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center"><div className="text-3xl font-bold">☺</div></div> },
+        { id: 'Ghost', icon: <div className="w-full h-full bg-purple-600 text-white flex items-center justify-center"><div className="text-3xl font-bold">👻</div></div> },
+        { id: 'Ninja', icon: <div className="w-full h-full bg-red-600 text-white flex items-center justify-center"><div className="text-3xl font-bold">🐱</div></div> },
+    ];
+
+    const filteredAccounts = accounts.filter(acc =>
+        acc.identifier.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        acc.platform.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const loadAccounts = async () => {
         setLoading(true);
         try {
             const data = await api.getAccounts();
-            const accountsList = data.accounts || [];
-            setAccounts(accountsList);
-            if (accountsList.length > 0 && !activeAccountId) {
-                // Prefer healthy accounts
-                const healthy = accountsList.find(a => a.status === 'Healthy');
-                setActiveAccountId(healthy ? healthy.id : accountsList[0].id);
+            setAccounts(data.accounts || []);
+            // Set first account as active if none selected
+            if (!activeAccountId && data.accounts?.length > 0) {
+                setActiveAccountId(data.accounts[0].id);
             }
-        } catch (error) {
-            console.error('Failed to load accounts:', error);
+        } catch (e) {
+            console.error('Failed to load accounts:', e);
         } finally {
             setLoading(false);
         }
@@ -196,962 +81,747 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout }) => {
         loadAccounts();
     }, []);
 
-    const activeAccount = accounts.find(a => a.id === activeAccountId);
-
     const handleOpenBrowser = async (platform: Platform) => {
-        if (!activeAccountId) return;
+        if (!activeAccountId) {
+            alert('Please select an account first');
+            return;
+        }
         setBrowserLoading(true);
         try {
-            await api.openSession(activeAccountId, platform);
-        } catch (error) {
-            console.error('Failed to open browser:', error);
+            const res = await api.openSession(activeAccountId, platform);
+            if (res?.status === 'error') {
+                throw new Error(res.message);
+            }
+            setCurrentView('browse');
+        } catch (e: any) {
+            console.error(`Failed to open ${platform}:`, e);
+            alert(`Failed to open ${platform}: ${e.message}`);
         } finally {
             setBrowserLoading(false);
         }
     };
 
-    const handleFetchGV = async () => {
-        if (!activeAccountId) return;
-        setIsFetchingGV(true);
+    const handleRemoveAccount = async (accountId: string) => {
+        if (!confirm('Remove this account?')) return;
         try {
-            // Optimistic update notification or toast could be added here
-            const res = await api.fetchGVBalance(activeAccountId);
-            if (res.success) {
-                await loadAccounts();
-                // Simple feedback (could be improved with toast)
-                console.log(`[GV] Fetched: ${res.balance}`);
-            } else {
-                console.error(`[GV] Failed: ${res.error}`);
-            }
-        } catch (error) {
-            console.error('[GV] Error:', error);
-        } finally {
-            setIsFetchingGV(false);
-        }
-    };
-
-    const handleRemoveAccount = async (id: string) => {
-        if (!confirm('Are you sure you want to remove this account?')) return;
-        try {
-            await api.deleteAccount(id);
-            await loadAccounts();
-            if (activeAccountId === id) {
+            await api.deleteAccount(accountId);
+            loadAccounts();
+            if (activeAccountId === accountId) {
                 setActiveAccountId(undefined);
             }
-        } catch (error) {
-            console.error('Failed to remove account:', error);
+        } catch (e) {
+            alert('Failed to remove account');
         }
     };
 
-    const handleFetchOrders = async () => {
-        if (!activeAccountId || !activeAccount) return;
-        setIsFetchingOrders(true);
-        try {
-            await api.fetchOrders(activeAccountId, activeAccount.platform);
-            await loadAccounts();
-        } catch (error) {
-            console.error('Failed to fetch orders:', error);
-        } finally {
-            setIsFetchingOrders(false);
-        }
-    };
-
-    // Batch fetch all accounts
-    const handleBatchFetchOrders = async (platform: Platform = 'flipkart') => {
-        if (accounts.length === 0) return;
-
-        const accountIds = accounts.map(a => a.id);
-        setIsBatchFetching(true);
-        setBatchJob({
-            jobId: 'starting...',
-            status: 'pending',
-            total: accountIds.length,
-            completed: 0,
-            failed: 0,
-            results: [],
-            errors: []
-        });
-
-        try {
-            const response = await api.batchFetchOrders(accountIds, platform, 5);
-            if (response.success && response.jobId) {
-                // Start polling for job status
-                pollJobStatus(response.jobId);
-            } else {
-                setIsBatchFetching(false);
-                setBatchJob(null);
-            }
-        } catch (error) {
-            console.error('Failed to start batch fetch:', error);
-            setIsBatchFetching(false);
-            setBatchJob(null);
-        }
-    };
-
-    const pollJobStatus = async (jobId: string) => {
-        // Clear any existing interval
-        if (pollingIntervalRef.current) {
-            clearInterval(pollingIntervalRef.current);
-        }
-
-        // Poll every 2 seconds
-        pollingIntervalRef.current = setInterval(async () => {
-            try {
-                const response = await api.getBatchJobStatus(jobId);
-                if (response.success && response.job) {
-                    setBatchJob(response.job);
-
-                    // Stop polling if job is done
-                    if (['completed', 'cancelled', 'failed'].includes(response.job.status)) {
-                        if (pollingIntervalRef.current) {
-                            clearInterval(pollingIntervalRef.current);
-                            pollingIntervalRef.current = null;
-                        }
-                        setIsBatchFetching(false);
-                        // Reload accounts to get updated orders
-                        await loadAccounts();
-                    }
-                }
-            } catch (error) {
-                console.error('Polling error:', error);
-            }
-        }, 2000);
-    };
-
-    const handleCancelBatch = async () => {
-        if (!batchJob?.jobId) return;
-        try {
-            await api.cancelBatchJob(batchJob.jobId);
-        } catch (error) {
-            console.error('Failed to cancel batch:', error);
-        }
-    };
-
-    // Cleanup polling on unmount
-    useEffect(() => {
-        return () => {
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-            }
-        };
-    }, []);
+    const activeAccount = accounts.find(a => a.id === activeAccountId);
 
     const navItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon />, onClick: () => setCurrentView('dashboard') },
-        { id: 'browse', label: 'Browse', icon: <BrowseIcon />, onClick: () => setCurrentView('browse') },
-        { id: 'orders', label: 'Orders', icon: <OrdersIcon />, onClick: () => setCurrentView('orders') },
-        { id: 'activity', label: 'Activity', icon: <ActivityIcon />, onClick: () => setCurrentView('activity') },
-        { id: 'settings', label: 'Settings', icon: <SettingsIcon />, onClick: () => setCurrentView('settings') },
+        {
+            id: 'dashboard',
+            label: 'Dashboard',
+            icon: <LayoutDashboard size={20} />,
+            onClick: () => setCurrentView('dashboard'),
+            active: currentView === 'dashboard'
+        },
+        {
+            id: 'id_portal',
+            label: 'ID Portal',
+            icon: <Globe size={20} />,
+            onClick: () => setCurrentView('id_portal'),
+            active: currentView === 'id_portal'
+        },
+        {
+            id: 'orders',
+            label: 'Orders',
+            icon: <ShoppingBag size={20} />,
+            onClick: () => setCurrentView('orders'),
+            active: currentView === 'orders'
+        },
+        {
+            id: 'wallet',
+            label: 'Wallet & GV',
+            icon: <Activity size={20} />,
+            onClick: () => setCurrentView('wallet'),
+            active: currentView === 'wallet'
+        },
+        {
+            id: 'settings',
+            label: 'Settings',
+            icon: <Settings size={20} />,
+            onClick: () => setCurrentView('settings'),
+            active: currentView === 'settings'
+        },
+        {
+            id: 'browser_1',
+            label: 'Browser 1',
+            icon: <Monitor size={20} />,
+            onClick: () => setCurrentView('browser_1'),
+            active: currentView === 'browser_1',
+            section: 'Browsers'
+        },
+        {
+            id: 'browser_2',
+            label: 'Browser 2',
+            icon: <Monitor size={20} />,
+            onClick: () => setCurrentView('browser_2'),
+            section: 'Browsers'
+        },
+        {
+            id: 'notifications',
+            label: 'Notifications',
+            icon: <Bell size={20} />,
+            onClick: () => setCurrentView('notifications'),
+            active: currentView === 'notifications',
+            section: 'System'
+        }
     ];
 
     const renderContent = () => {
-        switch (currentView) {
-            case 'dashboard': return renderDashboardView();
-            case 'browse': return renderBrowseView();
-            case 'orders': return renderOrdersView();
-            case 'settings': return renderSettingsView();
-            default: return renderDashboardView();
-        }
-    };
-
-    const renderOrdersView = () => {
-        if (!activeAccount) {
+        if (loading) {
             return (
                 <div className="flex items-center justify-center h-full">
-                    <p className="text-slate-500">Please select an account to view orders.</p>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-accent"></div>
                 </div>
             );
         }
 
-        const allOrders = activeAccount.orders || [];
+        switch (currentView) {
+            case 'browse':
+                return renderBrowseView();
+            case 'id_portal':
+                return renderIDPortalView();
+            case 'orders':
+                return <Orders accounts={accounts} />;
+            case 'wallet':
+                return <Wallet accounts={accounts} />;
+            case 'support':
+                return <Support />;
+            case 'settings':
+                return renderSettingsView();
+            case 'browser_1':
+                // Pass all accounts so user can quick-launch any of them
+                return <InAppBrowser key="b1" savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />;
+            case 'browser_2':
+                return <InAppBrowser key="b2" savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />;
+            case 'notifications':
+                return renderNotificationsView();
+            default:
+                return renderDashboardView();
+        }
+    };
 
-        // Filter Logic
-        const filteredOrders = allOrders.filter(o => {
-            const status = (o.status || '').toLowerCase();
-            const isFinished = status.includes('delivered') || status.includes('return') || status.includes('refund') || status.includes('cancel');
 
-            return activeTab === 'active' ? !isFinished : isFinished;
-        });
+
+    const renderIDPortalView = () => {
+        const platforms = Array.from(new Set(accounts.map(a => a.platform)));
 
         return (
-            <div className="p-6 space-y-6">
-                {/* Header Section with GV Balance */}
-                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                    <div>
-                        <h3 className="text-xl font-bold text-slate-900">Orders Dashboard</h3>
-                        <p className="text-sm text-slate-500">Real-time order tracking and details</p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        {/* GUI Balance Card */}
-                        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-4 py-2 rounded-lg shadow-sm">
-                            <div className="text-[10px] font-medium opacity-80 uppercase tracking-wider">GV Balance</div>
-                            <div className="text-lg font-bold">
-                                {activeAccount.details?.gvBalance || '₹0.00'}
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleFetchOrders}
-                            disabled={isFetchingOrders}
-                            className="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
-                        >
-                            {isFetchingOrders ? (
-                                <>
-                                    <svg className="animate-spin w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <span>Fetching...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    <span>Refresh Orders</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
+            <div className="p-8 space-y-8 max-w-6xl mx-auto">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-3xl font-bold text-text-primary tracking-tight">ID Portal</h3>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="px-6 py-3 bg-brand-primary text-white rounded-button hover:opacity-90 font-bold transition-all shadow-lg shadow-brand-primary/10 flex items-center gap-2"
+                    >
+                        + Add New ID
+                    </button>
                 </div>
 
-                {/* Tabs & Stats */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-50 rounded-xl p-1 border border-slate-200">
-                    <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm w-full sm:w-auto">
-                        <button
-                            onClick={() => setActiveTab('active')}
-                            className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${activeTab === 'active' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
-                        >
-                            Active Orders ({allOrders.filter(o => {
-                                const s = (o.status || '').toLowerCase();
-                                return !(s.includes('delivered') || s.includes('return') || s.includes('refund') || s.includes('cancel'));
-                            }).length})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('past')}
-                            className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${activeTab === 'past' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
-                        >
-                            Past Orders ({allOrders.filter(o => {
-                                const s = (o.status || '').toLowerCase();
-                                return (s.includes('delivered') || s.includes('return') || s.includes('refund') || s.includes('cancel'));
-                            }).length})
-                        </button>
-                    </div>
-                </div>
-
-                {filteredOrders.length === 0 ? (
-                    <div className="text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
-                        <div className="text-5xl mb-4">
-                            {activeTab === 'active' ? '⚡' : '🕰️'}
+                {platforms.length === 0 ? (
+                    <div className="text-center py-20 bg-bg-surface rounded-card border border-border-subtle border-dashed">
+                        <div className="w-20 h-20 bg-bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Globe size={32} className="text-text-tertiary" />
                         </div>
-                        <h4 className="text-lg font-medium text-slate-900">
-                            No {activeTab} orders found
-                        </h4>
-                        <p className="text-slate-500 mt-1 max-w-sm mx-auto">
-                            {activeTab === 'active'
-                                ? "Great news! You have no pending deliveries."
-                                : "You haven't completed any orders yet."}
-                        </p>
+                        <h4 className="text-xl font-bold text-text-primary mb-2">No Buyer Accounts Connected</h4>
+                        <p className="text-text-secondary max-w-sm mx-auto">Add your first buyer account to get started with the workspace.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-4">
-                        {filteredOrders.map((order, idx) => (
-                            <OrderCard key={order.orderId || idx} order={order} />
-                        ))}
+                    <div className="space-y-8">
+                        {platforms.map(platform => {
+                            const platformAccounts = accounts.filter(a => a.platform === platform);
+                            return (
+                                <div key={platform} className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 flex items-center justify-center">
+                                            {platform === 'flipkart' ? <FlipkartIcon size={32} /> :
+                                                platform === 'shopsy' ? <ShopsyIcon size={32} /> :
+                                                    platform === 'amazon' ? <AmazonIcon size={32} /> :
+                                                        platform === 'blinkit' ? <BlinkitIcon size={32} /> :
+                                                            platform === 'reliance' ? <RelianceIcon size={32} /> :
+                                                                platform === 'zepto' ? <ZeptoIcon size={32} /> :
+                                                                    platform === 'samsung' ? <SamsungIcon size={32} /> :
+                                                                        platform === 'oneplus' ? <OnePlusIcon size={32} /> :
+                                                                            platform === 'vivo' ? <VivoIcon size={32} /> :
+                                                                                platform === 'oppo' ? <OppoIcon size={32} /> :
+                                                                                    platform === 'redmi' ? <RedmiIcon size={32} /> :
+                                                                                        platform === 'realme' ? <RealmeIcon size={32} /> :
+                                                                                            platform === 'iqoo' ? <IQOOIcon size={32} /> :
+                                                                                                platform === 'vijaysales' ? <VijaySalesIcon size={32} /> :
+                                                                                                    <GenericPlatformIcon name={platform} className="w-8 h-8" />}
+                                        </div>
+                                        <h4 className="text-lg font-black uppercase text-text-primary tracking-wider">
+                                            {platform}
+                                            <span className="ml-3 text-xs bg-bg-surface-hover text-text-secondary px-2 py-1 rounded-full border border-border-subtle">{platformAccounts.length}</span>
+                                        </h4>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {platformAccounts.map(acc => (
+                                            <div key={acc.id} className="bg-bg-surface p-5 rounded-card border border-border-subtle hover:border-brand-primary/20 transition-all shadow-card group relative">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-text-primary truncate">{acc.identifier}</p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <div className={`w-2 h-2 rounded-full ${acc.status === 'Healthy' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                                            <p className="text-xs text-text-secondary font-medium">{acc.status || 'Unknown'}</p>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleRemoveAccount(acc.id)}
+                                                        className="p-2 text-text-tertiary hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                    >
+                                                        <AlertTriangle size={16} />
+                                                    </button>
+                                                </div>
+                                                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border-subtle">
+                                                    <button
+                                                        onClick={() => {
+                                                            setCurrentView('browser_1');
+                                                        }}
+                                                        className="flex-1 py-2 bg-bg-surface-hover text-text-secondary text-xs font-bold uppercase rounded-lg hover:bg-brand-primary hover:text-white transition-all border border-border-subtle hover:border-transparent"
+                                                    >
+                                                        Launch Session
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
         );
     };
 
-    const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
-        const [isExpanded, setIsExpanded] = useState(false);
-        const [showModal, setShowModal] = useState(false);
+    const renderDashboardView = () => {
+        const healthyCount = accounts.filter(a => a.status === 'Healthy').length;
+        const attentionCount = accounts.filter(a => a.status === 'Error' || a.status === 'NeedsRefresh').length;
+        const flipkartCount = accounts.filter(a => a.platform === 'flipkart').length;
+        const shopsyCount = accounts.filter(a => a.platform === 'shopsy').length;
+        const totalAccounts = accounts.length;
 
-        // Helper to parse the messy deliveryDetails blob into structured JSON
-        const parseOrderDetails = (text?: string) => {
-            if (!text) return null;
-
-            const rawStatus = (order.status || '').toLowerCase();
-            const orderIsDelivered = rawStatus.includes('delivered');
-            const orderIsCancelled = rawStatus.includes('cancel');
-            const orderIsReturned = rawStatus.includes('return') || rawStatus.includes('refund');
-
-            // 1. Extract Address & Phone - improved patterns
-            let shippingAddress: string | null = null;
-            let phoneNumber: string | null = null;
-            let receiverName: string | null = order.receiverName || null;
-
-            // Try multiple patterns for address extraction
-            const addressPatterns = [
-                /Delivery details\s*([\s\S]*?)\s*(\d{10})/i,
-                /Delivery Address\s*([\s\S]*?)\s*(\d{10})/i,
-                /Ship to:\s*([\s\S]*?)\s*(\d{10})/i,
-            ];
-            for (const pattern of addressPatterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    shippingAddress = match[1].replace(/\n/g, ', ').trim();
-                    phoneNumber = match[2];
-                    break;
-                }
-            }
-
-            // Extract name from address section if not already set
-            if (!receiverName && shippingAddress) {
-                const lines = shippingAddress.split(',').map(l => l.trim());
-                if (lines.length > 0 && lines[0].length > 2 && lines[0].length < 40) {
-                    receiverName = lines[0];
-                }
-            }
-
-            // 2. Extract Price Breakdown
-            const priceMatches = text.match(/₹([\d,]+)\s+₹([\d,]+)\s+Total fees\s+₹([\d,]+)\s+₹([\d,]+)/i);
-            const priceInfo = priceMatches ? {
-                mrp: priceMatches[1],
-                sellingPrice: priceMatches[2],
-                totalFees: priceMatches[3],
-                finalAmount: priceMatches[4]
-            } : null;
-
-            // 3. Extract structured details as JSON
-            const structuredDetails = {
-                orderId: order.orderId,
-                productName: order.productName,
-                status: order.status,
-                price: order.price,
-                otp: order.otp,
-                receiverName: receiverName,
-                phoneNumber: phoneNumber,
-                address: shippingAddress,
-                trackingId: order.trackingId,
-                seller: order.seller,
-                sku: order.sku
-            };
-
-            // 4. Build Timeline based on order status
-            const timeline: { status: string; date: string; active: boolean; details: string[] }[] = [];
-
-            // Default timeline steps
-            const defaultSteps = [
-                { status: 'Ordered', alias: ['Order Confirmed', 'Order Placed'] },
-                { status: 'Shipped', alias: ['Dispatched', 'In Transit'] },
-                { status: 'Out For Delivery', alias: ['Out for Delivery'] },
-                { status: 'Delivered', alias: ['Delivery'] }
-            ];
-
-            // For delivered/returned/cancelled orders, set timeline accordingly
-            if (orderIsDelivered) {
-                // All steps complete for delivered orders
-                defaultSteps.forEach(step => {
-                    timeline.push({ status: step.status, date: '', active: true, details: [] });
-                });
-            } else if (orderIsReturned) {
-                // Delivered + returned
-                defaultSteps.forEach(step => {
-                    timeline.push({ status: step.status, date: '', active: true, details: [] });
-                });
-                timeline.push({ status: 'Returned', date: '', active: true, details: [] });
-            } else if (orderIsCancelled) {
-                // Only first step active
-                timeline.push({ status: 'Ordered', date: '', active: true, details: ['Order was cancelled'] });
-                timeline.push({ status: 'Cancelled', date: '', active: true, details: [] });
-            } else {
-                // Parse from text or use defaults with smart detection
-                const headers = ['Order Confirmed', 'Shipped', 'Out For Delivery', 'Delivery'];
-                let foundAnyHeader = false;
-
-                headers.forEach(header => {
-                    if (text.toLowerCase().includes(header.toLowerCase())) {
-                        foundAnyHeader = true;
-                    }
-                });
-
-                if (foundAnyHeader) {
-                    // Try to parse from text
-                    let splitIndices: { index: number, label: string }[] = [];
-                    headers.forEach(h => {
-                        const regex = new RegExp(h, 'i');
-                        const match = text.match(regex);
-                        if (match && match.index !== undefined) {
-                            splitIndices.push({ index: match.index, label: h });
-                        }
-                    });
-                    splitIndices.sort((a, b) => a.index - b.index);
-
-                    for (let i = 0; i < splitIndices.length; i++) {
-                        const current = splitIndices[i];
-                        const next = splitIndices[i + 1];
-                        const content = next
-                            ? text.slice(current.index, next.index)
-                            : text.slice(current.index, current.index + 200);
-
-                        const hasPending = content.toLowerCase().includes('yet to be') ||
-                            content.toLowerCase().includes('expected by');
-
-                        const dateMatch = content.match(/((?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[^,]+,[^,]+)/i);
-                        const stepDate = dateMatch ? dateMatch[0] : '';
-
-                        // Step is active if it has actual date and no pending phrases
-                        const isActive = stepDate.length > 0 && !hasPending;
-
-                        // Extract details lines
-                        const detailsLines = content.split('\n')
-                            .map(l => l.trim())
-                            .filter(l =>
-                                l.length > 0 &&
-                                !l.toLowerCase().includes(current.label.toLowerCase()) &&
-                                (!stepDate || !l.includes(stepDate)) &&
-                                !l.toLowerCase().includes('expected by') &&
-                                !l.toLowerCase().includes('yet to be')
-                            );
-
-                        timeline.push({
-                            status: current.label === 'Order Confirmed' ? 'Ordered' :
-                                current.label === 'Delivery' ? 'Delivered' : current.label,
-                            date: stepDate,
-                            active: isActive,
-                            details: detailsLines
-                        });
-                    }
-
-                    // Enforce sequential - can't have later step active if earlier is inactive
-                    let foundInactive = false;
-                    for (let i = 0; i < timeline.length; i++) {
-                        if (foundInactive) {
-                            timeline[i].active = false;
-                        } else if (!timeline[i].active) {
-                            foundInactive = true;
-                        }
-                    }
-                } else {
-                    // Default: only ordered is active
-                    timeline.push({ status: 'Ordered', date: '', active: true, details: ['Order placed'] });
-                    timeline.push({ status: 'Shipped', date: '', active: false, details: [] });
-                    timeline.push({ status: 'Out For Delivery', date: '', active: false, details: [] });
-                    timeline.push({ status: 'Delivered', date: '', active: false, details: [] });
-                }
-            }
-
-            return { shippingAddress, phoneNumber, receiverName, priceInfo, timeline, structuredDetails };
-        };
-
-        const details = parseOrderDetails(order.deliveryDetails);
-        const currentStatus = order.status || 'Ordered';
+        // Calculate percentages for "Donut"
+        const flipkartPct = totalAccounts > 0 ? (flipkartCount / totalAccounts) * 100 : 0;
+        const shopsyPct = totalAccounts > 0 ? (shopsyCount / totalAccounts) * 100 : 0;
 
         return (
-            <div className="bg-white border border-slate-200 rounded-[8px] overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div className="p-5 flex flex-col lg:flex-row gap-8">
-                    {/* Left: Product Info & Image */}
-                    <div className="flex flex-col gap-4 w-full lg:w-[350px]">
-                        <div className="flex gap-4">
-                            <div className="w-24 h-24 flex-shrink-0 bg-slate-50 rounded p-2 flex items-center justify-center border border-slate-100">
-                                {order.imageUrl ? (
-                                    <img src={order.imageUrl} alt={order.productName} className="max-h-full max-w-full object-contain mix-blend-multiply" />
-                                ) : (
-                                    <div className="text-slate-200"><svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" /></svg></div>
-                                )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-slate-900 text-sm line-clamp-2 hover:text-blue-600 cursor-pointer">{order.productName}</h4>
-                                <p className="text-[11px] text-slate-500 mt-1 uppercase font-semibold">SKU: {order.sku || 'N/A'}</p>
-                                <div className={`mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${currentStatus.toLowerCase().includes('deliver') ? 'bg-green-100 text-green-700' :
-                                    currentStatus.toLowerCase().includes('cancel') ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
-                                    }`}>
-                                    {order.status || 'Status Unknown'}
-                                </div>
-                            </div>
-                        </div>
+            <div className="p-8 space-y-8 max-w-7xl mx-auto font-sans">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-3xl font-bold text-text-primary tracking-tight">Welcome Back, {username}!</h2>
+                        <p className="text-text-secondary font-medium mt-1">
+                            You have <span className="text-text-primary font-bold">{accounts.length} linked accounts</span> today — keep it up!
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button className="p-2.5 bg-bg-surface border border-border-subtle rounded-button text-text-tertiary hover:text-text-primary transition-all shadow-sm">
+                            <Info size={18} />
+                        </button>
+                        <button onClick={loadAccounts} className="flex items-center gap-2 px-4 py-2.5 bg-bg-surface border border-border-subtle rounded-button text-xs font-bold text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-all shadow-sm">
+                            <Activity size={16} className="text-text-tertiary" />
+                            Refresh Data
+                        </button>
+                    </div>
+                </div>
 
-                        <div className="grid grid-cols-2 gap-4 mt-2">
-                            <div className="bg-slate-50 p-2 rounded border border-slate-100">
-                                <div className="text-[9px] font-bold text-slate-400 uppercase">Order ID</div>
-                                <div className="text-[11px] font-mono font-bold text-slate-700 truncate">{order.orderId || '--'}</div>
+                {/* Highlights Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Stat Can: Total IDs */}
+                    <div className="bg-bg-surface rounded-card p-6 shadow-card border border-border-subtle flex flex-col justify-between h-32 relative overflow-hidden group cursor-pointer hover:shadow-float transition-all" onClick={() => setCurrentView('id_portal')}>
+                        <div className="flex justify-between items-start z-10">
+                            <div>
+                                <p className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                                    <Globe size={14} /> Total IDs
+                                </p>
+                                <h3 className="text-4xl font-black text-text-primary mt-2">{totalAccounts}</h3>
                             </div>
-                            <div className="bg-slate-50 p-2 rounded border border-slate-100">
-                                <div className="text-[9px] font-bold text-slate-400 uppercase">OTP</div>
-                                <div className="text-xs font-mono font-black text-indigo-600">{order.otp || 'N/A'}</div>
-                            </div>
+                            <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-full border border-emerald-100">+12%</span>
                         </div>
-
-                        <div className="flex justify-between items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100">
-                            <span className="text-xs font-bold text-slate-600">Total Price</span>
-                            <span className="text-lg font-black text-slate-900">{order.price || details?.priceInfo?.finalAmount || '₹--'}</span>
+                        {/* Decorative Sparkline (CSS) */}
+                        <div className="absolute bottom-0 left-0 right-0 h-10 w-full opacity-20 group-hover:opacity-30 transition-opacity">
+                            <svg viewBox="0 0 100 20" preserveAspectRatio="none" className="w-full h-full text-brand-accent fill-current">
+                                <path d="M0,20 L0,10 Q25,18 50,5 T100,0 L100,20 Z" />
+                            </svg>
                         </div>
                     </div>
 
-                    {/* Middle: Live Tracking Timeline - Flipkart Style */}
-                    <div className="flex-1 border-l border-r border-slate-100 px-8 relative">
-                        <div className="flex items-center justify-between mb-6">
-                            <h5 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Order Journey</h5>
-                            <button
-                                onClick={() => setIsExpanded(!isExpanded)}
-                                className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors flex items-center gap-1"
-                            >
-                                {isExpanded ? (
-                                    <>
-                                        <span>Hide Updates</span>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>See All Updates</span>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                    </>
-                                )}
-                            </button>
-                        </div>
-
-                        <div className="relative">
-                            {/* Vertical connecting line - green for completed portion */}
-                            <div className="absolute top-3 bottom-3 left-[9px] w-[2px] bg-slate-200 z-0"></div>
-                            {details?.timeline && (() => {
-                                const lastActiveIdx = details.timeline.reduce((acc, step, idx) => step.active ? idx : acc, -1);
-                                const totalSteps = details.timeline.length;
-                                const greenHeight = totalSteps > 1 ? ((lastActiveIdx) / (totalSteps - 1)) * 100 : 0;
-                                return (
-                                    <div
-                                        className="absolute top-3 left-[9px] w-[2px] bg-green-500 z-[1] transition-all duration-500"
-                                        style={{ height: `calc(${greenHeight}% - 6px)` }}
-                                    ></div>
-                                );
-                            })()}
-
-                            <div className="space-y-0 relative z-10">
-                                {details?.timeline.map((step, idx) => {
-                                    const isLastActive = step.active && (!details.timeline[idx + 1] || !details.timeline[idx + 1].active);
-                                    const showDetails = isExpanded || isLastActive;
-
-                                    return (
-                                        <div key={idx} className="flex gap-4 items-start group pb-6 last:pb-0">
-                                            {/* Circle indicator */}
-                                            <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-300 ${step.active
-                                                ? 'bg-white border-2 border-green-500'
-                                                : 'bg-white border-2 border-slate-300'
-                                                }`}>
-                                                {step.active && (
-                                                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
-                                                )}
-                                            </div>
-
-                                            <div className={`flex-1 min-w-0 transition-opacity ${step.active ? 'opacity-100' : 'opacity-60'}`}>
-                                                {/* Status Header with Date */}
-                                                <div className="flex flex-wrap items-baseline gap-2">
-                                                    <h4 className={`text-[15px] font-bold ${step.active ? 'text-slate-900' : 'text-slate-600'}`}>
-                                                        {step.status}
-                                                        {!step.active && step.date && (
-                                                            <span className="font-normal text-slate-500 ml-1">Expected By {step.date}</span>
-                                                        )}
-                                                    </h4>
-                                                    {step.active && step.date && (
-                                                        <span className="text-sm text-slate-500">{step.date}</span>
-                                                    )}
-                                                </div>
-
-                                                {/* Detailed sub-events - shown when expanded */}
-                                                {showDetails && step.details.length > 0 && (
-                                                    <div className="mt-3 space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                        {step.details.map((line, dIdx) => {
-                                                            // Try to extract timestamp from line
-                                                            const timeMatch = line.match(/([A-Za-z]{3},?\s+\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]{3}(?:\s+'\d{2})?\s*-?\s*\d{1,2}:\d{2}(?:am|pm)?)/i);
-                                                            const timestamp = timeMatch ? timeMatch[0] : null;
-                                                            const content = timestamp ? line.replace(timestamp, '').trim() : line;
-
-                                                            return (
-                                                                <div key={dIdx} className="text-sm text-slate-600 leading-relaxed">
-                                                                    <p className="font-medium text-slate-700">{content}</p>
-                                                                    {timestamp && (
-                                                                        <p className="text-xs text-slate-400 mt-0.5">{timestamp}</p>
-                                                                    )}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                )}
-
-                                                {/* Pending status message */}
-                                                {!step.active && showDetails && (
-                                                    <p className="text-sm text-slate-500 mt-1">
-                                                        {step.status === 'Shipped' && 'Item yet to be shipped.'}
-                                                        {step.status === 'Out For Delivery' && 'Item yet to be out for delivery.'}
-                                                        {step.status === 'Delivered' && 'Item yet to be delivered.'}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                    {/* Stat Card: Active Sessions */}
+                    <div className="bg-bg-surface rounded-card p-6 shadow-card border border-border-subtle flex flex-col justify-between h-32 hover:shadow-float transition-all duration-300">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                                    <CheckCircle2 size={14} /> Active
+                                </p>
+                                <h3 className="text-4xl font-black text-text-primary mt-2">{healthyCount}</h3>
                             </div>
+                            <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-full border border-emerald-100">Healthy</span>
+                        </div>
+                        <div className="w-full bg-bg-surface-hover h-1 rounded-full mt-auto overflow-hidden">
+                            <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${(healthyCount / (totalAccounts || 1)) * 100}%` }}></div>
                         </div>
                     </div>
 
-                    {/* Right: Shipping & Price Breakdown */}
-                    <div className="w-full lg:w-[300px] flex flex-col gap-6">
-                        {/* Shipping Section */}
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded">
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                </div>
-                                <h5 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Shipping Details</h5>
+                    {/* Stat Card: Issues */}
+                    <div className="bg-bg-surface rounded-card p-6 shadow-card border border-border-subtle flex flex-col justify-between h-32 hover:shadow-float transition-all duration-300">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                                    <AlertTriangle size={14} /> Issues
+                                </p>
+                                <h3 className="text-4xl font-black text-text-primary mt-2">{attentionCount}</h3>
                             </div>
-                            <div className="bg-slate-50/50 rounded-lg p-3 border border-slate-100">
-                                <p className="text-xs font-bold text-slate-800 mb-1">{details?.receiverName || order.receiverName || 'Receiver'}</p>
-                                <p className="text-[11px] text-slate-600 leading-relaxed italic">{details?.shippingAddress || 'Address not available'}</p>
-                                {details?.phoneNumber && (
-                                    <div className="flex items-center gap-2 mt-2 text-indigo-600">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                                        <span className="text-xs font-black">{details.phoneNumber}</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Price Breakdown */}
-                        {details?.priceInfo && (
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2">
-                                    <div className="p-1.5 bg-amber-50 text-amber-600 rounded">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    </div>
-                                    <h5 className="text-[11px] font-black uppercase tracking-widest text-slate-400">Payment Summary</h5>
-                                </div>
-                                <div className="space-y-2 px-1">
-                                    <div className="flex justify-between items-center text-[11px]">
-                                        <span className="text-slate-500 font-medium">List Price</span>
-                                        <span className="text-slate-700 font-bold line-through">₹{details.priceInfo.mrp}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-[11px]">
-                                        <span className="text-slate-500 font-medium">Selling Price</span>
-                                        <span className="text-slate-700 font-bold">₹{details.priceInfo.sellingPrice}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-[11px]">
-                                        <span className="text-slate-500 font-medium">Extra Fees</span>
-                                        <span className="text-amber-600 font-bold">+ ₹{details.priceInfo.totalFees}</span>
-                                    </div>
-                                    <div className="pt-2 border-t border-dashed border-slate-200 flex justify-between items-center mt-2">
-                                        <span className="text-xs font-black text-slate-900">Total Charged</span>
-                                        <span className="text-sm font-black text-indigo-700">₹{details.priceInfo.finalAmount}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="mt-auto pt-4 flex gap-2">
-                            {order.orderUrl && (
-                                <a
-                                    href={order.orderUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 text-center py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded hover:bg-black transition-colors"
-                                >
-                                    Track on Website
-                                </a>
+                            {attentionCount > 0 ? (
+                                <span className="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-1 rounded-full border border-amber-100">Action Req.</span>
+                            ) : (
+                                <span className="bg-bg-surface-hover text-text-tertiary text-[10px] font-bold px-2 py-1 rounded-full border border-border-subtle">Good</span>
                             )}
-                            <button
-                                onClick={() => setShowModal(true)}
-                                className="px-3 py-2 border border-slate-200 text-slate-600 rounded hover:bg-slate-50 transition-colors"
-                            >
-                                <span className="sr-only">View Details</span>
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                            </button>
+                        </div>
+                        <div className="w-full bg-bg-surface-hover h-1 rounded-full mt-auto overflow-hidden">
+                            <div className="bg-amber-500 h-full rounded-full" style={{ width: `${(attentionCount / (totalAccounts || 1)) * 100}%` }}></div>
+                        </div>
+                    </div>
+
+                    {/* Stat Card: Platform Split (Mini) */}
+                    <div className="bg-bg-surface rounded-card p-6 shadow-card border border-border-subtle flex flex-col justify-between h-32 hover:shadow-float transition-all duration-300">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-xs font-bold text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                                    <LayoutDashboard size={14} /> Platforms
+                                </p>
+                                <div className="flex -space-x-2 mt-3">
+                                    <div className="w-8 h-8 rounded-full bg-[#fff700] border-2 border-white flex items-center justify-center text-[10px] font-bold text-[#2874f0]">F</div>
+                                    <div className="w-8 h-8 rounded-full bg-[#00E065] border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">S</div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-xs font-bold text-text-primary">{flipkartCount} F</span>
+                                <span className="text-xs font-bold text-text-secondary">{shopsyCount} S</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Detailed Modal */}
-                {showModal && (
-                    <OrderDetailsModal
-                        order={order}
-                        details={{ ...details, timeline: details?.timeline || [] }}
-                        onClose={() => setShowModal(false)}
-                    />
-                )}
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Col: Account Status Table */}
+                    <div className="lg:col-span-2 bg-bg-surface rounded-card p-8 shadow-card border border-border-subtle">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                                <Activity size={18} className="text-text-tertiary" />
+                                Account Status
+                            </h3>
+                            <div className="flex gap-2">
+                                <button className="px-3 py-1.5 rounded-lg border border-border-subtle text-xs font-bold text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors">Filter</button>
+                                <button className="px-3 py-1.5 rounded-lg border border-border-subtle text-xs font-bold text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-colors">Sort</button>
+                            </div>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th className="pb-4 text-xs font-bold text-text-tertiary uppercase tracking-wider pl-2">Account ID</th>
+                                        <th className="pb-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Platform</th>
+                                        <th className="pb-4 text-xs font-bold text-text-tertiary uppercase tracking-wider">Status</th>
+                                        <th className="pb-4 text-xs font-bold text-text-tertiary uppercase tracking-wider text-right pr-2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-sm">
+                                    {filteredAccounts.slice(0, 5).map(acc => (
+                                        <tr key={acc.id} className="border-t border-border-subtle hover:bg-bg-surface-hover transition-colors group">
+                                            <td className="py-4 pl-2 font-bold text-text-primary flex items-center gap-3">
+                                                <div className={`w-2 h-2 rounded-full ${acc.status === 'Healthy' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                                {acc.identifier}
+                                            </td>
+                                            <td className="py-4">
+                                                {acc.platform === 'flipkart' ? (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#fff700]/20 text-[#2874f0] text-[10px] font-bold uppercase tracking-wide">
+                                                        Flipkart
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#00E065]/20 text-[#00E065] text-[10px] font-bold uppercase tracking-wide">
+                                                        Shopsy
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="py-4">
+                                                <span className={`text-xs font-bold ${acc.status === 'Healthy' ? 'text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100' :
+                                                    acc.status === 'Error' ? 'text-red-600 bg-red-50 px-2 py-1 rounded-lg border border-red-100' :
+                                                        'text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100'
+                                                    }`}>
+                                                    {acc.status}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 text-right pr-2">
+                                                <button
+                                                    onClick={() => { setActiveAccountId(acc.id); handleOpenBrowser(acc.platform); }}
+                                                    className="px-3 py-1.5 bg-brand-primary text-white text-[10px] font-bold rounded-lg hover:opacity-90 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                                                >
+                                                    Launch
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {accounts.length === 0 && (
+                                        <tr>
+                                            <td colSpan={4} className="py-8 text-center text-text-tertiary italic">No accounts connected yet.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Right Col: Platform Split & Quick Review */}
+                    <div className="space-y-8">
+                        {/* Platform Split Donut */}
+                        <div className="bg-bg-surface rounded-card p-8 shadow-card border border-border-subtle flex flex-col items-center justify-center text-center">
+                            <h3 className="text-sm font-bold text-text-primary mb-6 w-full text-left flex items-center gap-2">
+                                <LayoutDashboard size={18} className="text-text-tertiary" />
+                                Platform Distribution
+                            </h3>
+                            <div className="relative w-40 h-40 mb-6">
+                                <svg viewBox="0 0 36 36" className="w-full h-full rotate-[-90deg]">
+                                    {/* Background Circle */}
+                                    <path className="text-bg-surface-hover" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3.5" />
+                                    {/* Shopsy Segment */}
+                                    <path className="text-[#00E065]" strokeDasharray={`${shopsyPct}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3.5" />
+                                    {/* Flipkart Segment (Offset by Shopsy Pct) */}
+                                    <path className="text-[#fff700]" strokeDasharray={`${flipkartPct}, 100`} strokeDashoffset={`-${shopsyPct}`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3.5" />
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center flex-col">
+                                    <span className="text-3xl font-black text-text-primary">{totalAccounts}</span>
+                                    <span className="text-[10px] font-bold text-text-tertiary uppercase">Total</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 text-xs font-bold w-full justify-center">
+                                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#fff700]" /> Flipkart</div>
+                                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#00E065]" /> Shopsy</div>
+                            </div>
+                        </div>
+
+                        {/* Quick Review */}
+                        <div className="bg-bg-surface rounded-card p-8 shadow-card border border-border-subtle">
+                            <h3 className="text-sm font-bold text-text-primary mb-2">Quick Access</h3>
+                            <p className="text-xs text-text-tertiary mb-6">Jump to frequently used tools.</p>
+
+                            <div className="space-y-3">
+                                <button onClick={() => setCurrentView('id_portal')} className="w-full flex items-center gap-3 p-3 rounded-card bg-bg-surface-hover hover:bg-bg-surface hover:shadow-card hover:border-border-subtle transition-all group border border-transparent">
+                                    <div className="w-8 h-8 rounded-lg bg-bg-surface shadow-sm flex items-center justify-center text-text-secondary group-hover:text-brand-accent">
+                                        <Globe size={16} />
+                                    </div>
+                                    <span className="text-xs font-bold text-text-primary">Manage IDs</span>
+                                    <ChevronDown size={14} className="ml-auto -rotate-90 text-text-tertiary" />
+                                </button>
+                                <button onClick={() => setCurrentView('orders')} className="w-full flex items-center gap-3 p-3 rounded-card bg-bg-surface-hover hover:bg-bg-surface hover:shadow-card hover:border-border-subtle transition-all group border border-transparent">
+                                    <div className="w-8 h-8 rounded-lg bg-bg-surface shadow-sm flex items-center justify-center text-text-secondary group-hover:text-brand-accent">
+                                        <ShoppingBag size={16} />
+                                    </div>
+                                    <span className="text-xs font-bold text-text-primary">Process Orders</span>
+                                    <ChevronDown size={14} className="ml-auto -rotate-90 text-text-tertiary" />
+                                </button>
+                            </div>
+
+                            <button onClick={() => setIsAddModalOpen(true)} className="w-full mt-6 py-3 bg-brand-primary text-white rounded-button text-xs font-bold hover:opacity-90 transition-all shadow-md shadow-brand-primary/10 flex items-center justify-center gap-2">
+                                Add New Account <ChevronDown size={14} className="-rotate-90" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     };
-
-    const renderDashboardView = () => (
-        <div className="p-6 space-y-6">
-            {/* Welcome Card */}
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white">
-                <h2 className="text-2xl font-bold mb-2">Welcome back, {username}!</h2>
-                <p className="text-indigo-100">
-                    Manage your Flipkart & Shopsy accounts from one place.
-                </p>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white rounded-xl p-4 border border-slate-200">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Connected IDs</div>
-                    <div className="text-2xl font-black text-slate-900">{accounts.length}</div>
-                </div>
-                <div className="bg-white rounded-xl p-4 border border-slate-200">
-                    <div className="text-[10px] font-bold text-green-500 uppercase tracking-wider">Active Sessions</div>
-                    <div className="text-2xl font-black text-green-600">
-                        {accounts.filter(a => a.status === 'Healthy').length}
-                    </div>
-                </div>
-                <div className="bg-white rounded-xl p-4 border border-slate-200">
-                    <div className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Needs Attention</div>
-                    <div className="text-2xl font-black text-amber-600">
-                        {accounts.filter(a => a.status === 'Error' || a.status === 'NeedsRefresh').length}
-                    </div>
-                </div>
-            </div>
-
-            {/* Quick Actions */}
-            {activeAccount && (
-                <div className="bg-white rounded-xl p-6 border border-slate-200">
-                    <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h3>
-                    <div className="flex flex-wrap gap-3">
-                        <button
-                            onClick={() => handleOpenBrowser('flipkart')}
-                            disabled={browserLoading}
-                            className="flex items-center px-4 py-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors disabled:opacity-50"
-                        >
-                            <span className="text-yellow-600 font-bold text-sm">🛒 Open Flipkart</span>
-                        </button>
-                        <button
-                            onClick={() => handleOpenBrowser('shopsy')}
-                            disabled={browserLoading}
-                            className="flex items-center px-4 py-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
-                        >
-                            <span className="text-green-600 font-bold text-sm">🛍️ Open Shopsy</span>
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Batch Fetch Orders Section */}
-            <div className="bg-white rounded-xl p-6 border border-slate-200">
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-900">Batch Fetch Orders</h3>
-                        <p className="text-sm text-slate-500">Fetch orders from all {accounts.length} accounts at once</p>
-                    </div>
-                    {!isBatchFetching ? (
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => handleBatchFetchOrders('flipkart')}
-                                disabled={accounts.length === 0}
-                                className="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-bold hover:bg-yellow-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                                Fetch All (Flipkart)
-                            </button>
-                            <button
-                                onClick={() => handleBatchFetchOrders('shopsy')}
-                                disabled={accounts.length === 0}
-                                className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-bold hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-                            >
-                                Fetch All (Shopsy)
-                            </button>
-                        </div>
-                    ) : (
-                        <button
-                            onClick={handleCancelBatch}
-                            className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-bold hover:bg-red-600 transition-colors flex items-center gap-2"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Cancel
-                        </button>
-                    )}
-                </div>
-
-                {/* Progress Bar */}
-                {batchJob && (
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium text-slate-700">
-                                {batchJob.status === 'completed' ? '✅ Completed' :
-                                    batchJob.status === 'cancelled' ? '⚠️ Cancelled' :
-                                        batchJob.status === 'failed' ? '❌ Failed' :
-                                            `⏳ Processing ${batchJob.completed}/${batchJob.total} accounts...`}
-                            </span>
-                            <span className="text-slate-500">
-                                {batchJob.failed > 0 && <span className="text-red-500 mr-2">{batchJob.failed} failed</span>}
-                                {Math.round((batchJob.completed / batchJob.total) * 100)}%
-                            </span>
-                        </div>
-
-                        {/* Progress bar */}
-                        <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full transition-all duration-500 ease-out ${batchJob.status === 'completed' ? 'bg-green-500' :
-                                    batchJob.status === 'failed' ? 'bg-red-500' :
-                                        batchJob.status === 'cancelled' ? 'bg-amber-500' :
-                                            'bg-indigo-500'
-                                    }`}
-                                style={{ width: `${(batchJob.completed / batchJob.total) * 100}%` }}
-                            />
-                        </div>
-
-                        {/* Recent Results */}
-                        {batchJob.results.length > 0 && (
-                            <div className="max-h-32 overflow-y-auto border rounded-lg p-2 bg-slate-50 text-xs space-y-1">
-                                {batchJob.results.slice(-5).reverse().map((result, idx) => (
-                                    <div key={idx} className="flex items-center justify-between">
-                                        <span className="font-mono truncate max-w-[200px]">{result.accountId}</span>
-                                        <span className={`font-bold ${result.status === 'done' ? 'text-green-600' :
-                                            result.status === 'error' ? 'text-red-600' :
-                                                result.status === 'running' ? 'text-blue-600' :
-                                                    'text-slate-400'
-                                            }`}>
-                                            {result.status === 'done' ? `✓ ${result.ordersFound} orders` :
-                                                result.status === 'error' ? `✗ Error` :
-                                                    result.status === 'running' ? '⏳' : '○'}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Errors Summary */}
-                        {batchJob.errors.length > 0 && (
-                            <div className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-200">
-                                <strong>Errors:</strong> {batchJob.errors.slice(0, 3).map(e => e.accountId).join(', ')}
-                                {batchJob.errors.length > 3 && ` and ${batchJob.errors.length - 3} more...`}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {!batchJob && (
-                    <div className="text-center py-8 text-slate-400">
-                        <div className="text-4xl mb-2">📦</div>
-                        <p className="text-sm">Click "Fetch All" to start batch fetching orders from all your accounts</p>
-                        <p className="text-xs mt-1">Runs 5 browsers in parallel for optimal speed</p>
-                    </div>
-                )}
-            </div>
-
-            {/* Total GV Balance Summary */}
-            {accounts.length > 0 && (
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-6 text-white">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-lg font-bold opacity-90">Total GV Balance</h3>
-                            <p className="text-sm opacity-75">Across all {accounts.length} accounts</p>
-                        </div>
-                        <div className="text-3xl font-black">
-                            ₹{accounts.reduce((sum, acc) => {
-                                const balance = acc.details?.gvBalance?.replace(/[₹,]/g, '') || '0';
-                                return sum + (parseFloat(balance) || 0);
-                            }, 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
 
     const renderBrowseView = () => {
         if (!activeAccount) {
             return (
-                <div className="flex items-center justify-center h-full">
-                    <div className="text-center">
-                        <p className="text-slate-500 mb-4">No account selected</p>
-                        <button
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                        >
-                            Add Account
-                        </button>
+                <div className="flex flex-col items-center justify-center h-full p-8 text-center max-w-md mx-auto">
+                    <div className="w-20 h-20 bg-bg-surface-hover rounded-3xl flex items-center justify-center mb-8 shadow-inner">
+                        <Globe size={40} className="text-brand-accent" />
                     </div>
+                    <h3 className="text-2xl font-bold text-text-primary mb-3 tracking-tight">No Account Selected</h3>
+                    <p className="text-text-secondary mb-8 leading-relaxed">Please select an account from the top bar to start a secure browsing session.</p>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="px-8 py-4 bg-brand-accent text-white rounded-button hover:bg-brand-accent/90 font-bold shadow-lg shadow-brand-accent/20 transition-all hover:-translate-y-0.5"
+                    >
+                        + Add Account
+                    </button>
                 </div>
             );
         }
 
         return (
-            <div className="p-6 space-y-4">
-                <div className="bg-white rounded-xl p-4 border border-slate-200">
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <h3 className="text-lg font-bold text-slate-900">
-                                Browse with {activeAccount.details?.name || activeAccount.identifier}
-                            </h3>
-                            {activeAccount.details?.name && (
-                                <p className="text-sm text-slate-500">{activeAccount.identifier}</p>
-                            )}
-                            <p className="text-sm text-slate-500">Opens in a separate browser window with your saved session</p>
-                        </div>
+            <div className="p-8 space-y-8 max-w-6xl mx-auto">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-3xl font-bold text-text-primary tracking-tight">Browse Session</h3>
+                        <p className="text-sm text-text-secondary mt-2 flex items-center gap-2">
+                            Active Session:
+                            <span className="font-bold text-brand-accent bg-brand-accent/5 px-2.5 py-0.5 rounded-md border border-brand-accent/10">
+                                {activeAccount.identifier}
+                            </span>
+                        </p>
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <button
+                        onClick={() => setCurrentView('dashboard')}
+                        className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-text-primary bg-bg-surface hover:bg-bg-surface-hover border border-border-subtle rounded-button transition-all"
+                    >
+                        Esc / Back
+                    </button>
+                </div>
+
+                <div className="bg-bg-surface rounded-card p-10 border border-border-subtle shadow-card">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <button
                             onClick={() => handleOpenBrowser('flipkart')}
                             disabled={browserLoading}
-                            className="flex-1 min-w-[150px] flex items-center justify-center px-6 py-4 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-colors disabled:opacity-50 font-bold"
+                            className="flex flex-col items-center justify-center p-12 bg-bg-surface hover:bg-bg-surface-hover border-2 border-border-subtle rounded-card hover:border-yellow-400/50 hover:shadow-float transition-all hover:-translate-y-1 group relative overflow-hidden"
                         >
-                            {browserLoading ? 'Opening...' : '🛒 Open Flipkart'}
+                            <div className="w-24 h-24 bg-[#fff700] rounded-3xl shadow-sm flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-300">
+                                <FlipkartIcon size={48} className="text-[#2874f0]" />
+                            </div>
+                            <h4 className="text-2xl font-black text-text-primary mb-3">Open Flipkart</h4>
+                            <p className="text-text-tertiary text-center font-medium">Go to Homepage</p>
                         </button>
+
                         <button
                             onClick={() => handleOpenBrowser('shopsy')}
                             disabled={browserLoading}
-                            className="flex-1 min-w-[150px] flex items-center justify-center px-6 py-4 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors disabled:opacity-50 font-bold"
+                            className="flex flex-col items-center justify-center p-12 bg-bg-surface hover:bg-bg-surface-hover border-2 border-border-subtle rounded-card hover:border-green-400/50 hover:shadow-float transition-all hover:-translate-y-1 group relative overflow-hidden"
                         >
-                            {browserLoading ? 'Opening...' : '🛍️ Open Shopsy'}
-                        </button>
-                        <button
-                            onClick={handleFetchGV}
-                            disabled={isFetchingGV || browserLoading}
-                            className="flex-1 min-w-[150px] flex items-center justify-center px-6 py-4 bg-teal-500 text-white rounded-xl hover:bg-teal-600 transition-colors disabled:opacity-50 font-bold"
-                        >
-                            {isFetchingGV ? 'Fetching...' : '💳 Fetch Balance'}
+                            <div className="w-24 h-24 bg-[#00E065] rounded-3xl shadow-sm flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-300">
+                                <ShopsyIcon size={48} className="text-[#00E065]" />
+                            </div>
+                            <h4 className="text-2xl font-black text-text-primary mb-3">Open Shopsy</h4>
+                            <p className="text-text-tertiary text-center font-medium">Go to Homepage</p>
                         </button>
                     </div>
-                </div>
-
-                {/* Info Card */}
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <p className="text-sm text-blue-700">
-                        <strong>💡 Tip:</strong> Your session is automatically saved. No need to login again!
-                    </p>
                 </div>
             </div>
         );
     };
 
     const renderSettingsView = () => (
-        <div className="p-6">
-            <div className="bg-white rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">User Settings</h3>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between py-3 border-b border-slate-100">
-                        <div>
-                            <p className="font-medium text-slate-900">Username</p>
-                            <p className="text-sm text-slate-500">{username}</p>
+        <div className="p-8 max-w-4xl mx-auto space-y-8">
+            <h3 className="text-3xl font-bold text-text-primary tracking-tight">Settings</h3>
+
+            {/* Profile Section */}
+            <div className="bg-bg-surface rounded-card p-8 border border-border-subtle shadow-card">
+                <div className="flex items-start justify-between mb-6 border-b border-border-subtle pb-4">
+                    <h4 className="text-xs font-black text-text-tertiary uppercase tracking-widest">Profile Information</h4>
+                    {!isEditingProfile && (
+                        <button onClick={() => setIsEditingProfile(true)} className="text-xs font-bold text-brand-primary hover:text-brand-accent transition-colors">
+                            Edit Profile
+                        </button>
+                    )}
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* Avatar Display / Selection */}
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-inner ring-4 ring-bg-surface border border-border-subtle relative group">
+                            {AVATARS.find(a => a.id === selectedAvatar)?.icon}
+                            {isEditingProfile && (
+                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    Change
+                                </div>
+                            )}
+                        </div>
+                        {isEditingProfile && (
+                            <div className="grid grid-cols-5 gap-2 bg-bg-canvas p-2 rounded-xl">
+                                {AVATARS.map(avatar => (
+                                    <button
+                                        key={avatar.id}
+                                        onClick={() => setSelectedAvatar(avatar.id)}
+                                        className={`w-8 h-8 rounded-lg overflow-hidden border-2 transition-all ${selectedAvatar === avatar.id ? 'border-brand-primary scale-110 shadow-sm' : 'border-transparent hover:border-border-subtle'}`}
+                                    >
+                                        {avatar.icon}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex-1 space-y-4">
+                        {isEditingProfile ? (
+                            <div className="space-y-4 max-w-sm">
+                                <div>
+                                    <label className="text-xs font-bold text-text-tertiary mb-1 block">Username</label>
+                                    <input type="text" value={username} disabled className="w-full px-4 py-2 bg-bg-canvas border border-border-subtle rounded-lg text-text-secondary font-medium cursor-not-allowed" />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-text-tertiary mb-1 block">Current Plan</label>
+                                    <select className="w-full px-4 py-2 bg-bg-canvas border border-border-subtle rounded-lg text-text-primary font-bold focus:ring-2 focus:ring-brand-primary outline-none">
+                                        <option>Standard User Plan</option>
+                                        <option>Pro User Plan</option>
+                                    </select>
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button onClick={() => setIsEditingProfile(false)} className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-opacity">Save Changes</button>
+                                    <button onClick={() => setIsEditingProfile(false)} className="px-4 py-2 bg-bg-surface border border-border-subtle text-text-secondary text-xs font-bold rounded-lg hover:bg-bg-surface-hover">Cancel</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <h2 className="text-2xl font-black text-text-primary mb-1">{username}</h2>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="px-2 py-0.5 bg-brand-primary text-white text-[10px] font-bold uppercase tracking-wider rounded-md">User</span>
+                                    <span className="px-2 py-0.5 bg-bg-surface-hover text-text-secondary text-[10px] font-bold uppercase tracking-wider rounded-md border border-border-subtle">Standard Plan</span>
+                                </div>
+                                <p className="text-sm text-text-secondary">Manage your personal details and account settings here.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* General Settings */}
+                <div className="bg-bg-surface rounded-card p-8 border border-border-subtle shadow-card">
+                    <h4 className="text-xs font-black text-text-tertiary uppercase tracking-widest mb-6 border-b border-border-subtle pb-2">General Preferences</h4>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between group cursor-pointer">
+                            <span className="text-sm font-bold text-text-secondary group-hover:text-text-primary transition-colors">Dark Mode</span>
+                            <div className="w-12 h-7 bg-bg-canvas border border-border-subtle rounded-full relative transition-colors">
+                                <div className="absolute left-1 top-1 w-5 h-5 bg-text-tertiary rounded-full shadow-sm transition-transform"></div>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between group cursor-pointer">
+                            <span className="text-sm font-bold text-text-secondary group-hover:text-text-primary transition-colors">Notifications</span>
+                            <div className="w-12 h-7 bg-brand-primary rounded-full relative transition-colors">
+                                <div className="absolute right-1 top-1 w-5 h-5 bg-white rounded-full shadow-sm"></div>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between group cursor-pointer">
+                            <span className="text-sm font-bold text-text-secondary group-hover:text-text-primary transition-colors">Auto-Launch Browsers</span>
+                            <div className="w-12 h-7 bg-bg-canvas border border-border-subtle rounded-full relative transition-colors">
+                                <div className="absolute left-1 top-1 w-5 h-5 bg-text-tertiary rounded-full shadow-sm transition-transform"></div>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between py-3 border-b border-slate-100">
-                        <div>
-                            <p className="font-medium text-slate-900">Connected Accounts</p>
-                            <p className="text-sm text-slate-500">{accounts.length} account(s)</p>
-                        </div>
+                </div>
+
+                {/* Security */}
+                <div className="bg-bg-surface rounded-card p-8 border border-border-subtle shadow-card">
+                    <h4 className="text-xs font-black text-text-tertiary uppercase tracking-widest mb-6 border-b border-border-subtle pb-2">Security</h4>
+                    <div className="space-y-3">
+                        <button className="w-full text-left px-5 py-4 bg-bg-canvas hover:bg-bg-surface-hover rounded-xl border border-border-subtle font-bold text-text-primary text-sm transition-all flex justify-between items-center group shadow-sm hover:shadow-md">
+                            Change Password
+                            <ChevronDown size={16} className="-rotate-90 text-text-tertiary group-hover:text-brand-primary transition-colors" />
+                        </button>
+                        <button className="w-full text-left px-5 py-4 bg-bg-canvas hover:bg-bg-surface-hover rounded-xl border border-border-subtle font-bold text-text-primary text-sm transition-all flex justify-between items-center group shadow-sm hover:shadow-md">
+                            Two-Factor Authentication
+                            <ChevronDown size={16} className="-rotate-90 text-text-tertiary group-hover:text-brand-primary transition-colors" />
+                        </button>
                     </div>
-                    <div className="pt-2">
-                        <span className="text-[10px] font-bold uppercase px-2 py-1 bg-amber-100 text-amber-600 rounded">
-                            In Process
-                        </span>
-                        <p className="text-sm text-slate-500 mt-2">
-                            More settings options coming soon...
-                        </p>
+                </div>
+            </div>
+
+            {/* App Info */}
+            <div className="bg-bg-canvas rounded-card p-8 border border-border-subtle border-dashed text-center opacity-70 hover:opacity-100 transition-opacity">
+                <div className="flex justify-center gap-12">
+                    <div>
+                        <p className="text-4xl font-black text-text-primary tracking-tighter">{accounts.length}</p>
+                        <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mt-1">Connected IDs</p>
+                    </div>
+                    <div className="w-px bg-border-subtle h-12 self-center"></div>
+                    <div>
+                        <p className="text-4xl font-black text-text-primary tracking-tighter">1.2.0</p>
+                        <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mt-1">Version</p>
                     </div>
                 </div>
             </div>
         </div>
     );
 
+    const renderNotificationsView = () => (
+        <div className="p-8 max-w-4xl mx-auto space-y-8">
+            <h3 className="text-3xl font-bold text-text-primary tracking-tight">Notifications</h3>
+
+            {/* Notification List */}
+            <div className="space-y-4">
+                <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card flex items-start gap-4">
+                    <div className="w-10 h-10 bg-bg-surface-hover text-brand-primary rounded-full flex items-center justify-center shrink-0">
+                        <ShoppingBag size={20} />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                            <h4 className="text-sm font-bold text-text-primary">Order #OD3298293829 Delivered</h4>
+                            <span className="text-[10px] font-bold text-text-tertiary">2 mins ago</span>
+                        </div>
+                        <p className="text-sm text-text-secondary mt-1">Order for Apple iPhone 15 (Blue, 128 GB) has been delivered successfully.</p>
+                        <div className="mt-3 flex gap-2">
+                            <button
+                                onClick={() => { setCurrentView('orders'); }}
+                                className="px-3 py-1.5 bg-bg-surface-hover text-text-secondary text-xs font-bold rounded-lg hover:bg-bg-canvas border border-border-subtle hover:text-text-primary transition-colors"
+                            >
+                                View Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card flex items-start gap-4">
+                    <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center shrink-0">
+                        <AlertTriangle size={20} />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                            <h4 className="text-sm font-bold text-text-primary">OTP Required</h4>
+                            <span className="text-[10px] font-bold text-text-tertiary">10 mins ago</span>
+                        </div>
+                        <p className="text-sm text-text-secondary mt-1">Platform <strong>Flipkart (SureshIyer)</strong> is requesting login verification.</p>
+                        <div className="mt-3 flex gap-2">
+                            <div className="px-3 py-1.5 bg-bg-surface-hover border border-border-subtle text-text-primary text-xs font-mono font-bold rounded-lg tracking-widest">
+                                8273
+                            </div>
+                            <button
+                                onClick={() => { navigator.clipboard.writeText('8273'); alert('OTP copied to clipboard!'); }}
+                                className="px-3 py-1.5 bg-brand-accent/5 text-brand-accent text-xs font-bold rounded-lg hover:bg-brand-accent/10 transition-colors"
+                            >
+                                Copy OTP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-bg-surface rounded-card p-6 border border-border-subtle shadow-card flex items-start gap-4">
+                    <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
+                        <CheckCircle2 size={20} />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                            <h4 className="text-sm font-bold text-text-primary">Wallet Top-up Successful</h4>
+                            <span className="text-[10px] font-bold text-text-tertiary">1 hour ago</span>
+                        </div>
+                        <p className="text-sm text-text-secondary mt-1">₹5,000 has been added to your main wallet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="text-center pt-8">
+                <p className="text-xs font-bold text-text-tertiary uppercase tracking-widest">No more notifications</p>
+            </div>
+        </div>
+    );
+
     return (
         <>
-
-
             <Layout
                 username={username}
                 role="user"
@@ -1164,18 +834,16 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout }) => {
                 onRefresh={loadAccounts}
                 onSignOut={() => { api.signOut(); onLogout(); }}
                 showAccountSelector={true}
+                showSearch={currentView !== 'browser_1' && currentView !== 'browser_2' && currentView !== 'browse' && currentView !== 'settings'}
+                showAddButton={currentView === 'id_portal' || currentView === 'dashboard'}
+                onSearch={setSearchQuery}
             >
                 {renderContent()}
             </Layout>
 
+
             <ChatWidget onNavigate={(orderId) => {
-                // Navigate to orders view
-                const items = [...navItems];
-                const ordersItem = items.find(i => i.id === 'orders');
-                if (ordersItem) {
-                    ordersItem.onClick?.();
-                }
-                // TODO: Implement specific order highlighting/scrolling if needed
+                setCurrentView('orders');
                 console.log('Navigate to order:', orderId);
             }} />
 
@@ -1187,4 +855,3 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout }) => {
         </>
     );
 };
-

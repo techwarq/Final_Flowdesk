@@ -1,6 +1,8 @@
 {
   "main": "electron/main.cjs",
   "name": "tauri-appflowdesk",
+  "productName": "FlowDesk",
+  "description": "ASTRA - High Performance E-commerce Operations",
   "private": true,
   "version": "0.1.2",
   "type": "module",
@@ -23,10 +25,9 @@
     },
     "win": {
       "target": [
-        "nsis"
-      ],
-      "verifyUpdateCodeSignature": false,
-      "forceCodeSigning": false
+        "nsis",
+        "portable"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -43,29 +44,25 @@
     ],
     "extraResources": [
       {
-        "from": "backend/dist",
-        "to": "backend/dist"
-      },
-      {
-        "from": "backend/node_modules",
-        "to": "backend/node_modules"
-      },
-      {
-        "from": "backend/browsers",
-        "to": "backend/browsers"
-      },
-      {
-        "from": "backend/package.json",
-        "to": "backend/package.json"
-      },
-      {
-        "from": "backend/.env",
-        "to": "backend/.env"
+        "from": "backend",
+        "to": "backend",
+        "filter": [
+          "**/*",
+          "!src",
+          "!tsconfig.json",
+          "!*.ts",
+          "dist/**/*",
+          "node_modules/**/*",
+          "browsers/**/*",
+          "package.json",
+          ".env"
+        ]
       }
     ]
   },
   "dependencies": {
     "electron-is-dev": "^3.0.1",
+    "lucide-react": "^0.562.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "wait-on": "^9.0.3"

@@ -1,6 +1,20 @@
 import React from 'react';
 
-export type Platform = 'flipkart' | 'shopsy';
+export type Platform =
+    | 'flipkart'
+    | 'shopsy'
+    | 'amazon'
+    | 'blinkit'
+    | 'reliance'
+    | 'vivo'
+    | 'oppo'
+    | 'redmi'
+    | 'realme'
+    | 'samsung'
+    | 'zepto'
+    | 'vijaysales'
+    | 'oneplus'
+    | 'iqoo';
 export type LoginType = 'email' | 'mobile';
 export type AccountStatus =
     | 'New'
@@ -24,31 +38,6 @@ export interface Account {
     errorCode?: string;
     createdAt: string;
     updatedAt: string;
-    details?: {
-        name?: string;
-        mobile?: string;
-        email?: string;
-        superCoins?: string;
-        isPlus?: boolean;
-        gvBalance?: string;
-    };
-    orders?: Order[];
-}
-
-export interface Order {
-    orderId: string;
-    productName: string;
-    status: string;
-    deliveryDate: string;
-    imageUrl?: string;
-    price?: string;
-    orderUrl: string;
-    otp?: string;
-    receiverName?: string;
-    trackingId?: string;
-    deliveryDetails?: string;
-    sku?: string;
-    seller?: string;
 }
 
 export interface UserProfile {
@@ -69,24 +58,3 @@ export interface NavItem {
     badge?: string;
 }
 
-// Batch Order Fetching Types
-export interface BatchJob {
-    jobId: string;
-    status: 'pending' | 'running' | 'completed' | 'cancelled' | 'failed';
-    total: number;
-    completed: number;
-    failed: number;
-    startedAt?: string;
-    completedAt?: string;
-    results: BatchAccountResult[];
-    errors: { accountId: string; error: string }[];
-}
-
-export interface BatchAccountResult {
-    accountId: string;
-    platform: Platform;
-    status: 'pending' | 'running' | 'done' | 'error';
-    ordersFound: number;
-    gvBalance?: string;
-    error?: string;
-}
