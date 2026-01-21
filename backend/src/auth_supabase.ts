@@ -80,6 +80,30 @@ const sessionStore = new Map<string, any>();
  */
 export async function signInSupabase(username: string, password: string): Promise<AuthResponse> {
     const supabase = getSupabaseAdminClient();
+
+    // DEV BYPASS: Allow 'admin' to login immediately without Supabase
+    if (username === 'admin' && password === 'admin123') {
+        logger.info(`[Auth] Admin bypass used for: ${username}`);
+        const sessionToken = randomUUID();
+        const adminUser = {
+            id: 'admin-bypass-id',
+            username: 'admin',
+            role: 'admin'
+        };
+        sessionStore.set(sessionToken, adminUser);
+
+        return {
+            success: true,
+            user: { id: adminUser.id, username: adminUser.username },
+            profile: adminUser,
+            session: {
+                access_token: sessionToken,
+                user_id: adminUser.id
+            },
+            message: 'Admin Access Granted (Dev Mode)'
+        };
+    }
+
     if (!supabase) return { success: false, message: 'Database not configured.' };
 
     username = username?.trim().toLowerCase() || '';

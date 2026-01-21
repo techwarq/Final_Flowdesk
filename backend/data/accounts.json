@@ -57,6 +57,28 @@
       "assignedTo": "SureshIyer13@emobilee.com",
       "userId": "3dc36b93-9f8c-4e26-9f26-025b78b8b661",
       "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/sureshiyer13@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "mobile",
+      "identifier": "rohan@gmail.com",
+      "status": "New",
+      "createdAt": "2026-01-19T22:53:15.783Z",
+      "updatedAt": "2026-01-19T22:53:15.784Z",
+      "id": "rohan",
+      "platform": "flipkart",
+      "assignedTo": "",
+      "userId": "3dc36b93-9f8c-4e26-9f26-025b78b8b661"
+    },
+    {
+      "loginType": "mobile",
+      "identifier": "bfdf",
+      "status": "New",
+      "createdAt": "2026-01-19T23:07:41.126Z",
+      "updatedAt": "2026-01-19T23:07:41.128Z",
+      "id": "fdb",
+      "platform": "flipkart",
+      "assignedTo": "",
+      "userId": "e837e8e3-d300-46f9-8598-7207fd67f525"
     }
   ]
 }

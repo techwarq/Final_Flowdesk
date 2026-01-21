@@ -1,6 +1,7 @@
 {
   "main": "electron/main.cjs",
   "name": "tauri-appflowdesk",
+  "description": "ASTRA - High Performance E-commerce Operations",
   "private": true,
   "version": "0.1.2",
   "type": "module",
@@ -17,7 +18,7 @@
   },
   "build": {
     "appId": "com.flowdesk.app",
-    "productName": "FlowDesk",
+    "productName": "ASTRA",
     "mac": {
       "category": "public.app-category.business"
     },
@@ -60,6 +61,7 @@
   },
   "dependencies": {
     "electron-is-dev": "^3.0.1",
+    "lucide-react": "^0.562.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "wait-on": "^9.0.3"

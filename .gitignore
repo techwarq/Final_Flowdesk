@@ -28,3 +28,6 @@ backend/data
 
 # Build Output
 dist_electron
+
+# Browsers
+backend/browsers

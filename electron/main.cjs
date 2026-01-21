@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, session, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const isDev = require('electron-is-dev');
@@ -6,7 +6,7 @@ const waitOn = require('wait-on');
 const fs = require('fs');
 
 // Simple file logger for startup debugging
-const logPath = path.join(app.getPath('home'), 'flowdesk_startup_log.txt');
+const logPath = path.join(app.getPath('home'), 'astra_startup_log.txt');
 
 function logToFile(msg) {
   try {
@@ -31,6 +31,7 @@ try {
 } catch (e) { }
 
 let mainWindow;
+let splashWindow;
 let backendProcess;
 
 // Backend setup
@@ -117,9 +118,11 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    show: false, // Don't show until ready
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      webviewTag: true,
       preload: path.join(__dirname, 'preload.cjs')
     },
   });
@@ -145,6 +148,8 @@ function createWindow() {
     logToFile('Services are ready!');
     console.log('Services are ready!');
     mainWindow.loadURL(frontendUrl);
+
+    // NO-OP here, we wait for IPC 'app-ready' from React
   }).catch((err) => {
     logToFile(`Services did not start in time: ${err.message}`);
     console.error('Services did not start in time:', err);
@@ -152,7 +157,7 @@ function createWindow() {
   });
 
   if (isDev) {
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools(); // Disabled as per user request
   }
 
   mainWindow.on('closed', () => {
@@ -160,10 +165,59 @@ function createWindow() {
   });
 }
 
+
+
+function createSplashWindow() {
+  splashWindow = new BrowserWindow({
+    width: 340,
+    height: 340,
+    titleBarStyle: 'hidden',
+    frame: false,
+    alwaysOnTop: true,
+    transparent: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  splashWindow.loadFile(path.join(__dirname, 'splash.html'));
+  splashWindow.center();
+}
+
 app.on('ready', () => {
   logToFile('Electron Ready event fired');
+  createSplashWindow();
   startBackend();
   createWindow();
+
+  ipcMain.on('app-ready', () => {
+    logToFile('App ready event received from renderer');
+    if (mainWindow) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+    if (splashWindow) {
+      setTimeout(() => {
+        if (splashWindow && !splashWindow.isDestroyed()) {
+          splashWindow.destroy();
+          splashWindow = null;
+        }
+      }, 300); // Small buffer to ensure smooth transition
+    }
+    ipcMain.on('set-proxy', async (event, { partition, proxyRules }) => {
+      logToFile(`Setting proxy for partition ${partition} to ${proxyRules}`);
+      const ses = session.fromPartition(partition);
+      await ses.setProxy({ proxyRules });
+      logToFile(`Proxy set successfully for ${partition}`);
+    });
+
+    ipcMain.on('get-ip-info', async (event, { partition }) => {
+      // This is a helper to verify IP from the main process side if needed, 
+      // but we can also just do it in the renderer via fetch() if proxy is set correctly.
+      // For now we just ack.
+    });
+  });
 });
 
 app.on('window-all-closed', () => {

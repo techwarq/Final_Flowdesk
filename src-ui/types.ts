@@ -1,6 +1,20 @@
 import React from 'react';
 
-export type Platform = 'flipkart' | 'shopsy';
+export type Platform =
+    | 'flipkart'
+    | 'shopsy'
+    | 'amazon'
+    | 'blinkit'
+    | 'reliance'
+    | 'vivo'
+    | 'oppo'
+    | 'redmi'
+    | 'realme'
+    | 'samsung'
+    | 'zepto'
+    | 'vijaysales'
+    | 'oneplus'
+    | 'iqoo';
 export type LoginType = 'email' | 'mobile';
 export type AccountStatus =
     | 'New'
