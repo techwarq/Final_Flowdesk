@@ -4,7 +4,8 @@ import {
     ChevronLeft,
     ChevronRight,
     LogOut,
-    LayoutDashboard
+    LayoutDashboard,
+    Shield
 } from 'lucide-react';
 
 interface NavItem {
@@ -30,6 +31,7 @@ interface SidebarProps {
     collapsed?: boolean;
     onToggleCollapse?: () => void;
     onSwitchToUser?: () => void;
+    onSwitchToAdmin?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -39,7 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onSignOut,
     collapsed = false,
     onToggleCollapse,
-    onSwitchToUser
+    onSwitchToUser,
+    onSwitchToAdmin
 }) => {
 
     return (
@@ -68,8 +71,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         onClick={item.onClick}
                         disabled={item.disabled}
                         className={`w-full flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 group relative ${item.active
-                                ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/25'
-                                : 'text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary'
+                            ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/25'
+                            : 'text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary'
                             } ${item.disabled ? 'opacity-50 cursor-not-allowed hidden' : ''}`}
                     >
                         <div className={`flex items-center justify-center ${collapsed ? 'w-full' : ''}`}>
@@ -125,6 +128,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     >
                         <LayoutDashboard size={20} />
                         {!collapsed && <span className="text-sm font-medium">User View</span>}
+                    </button>
+                )}
+
+                {onSwitchToAdmin && (
+                    <button
+                        onClick={onSwitchToAdmin}
+                        title={collapsed ? "Switch to Admin Dashboard" : ""}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 mb-2 rounded-xl text-text-secondary hover:bg-bg-surface-hover hover:text-text-primary transition-all group ${collapsed ? 'justify-center' : ''}`}
+                    >
+                        <Shield size={20} className="text-brand-accent" />
+                        {!collapsed && <span className="text-sm font-medium">Admin Dashboard</span>}
                     </button>
                 )}
 

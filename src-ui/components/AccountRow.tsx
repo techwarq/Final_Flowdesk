@@ -13,6 +13,7 @@ export const AccountRow: React.FC<Props> = ({ account, onRefresh, selected = fal
     const [loading, setLoading] = useState(false);
     const [actionStatus, setActionStatus] = useState<string | null>(null);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
 
     const handleOpenPlatform = async (platform: Platform) => {
         // Opens Playwright browser with saved cookies
@@ -74,6 +75,28 @@ export const AccountRow: React.FC<Props> = ({ account, onRefresh, selected = fal
         }
     };
 
+    const handleReset = async () => {
+        if (!showResetConfirm) {
+            setShowResetConfirm(true);
+            setTimeout(() => setShowResetConfirm(false), 3000);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await api.resetAccount(account.id);
+            onRefresh();
+            setActionStatus('Reset');
+            setTimeout(() => setActionStatus(null), 2000);
+        } catch (e) {
+            console.error('Reset failed:', e);
+            setActionStatus('Failed');
+        } finally {
+            setLoading(false);
+            setShowResetConfirm(false);
+        }
+    };
+
     const statusStyles = {
         'Healthy': 'bg-green-100 text-green-700',
         'New': 'bg-blue-100 text-blue-700',
@@ -109,8 +132,11 @@ export const AccountRow: React.FC<Props> = ({ account, onRefresh, selected = fal
                 {actionStatus ? (
                     <span className="text-xs font-bold text-indigo-600 animate-pulse">{actionStatus}</span>
                 ) : (
-                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${statusStyles[account.status] || 'bg-slate-100'}`}>
-                        {account.status}
+                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
+                        // Mask Error as NeedsRefresh visual
+                        account.status === 'Error' ? statusStyles['NeedsRefresh'] : (statusStyles[account.status] || 'bg-slate-100')
+                        }`}>
+                        {account.status === 'Error' ? 'NeedsRefresh' : account.status}
                     </span>
                 )}
             </td>
@@ -140,6 +166,21 @@ export const AccountRow: React.FC<Props> = ({ account, onRefresh, selected = fal
                     >
                         REFRESH
                     </button>
+                    {/* Errors hidden/masked, so fix button might be redundant or we can keep it but styled differently? 
+                        User said "no error nahi dikhani", so let's hide the specific Fix button if we are masking the status.
+                        Actually, if it says "NeedsRefresh", the Refresh button handles it. 
+                    */}
+                    {false && account.status === 'Error' && (
+                        <button
+                            onClick={handleReset}
+                            disabled={loading}
+                            className={`px-3 py-1.5 text-[11px] font-bold border rounded transition-colors ${showResetConfirm
+                                ? 'bg-amber-100 text-amber-700 border-amber-300'
+                                : 'border-red-200 text-red-600 hover:bg-red-50'}`}
+                        >
+                            {showResetConfirm ? 'CONFIRM?' : 'FIX'}
+                        </button>
+                    )}
                     <button
                         onClick={handleDelete}
                         disabled={loading}

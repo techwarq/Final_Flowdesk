@@ -55,8 +55,11 @@ export const AccountCard: React.FC<Props> = ({ account, onRefresh }) => {
                     <h3 className="font-semibold text-lg text-slate-800">{account.id}</h3>
                     <p className="text-sm text-slate-500 capitalize">{account.platform}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${statusColor[account.status] || 'bg-gray-100'}`}>
-                    {account.status}
+                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                    // Mask Error as NeedsRefresh visual
+                    account.status === 'Error' ? statusColor['NeedsRefresh'] : (statusColor[account.status] || 'bg-gray-100')
+                    }`}>
+                    {account.status === 'Error' ? 'NeedsRefresh' : account.status}
                 </span>
             </div>
 

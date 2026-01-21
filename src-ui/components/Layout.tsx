@@ -32,6 +32,7 @@ interface LayoutProps {
     onSearch?: (query: string) => void;
     fullScreen?: boolean;
     onSwitchToUser?: () => void; // Optional for Admin only
+    onSwitchToAdmin?: () => void;
 }
 
 export const Layout: React.FC<LayoutProps> = ({
@@ -51,7 +52,8 @@ export const Layout: React.FC<LayoutProps> = ({
     showAddButton = true,
     onSearch,
     fullScreen = false,
-    onSwitchToUser
+    onSwitchToUser,
+    onSwitchToAdmin
 }) => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
     const isAdmin = role === 'admin';
@@ -76,6 +78,7 @@ export const Layout: React.FC<LayoutProps> = ({
                 collapsed={isSidebarCollapsed}
                 onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 onSwitchToUser={onSwitchToUser}
+                onSwitchToAdmin={onSwitchToAdmin}
             />
 
             {/* Main Content Area */}

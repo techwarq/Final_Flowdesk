@@ -443,12 +443,14 @@ fastify.get('/api/logs/errors', async (request, reply) => {
 });
 
 // Admin: Users
-import { getUsers, upsertUser, deleteUser } from './src/users.js';
+// Admin: Users
+// REMOVED local getUsers/upsertUser/deleteUser imports to enforce Cloud-only mode
 
 fastify.get('/api/admin/users', async (request, reply) => {
     const cloudUsers = await fetchCloudUsers();
+    // Strict Cloud Only: If cloud fetch fails (null), return empty or error, do NOT fallback to local
     if (cloudUsers) return cloudUsers;
-    return await getUsers();
+    return [];
 });
 
 fastify.post('/api/admin/users', async (request, reply) => {
@@ -490,8 +492,60 @@ fastify.delete('/api/admin/users/:username', async (request, reply) => {
     try {
         await deleteCloudUserFn(username);
         return { success: true, source: 'cloud' };
-    } catch (e) {
-        return { success: await deleteUser(username) };
+    } catch (e: any) {
+        // Strict Cloud Only: No fallback to local delete
+        return reply.status(500).send({ success: false, message: e.message });
+    }
+});
+
+fastify.post('/api/admin/accounts/clear-errors', async (request, reply) => {
+    // Auth check
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session || session.role !== 'admin') {
+        return reply.status(403).send({ success: false, message: 'Forbidden' });
+    }
+
+    try {
+        const data = await loadAccounts();
+        const errorAccounts = data.accounts.filter(a => a.status === 'Error');
+
+        let count = 0;
+        for (const acc of errorAccounts) {
+            await updateAccountStatus(acc.id, 'NeedsRefresh');
+            count++;
+        }
+
+        return { success: true, count, message: `Cleared errors for ${count} accounts.` };
+    } catch (e: any) {
+        return { success: false, message: e.message };
+    }
+});
+
+fastify.post('/api/admin/accounts/:id/reset', async (request, reply) => {
+    // Auth check
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session || session.role !== 'admin') {
+        return reply.status(403).send({ success: false, message: 'Forbidden' });
+    }
+
+    const { id } = request.params as { id: string };
+    const decodedId = decodeURIComponent(id);
+
+    try {
+        await updateAccountStatus(decodedId, 'NeedsRefresh');
+        return { success: true, message: `Account ${decodedId} reset.` };
+    } catch (e: any) {
+        return { success: false, message: e.message };
     }
 });
 

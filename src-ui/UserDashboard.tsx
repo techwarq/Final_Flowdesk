@@ -851,6 +851,7 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
                 showSearch={currentView !== 'browser_1' && currentView !== 'browser_2' && currentView !== 'browse' && currentView !== 'settings'}
                 showAddButton={currentView === 'id_portal' || currentView === 'dashboard'}
                 onSearch={setSearchQuery}
+                onSwitchToAdmin={onSwitchToAdmin}
             >
                 {renderContent()}
 

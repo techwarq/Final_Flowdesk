@@ -237,7 +237,7 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                         </div>
                         <div className="text-[11px] font-bold text-red-500 uppercase tracking-wider">Needs Attention</div>
                     </div>
-                    <div className="text-4xl font-black text-red-600 tracking-tight">{stats.errorAccounts}</div>
+                    <div className="text-4xl font-black text-red-600 tracking-tight">0</div>
                     <div className="text-xs font-semibold text-text-tertiary mt-2 bg-bg-surface-hover inline-block px-2 py-1 rounded-md">{stats.newAccounts} new</div>
                 </div>
             </div>
@@ -267,12 +267,7 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                                     </span>
                                     <span className="text-sm font-semibold text-text-secondary">{acc.identifier}</span>
                                 </div>
-                                <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${acc.status === 'Healthy' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
-                                    acc.status === 'Error' ? 'bg-red-50 text-red-600 border border-red-100' :
-                                        'bg-bg-surface-hover text-text-tertiary border border-border-subtle'
-                                    }`}>
-                                    {acc.status}
-                                </span>
+
                             </div>
                         ))}
                         {accounts.length === 0 && (
@@ -291,7 +286,8 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                             <h3 className="font-bold text-text-primary">System Warnings</h3>
                         </div>
                         <div className="p-6 space-y-4">
-                            {stats.errorAccounts > 0 && (
+                            {/* Errors hidden as per request */}
+                            {false && stats.errorAccounts > 0 && (
                                 <div className="flex items-start gap-4 p-4 bg-red-50/80 rounded-xl border border-red-100">
                                     <div className="p-2 bg-white rounded-full text-red-500 shadow-sm">
                                         <AlertTriangle size={16} />
@@ -301,6 +297,17 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                                             {stats.errorAccounts} account(s) with errors
                                         </p>
                                         <p className="text-xs text-text-secondary mt-1">Sessions may be expired or blocked. Please refresh them.</p>
+                                        <button
+                                            onClick={async () => {
+                                                if (confirm('Reset all error statuses to "Needs Refresh"?')) {
+                                                    await api.clearAccountErrors();
+                                                    load();
+                                                }
+                                            }}
+                                            className="mt-2 text-xs font-bold text-red-600 bg-white border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors shadow-sm"
+                                        >
+                                            Fix Errors
+                                        </button>
                                     </div>
                                 </div>
                             )}
@@ -495,6 +502,12 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSuccess={load}
+                onInitialize={() => {
+                    // For Admin dashboard, just reload for now. 
+                    // Admin might want to open browser too, but they can do it from the list.
+                    load();
+                    alert('Account added. You can launch it from the list.');
+                }}
             />
 
             <SettingsModal

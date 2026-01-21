@@ -167,6 +167,22 @@ export const api = {
         return res.json();
     },
 
+    clearAccountErrors: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/admin/accounts/clear-errors`, {
+            method: 'POST',
+            headers: getHeaders()
+        });
+        return res.json();
+    },
+
+    resetAccount: async (id: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/admin/accounts/${encodeURIComponent(id)}/reset`, {
+            method: 'POST',
+            headers: getHeaders()
+        });
+        return res.json();
+    },
+
     saveSettings: async (settings: any): Promise<any> => {
         const res = await fetch(`${API_BASE}/settings`, {
             method: 'POST',
