@@ -2,7 +2,7 @@ import { BrowserContext } from 'playwright';
 import fs from 'fs-extra';
 import path from 'path';
 import { DATA_DIR } from './config.js';
-import { pushCookies } from './cloud.js';
+import { pushCookies, fetchCookiesFromCloud } from './cloud.js';
 
 const COOKIES_DIR = path.join(DATA_DIR, 'cookies');
 
@@ -16,6 +16,27 @@ export async function ensureCookiesDir() {
 export function getCookieFilePath(accountId: string, platform: 'flipkart' | 'shopsy' = 'flipkart') {
     const id = accountId.toLowerCase().trim();
     return path.join(COOKIES_DIR, `${id}_${platform}.json`);
+}
+
+/**
+ * Load cookies from database first, falling back to local disk
+ * This is the preferred method for loading cookies.
+ */
+export async function loadCookiesFromDB(accountId: string, platform: 'flipkart' | 'shopsy' = 'flipkart') {
+    // Try cloud database first
+    try {
+        const dbCookies = await fetchCookiesFromCloud(accountId, platform);
+        if (dbCookies && dbCookies.length > 0) {
+            console.log(`[Cookies] Loaded ${dbCookies.length} cookies from DB for ${accountId}`);
+            return dbCookies;
+        }
+    } catch (e: any) {
+        console.warn(`[Cookies] DB fetch failed for ${accountId}, falling back to disk: ${e.message}`);
+    }
+
+    // Fallback to local disk
+    console.log(`[Cookies] No DB cookies found for ${accountId}, trying local disk...`);
+    return loadCookiesFromDisk(accountId, platform);
 }
 
 /**

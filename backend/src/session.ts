@@ -4,10 +4,11 @@ import fs from 'fs-extra';
 import { PROFILES_DIR } from './config.js';
 import { generateFingerprint } from './fingerprint.js';
 import logger, { getAccountLogger } from './log.js';
-import { loadCookiesFromDisk, extractAndSaveCookies, adaptCookiesForShopsy } from './cookies.js';
+import { loadCookiesFromDB, extractAndSaveCookies, adaptCookiesForShopsy } from './cookies.js';
 import { browsers } from './browserManager.js';
 import { pushCookies, fetchCookiesFromCloud, fetchLocalStorage, pushLocalStorage, getSupabase } from './cloud.js';
 import { loadLocalStorage, saveLocalStorage } from './localStorage.js';
+import { upsertAccount } from './accounts.js';
 
 export interface SessionOptions {
     accountId: string;
@@ -118,7 +119,7 @@ export async function openSession(options: SessionOptions) {
 
             if (cookies.length === 0) {
                 // Try local disk
-                cookies = await loadCookiesFromDisk(accountId, 'shopsy');
+                cookies = await loadCookiesFromDB(accountId, 'shopsy');
             }
 
             if (cookies.length === 0) {
@@ -129,7 +130,7 @@ export async function openSession(options: SessionOptions) {
                     log.info(`Adapted ${cookies.length} Flipkart cookies from cloud for Shopsy`);
                 } else {
                     // Final fallback: local Flipkart cookies
-                    const localFlipkart = await loadCookiesFromDisk(accountId, 'flipkart');
+                    const localFlipkart = await loadCookiesFromDB(accountId, 'flipkart');
                     if (localFlipkart.length > 0) {
                         cookies = adaptCookiesForShopsy(localFlipkart);
                         log.info(`Adapted ${cookies.length} local Flipkart cookies for Shopsy`);
@@ -146,7 +147,7 @@ export async function openSession(options: SessionOptions) {
 
             if (cookies.length === 0) {
                 // Fallback to local disk
-                cookies = await loadCookiesFromDisk(accountId, 'flipkart');
+                cookies = await loadCookiesFromDB(accountId, 'flipkart');
                 log.info(`Loaded ${cookies.length} Flipkart cookies from local disk (backend/data)`);
             } else {
                 log.info(`Loaded ${cookies.length} Flipkart cookies from cloud DB`);
@@ -296,6 +297,99 @@ export async function openSession(options: SessionOptions) {
 
     if (finalLoggedIn && !page.url().includes('/login')) {
         log.info(`[DEBUG-ANTIGRAVITY] PAGE STATE: LOGGED IN (Selector matched and URL=${page.url()})`);
+
+        // SCRAPE DETAILS
+        try {
+            log.info('Scraping account details...');
+            const details: any = {};
+
+            // 1. Try Header Name (Works on any page)
+            const headerName = await page.locator('._28p97w, ._10Ermr, .exehdJ').first().textContent().catch(() => null);
+            if (headerName) details.name = headerName.trim();
+
+            // 2. If on Account Page, try inputs
+            if (page.url().includes('/account')) {
+                const fname = await page.inputValue('input[name="firstName"]').catch(() => '');
+                const lname = await page.inputValue('input[name="lastName"]').catch(() => '');
+                if (fname) details.name = `${fname} ${lname}`.trim();
+
+                const mobile = await page.inputValue('input[name="mobileNumber"]').catch(() => '');
+                if (mobile) details.mobile = mobile;
+
+                const email = await page.inputValue('input[name="email"]').catch(() => '');
+                if (email) details.email = email;
+            }
+
+            // 3. Scrape Orders (in background page to avoid disturbing user)
+            try {
+                log.info('Starting background order scrape...');
+                const orderPage = await context.newPage();
+                await orderPage.goto('https://www.flipkart.com/account/orders', { waitUntil: 'domcontentloaded' });
+
+                // Wait for order list
+                try {
+                    await orderPage.waitForSelector('.AO0Ooo, ._2aFisS, .OhP-7q', { timeout: 5000 });
+                } catch (e) {
+                    log.info('No orders found or timeout waiting for selector');
+                }
+
+                // Scrape logic
+                const orders = await orderPage.evaluate(() => {
+                    const items = document.querySelectorAll('a._2aFisS, div.AO0Ooo a, a.OhP-7q'); // Common order item selectors
+                    const results: any[] = [];
+
+                    items.forEach((item) => {
+                        // Attempt to find fields
+                        const nameEl = item.querySelector('.KzDlHZ, ._213eRC, div[class*="product-name"]');
+                        const priceEl = item.querySelector('._30jeq3, div[class*="price"]');
+                        const statusEl = item.querySelector('.d-qwWO, ._35O681, div[class*="status"]'); // Status text
+                        const imgEl = item.querySelector('img');
+
+                        // Order ID often in URL or difficult to find in list view, might need to parse href
+                        const href = item.getAttribute('href') || '';
+                        const urlParams = new URLSearchParams(href.split('?')[1]);
+                        const orderId = urlParams.get('order_id') || href.split('order_id=')[1]?.split('&')[0] || '';
+
+                        if (nameEl) {
+                            results.push({
+                                orderId: orderId,
+                                productName: nameEl.textContent?.trim() || '',
+                                price: priceEl?.textContent?.trim() || '',
+                                status: statusEl?.textContent?.trim() || '',
+                                deliveryDate: '', // detailed status usually has date
+                                imageUrl: imgEl?.src || '',
+                                orderUrl: href.startsWith('/') ? `https://www.flipkart.com${href}` : href
+                            });
+                        }
+                    });
+                    return results.slice(0, 10); // Limit to last 10
+                });
+
+                log.info(`Scraped ${orders.length} orders.`);
+                if (orders.length > 0) {
+                    details.orders = orders;
+                }
+
+                await orderPage.close();
+            } catch (e: any) {
+                log.warn(`Failed to scrape orders: ${e.message}`);
+                // Try to close if open
+                try { (await context.pages().find(p => p.url().includes('orders')))?.close(); } catch { }
+            }
+
+            if (Object.keys(details).length > 0) {
+                log.info(`Scraped details with orders: ${JSON.stringify(details).substring(0, 100)}...`);
+                // Update Account
+                await upsertAccount({
+                    id: accountId,
+                    platform: platform,
+                    details: details,
+                    orders: details.orders // Save explicitly
+                });
+            }
+        } catch (e: any) {
+            log.warn(`Failed to scrape details: ${e.message}`);
+        }
     } else {
         log.info(`[DEBUG-ANTIGRAVITY] PAGE STATE: LOGGED OUT (URL=${page.url()})`);
 

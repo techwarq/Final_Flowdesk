@@ -2,5 +2,6 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
     // Add API functions here if needed
-    // For now, the app uses http calls to localhost
+    sendAppReady: () => ipcRenderer.send('app-ready'),
+    setCookies: (partition, cookies) => ipcRenderer.send('set-cookies', { partition, cookies })
 });

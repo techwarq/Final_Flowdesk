@@ -16,11 +16,26 @@
       "identifier": "GaneshKulkarni15@emobilee.com",
       "status": "Error",
       "createdAt": "2026-01-15T13:13:59.300Z",
-      "updatedAt": "2026-01-15T13:14:08.121Z",
+      "updatedAt": "2026-01-21T19:48:46.619Z",
       "id": "ganeshkulkarni15@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "GaneshKulkarni15@emobilee.com",
-      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/ganeshkulkarni15@emobilee.com/userDataDir/RunningChromeVersion'"
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/ganeshkulkarni15@emobilee.com/userDataDir/RunningChromeVersion'",
+      "details": {
+        "gvBalance": "₹0"
+      },
+      "orders": [
+        {
+          "orderId": "gen_2_More_Items_275_3 Delivered",
+          "productName": "2 More Items",
+          "price": "₹275",
+          "status": "3 Delivered",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/noodle/s/h/q/-original-imahc7g4dd23x9jm.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": ""
+        }
+      ]
     },
     {
       "loginType": "email",
@@ -39,12 +54,27 @@
       "identifier": "DineshPandey17@emobilee.com",
       "status": "Error",
       "createdAt": "2026-01-15T15:44:34.834Z",
-      "updatedAt": "2026-01-15T15:44:52.458Z",
+      "updatedAt": "2026-01-21T19:49:02.855Z",
       "id": "dineshpandey17@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "DineshPandey17@emobilee.com",
       "userId": "fc42f086-ede9-42c1-aa23-5dcdd5fa22d1",
-      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/dineshpandey17@emobilee.com/userDataDir/RunningChromeVersion'"
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/dineshpandey17@emobilee.com/userDataDir/RunningChromeVersion'",
+      "orders": [
+        {
+          "orderId": "gen_4_More_Items_276_5 Delivered",
+          "productName": "4 More Items",
+          "price": "₹276",
+          "status": "5 Delivered",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/chocolate/o/4/m/-original-imahjjwfgzxsvrtw.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": ""
+        }
+      ],
+      "details": {
+        "gvBalance": "₹0"
+      }
     },
     {
       "loginType": "email",
@@ -57,6 +87,270 @@
       "assignedTo": "SureshIyer13@emobilee.com",
       "userId": "3dc36b93-9f8c-4e26-9f26-025b78b8b661",
       "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/sureshiyer13@emobilee.com/userDataDir/RunningChromeVersion'"
+    },
+    {
+      "loginType": "email",
+      "identifier": "sunil806upadhyay@emobilee.com",
+      "status": "Error",
+      "createdAt": "2026-01-19T09:03:35.249Z",
+      "updatedAt": "2026-01-21T19:49:19.985Z",
+      "id": "sunil806upadhyay@emobilee.com",
+      "platform": "flipkart",
+      "assignedTo": "sunil806upadhyay@emobilee.com",
+      "userId": "fc42f086-ede9-42c1-aa23-5dcdd5fa22d1",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/Downloads/flowdesk/backend/data/profiles/flipkart/sunil806upadhyay@emobilee.com/userDataDir/RunningChromeVersion'",
+      "orders": [
+        {
+          "orderId": "OD436561239670613100",
+          "productName": "OnePlus Nord Buds 3r TWS Earbud, 10min c...",
+          "price": "₹1,518",
+          "status": "Delivery expected by Sat Jan 24",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/headphone/7/n/o/-original-imahfsg7chmgrugu.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD436561239670613100&item_id=436561239670613100&unit_id=436561239670613100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD125070937550702000",
+          "productName": "Kriti shared this order with you.",
+          "price": "₹288",
+          "status": "You returned this order because the quality was not as expected.",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/ki4w0i80-0/sling-bag/n/b/i/women-s-girls-sling-bag-roll-sl0708roll-sling-bag-astir-colleen-original-imafyyfs5j673sn4.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD125070937550702000&item_id=12507093755070200&unit_id=12507093755070200000&share_token=SH22053001301197843297.D08966F1A9B9D14E46D8F1D6296F4D32ECB57D4B",
+          "otp": ""
+        },
+        {
+          "orderId": "OD225048376660078000",
+          "productName": "MEGHDOOT Satreetha Shampoo 500ml (Pack o...",
+          "price": "₹145",
+          "status": "Delivered on May 31, 2022",
+          "deliveryDate": "May 31, 2022",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/shampoo/q/n/g/400-ayurvedic-satreetha-shampoo-for-dandruff-and-scalp-acne-original-imahek2zg9cje6qx.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD225048376660078000&item_id=22504837666007800&unit_id=22504837666007800000",
+          "otp": ""
+        }
+      ],
+      "details": {
+        "gvBalance": "₹50"
+      }
+    },
+    {
+      "loginType": "mobile",
+      "identifier": "8895660698",
+      "status": "Error",
+      "createdAt": "2026-01-21T17:49:23.764Z",
+      "updatedAt": "2026-01-21T19:49:35.118Z",
+      "id": "sonalinayak0804@gmail.com",
+      "platform": "flipkart",
+      "assignedTo": "Sonali",
+      "userId": "3dc36b93-9f8c-4e26-9f26-025b78b8b661",
+      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/Downloads/flowdesk/backend/data/profiles/flipkart/sonalinayak0804@gmail.com/userDataDir/RunningChromeVersion'",
+      "details": {
+        "gvBalance": "₹0"
+      },
+      "orders": [
+        {
+          "orderId": "OD435550287133069100",
+          "productName": "MILTON Plastic Utility Container - 750 ...",
+          "price": "₹190",
+          "status": "Delivered on Sep 27, 2025",
+          "deliveryDate": "Sep 27, 2025",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/container/s/t/t/3-ej066trsp0001-milton-original-imahaxzue3b6adnn.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD435550287133069100&item_id=435550287133069100&unit_id=435550287133069100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD434323460273409100",
+          "productName": "Alexa Plastic Grocery Container - 1200 ...",
+          "price": "₹756",
+          "status": "Delivered on May 12, 2025",
+          "deliveryDate": "May 12, 2025",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/container/t/7/k/12-square-12-black-alexa-original-imah734tqng7rszt.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD434323460273409100&item_id=434323460273409100&unit_id=434323460273409100000",
+          "otp": ""
+        },
+        {
+          "orderId": "gen_3_More_Items_1702_4 Delivered",
+          "productName": "3 More Items",
+          "price": "₹1,702",
+          "status": "4 Delivered",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/cleanser/b/j/y/-original-imahcqarbzc6nqfa.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/account/orders",
+          "otp": ""
+        },
+        {
+          "orderId": "OD431359669724214100",
+          "productName": "SAMSUNG Galaxy F34 5G (Mystic Green, 128...",
+          "price": "₹13,058",
+          "status": "Delivered on May 27, 2024",
+          "deliveryDate": "May 27, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/mobile/n/w/e/-original-imagtyw9fdfnsune.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD431359669724214100&item_id=431359669724214100&unit_id=431359669724214100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD431238132528172100",
+          "productName": "Fastrack Pulse I Analog Watch - For Wom...",
+          "price": "₹3,060",
+          "status": "Delivered on May 14, 2024",
+          "deliveryDate": "May 14, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/watch/o/h/w/-original-imahexnhfskgxcjs.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD431238132528172100&item_id=431238132528172100&unit_id=431238132528172100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD430979748116618100",
+          "productName": "Optimus Plastic Grocery Container - 300...",
+          "price": "₹504",
+          "status": "Delivered on Apr 20, 2024",
+          "deliveryDate": "Apr 20, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/keg02a80/container/h/m/j/con-pizza-pink12-sedulous-original-imafv469smedt3sh.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430979748116618100&item_id=430979748116618100&unit_id=430979748116618100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD430711532049820100",
+          "productName": "rudrama Women Kurta Pant Dupatta Set",
+          "price": "₹654",
+          "status": "Delivered on Mar 17, 2024",
+          "deliveryDate": "Mar 17, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/ethnic-set/w/p/l/xl-rd-new-style-women-rayon-kurta-pant-with-dupatta-rudrama-original-imagy3qqertbtzhp.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430711532049820100&item_id=430711532049820100&unit_id=430711532049820100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD430569476671566100",
+          "productName": "Sandeep Enterprises Women Kurta Pant Set",
+          "price": "₹554",
+          "status": "Delivered on Feb 29, 2024",
+          "deliveryDate": "Feb 29, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/ethnic-set/r/f/m/l-kurtiwith-pants-sandeep-enterprises-original-imagtdpxrjct52mp.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430569476671566100&item_id=430569476671566100&unit_id=430569476671566100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD430518698440122100",
+          "productName": "Somapah Women Kurta Palazzo Set",
+          "price": "₹655",
+          "status": "Delivered on Feb 24, 2024",
+          "deliveryDate": "Feb 24, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/ethnic-set/h/0/7/m-co-ord-set-somapah-original-imagu5cppxtashhu.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430518698440122100&item_id=430518698440122100&unit_id=430518698440122100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD430483495020859100",
+          "productName": "Tokyo Talkies Full Sleeve Printed Women ...",
+          "price": "₹399",
+          "status": "Delivered on Feb 19, 2024",
+          "deliveryDate": "Feb 19, 2024",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/sweatshirt/o/v/m/s-ttss001309-tokyo-talkies-original-imagwam7fuecezfz.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD430483495020859100&item_id=430483495020859100&unit_id=430483495020859100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD429502598836367100",
+          "productName": "Wings Phantom 315 Earbuds with 40 hrs Ba...",
+          "price": "₹709",
+          "status": "Delivered on Oct 26, 2023",
+          "deliveryDate": "Oct 26, 2023",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/headphone/z/b/s/315-wings-original-imahgcchqhtr87z3.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD429502598836367100&item_id=429502598836367100&unit_id=429502598836367100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD429424057495424100",
+          "productName": "SAMSUNG Watch 4 Classic LTE 46mm Super A...",
+          "price": "₹10,300",
+          "status": "Delivered on Oct 17, 2023",
+          "deliveryDate": "Oct 17, 2023",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/smartwatch/4/r/y/-original-imagxp8vvheu76xg.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD429424057495424100&item_id=429424057495424100&unit_id=429424057495424100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD427437472832397100",
+          "productName": "DIVINE 36 Pair Mix Design Earrings with ...",
+          "price": "₹299",
+          "status": "Delivered on Mar 04, 2023",
+          "deliveryDate": "Mar 04, 2023",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kzygpzk0/earring/m/q/m/na-combo-pack-set-of-36-pair-multicolor-colorful-mix-design-original-imagbukyg4pgmurj.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD427437472832397100&item_id=427437472832397100&unit_id=427437472832397100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD225838593517237000",
+          "productName": "Syska 10000 mAh Power Bank",
+          "price": "₹799",
+          "status": "Delivered on Sep 05, 2022",
+          "deliveryDate": "Sep 05, 2022",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kmp7ngw0/power-bank/e/v/y/power-pocket-100-10000-p1016b-bk-syska-original-imagfjh3xgh6dgdb.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD225838593517237000&item_id=22583859351723700&unit_id=22583859351723700000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD224153955342737000",
+          "productName": "realme C25_Y (Metal Grey, 64 GB)",
+          "price": "₹9,499",
+          "status": "Delivered on Feb 15, 2022",
+          "deliveryDate": "Feb 15, 2022",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kwgpz0w0/mobile/c/6/l/-original-imag95yfawvtzbdw.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD224153955342737000&item_id=22415395534273700&unit_id=22415395534273700000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD223010020253624000",
+          "productName": "Boult Audio AirBass ENCore with Environm...",
+          "price": "₹1,799",
+          "status": "Delivered on Oct 08, 2021",
+          "deliveryDate": "Oct 08, 2021",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kthjy4w0/headphone/d/6/m/airbass-encore-boult-audio-original-imag6tjfvw7yc7u5.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD223010020253624000&item_id=22301002025362400&unit_id=22301002025362400000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD222974448433081000",
+          "productName": "MOCA Front & Back Case for (PU Leather S...",
+          "price": "₹1,599",
+          "status": "Delivered on Oct 03, 2021",
+          "deliveryDate": "Oct 03, 2021",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/ken59jk0/cases-covers/front-back-case/x/x/y/moca-2020pro-pu-aqua-original-imafv9c5g3mf4e3h.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD222974448433081000&item_id=22297444843308100&unit_id=22297444843308100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD120015666814020000",
+          "productName": "IFB 23 L Convection Microwave Oven",
+          "price": "₹8,642",
+          "status": "Delivered on Nov 01, 2020",
+          "deliveryDate": "Nov 01, 2020",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/microwave-new/s/x/b/-original-imahd82ez72afreh.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD120015666814020000&item_id=12001566681402000&unit_id=12001566681402000000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD119730321694841000",
+          "productName": "Unravel India HWHU0278 2 Piece Spice Set",
+          "price": "₹664",
+          "status": "Delivered on Sep 23, 2020",
+          "deliveryDate": "Sep 23, 2020",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/kruyw7k0/condiment-set/z/n/3/hwhu0278-unravel-india-original-imag5kybqheevupw.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD119730321694841000&item_id=11973032169484100&unit_id=11973032169484100000",
+          "otp": ""
+        },
+        {
+          "orderId": "OD119624618367040000",
+          "productName": "Mezenor PREMIUM QUALITY SHIFFON RUBBER B...",
+          "price": "₹249",
+          "status": "Delivered on Sep 14, 2020",
+          "deliveryDate": "Sep 14, 2020",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/hair-accessory/k/n/d/-original-imahyjf6hbufnsvm.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD119624618367040000&item_id=11962461836704000&unit_id=11962461836704000000",
+          "otp": ""
+        }
+      ]
     }
   ]
 }

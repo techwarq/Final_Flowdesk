@@ -1,6 +1,20 @@
 import React from 'react';
 
-export type Platform = 'flipkart' | 'shopsy';
+export type Platform =
+    | 'flipkart'
+    | 'shopsy'
+    | 'amazon'
+    | 'blinkit'
+    | 'reliance'
+    | 'vivo'
+    | 'oppo'
+    | 'redmi'
+    | 'realme'
+    | 'samsung'
+    | 'zepto'
+    | 'vijaysales'
+    | 'oneplus'
+    | 'iqoo';
 export type LoginType = 'email' | 'mobile';
 export type AccountStatus =
     | 'New'
@@ -11,6 +25,20 @@ export type AccountStatus =
     | 'Error';
 
 export type UserRole = 'admin' | 'staff' | 'user';
+
+export interface Order {
+    orderId: string;
+    productName: string;
+    status: string;
+    deliveryDate: string;
+    imageUrl?: string;
+    price?: string;
+    orderUrl: string;
+    otp?: string;
+    receiverName?: string;
+    trackingId?: string;
+    deliveryDetails?: string;
+}
 
 export interface Account {
     id: string;
@@ -24,6 +52,11 @@ export interface Account {
     errorCode?: string;
     createdAt: string;
     updatedAt: string;
+    orders?: Order[];
+    details?: {
+        gvBalance?: string;
+        [key: string]: any;
+    };
 }
 
 export interface UserProfile {
