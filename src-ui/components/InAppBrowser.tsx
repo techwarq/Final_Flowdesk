@@ -33,6 +33,7 @@ interface InAppBrowserProps {
     savedAccounts: Account[];
     onClose: () => void;
     onAddAccount?: () => void;
+    launchTarget?: { accountId: string; platform: Platform } | null;
 }
 
 const START_URL = 'about:blank';
@@ -74,13 +75,23 @@ const groupAccountsByPlatform = (accounts: Account[]) => {
     return grouped;
 };
 
-export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClose }) => {
+export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClose, launchTarget }) => {
 
     const [tabs, setTabs] = useState<BrowserTab[]>([
         { id: 'start', title: 'New Tab', url: START_URL, initialUrl: START_URL, loading: false }
     ]);
     const [activeTabId, setActiveTabId] = useState<string>('start');
     const [urlInput, setUrlInput] = useState('');
+
+    // Handle Launch Target (Auto-open tab)
+    useEffect(() => {
+        if (launchTarget) {
+            const acc = savedAccounts.find(a => a.id === launchTarget.accountId);
+            if (acc) {
+                createNewTab(acc, launchTarget.platform);
+            }
+        }
+    }, [launchTarget]);
 
     // UI State for New Tab Page
     const [expandedPlatforms, setExpandedPlatforms] = useState<Record<string, boolean>>({});
@@ -163,14 +174,78 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
     }, [tabs]); // Re-bind when tabs change (e.g. new tab added)
 
     const checkIP = async (tabId: string) => {
-        try {
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            updateTab(tabId, { actualIp: data.ip });
-        } catch (e) {
-            updateTab(tabId, { actualIp: 'Check Failed' });
+        const tab = tabs.find(t => t.id === tabId);
+        if (!tab || !tab.accountId) return;
+
+        updateTab(tabId, { actualIp: 'Checking...' });
+        console.log(`[InAppBrowser] Checking IP for tab ${tabId} (Partition: ${tab.partition})`);
+
+        // Request IP check from Main process
+        if ((window as any).electron && (window as any).electron.getIpInfo) {
+            console.log(`[InAppBrowser] Sending get-ip-info IPC for ${tab.partition}`);
+            (window as any).electron.getIpInfo(tab.partition);
+        } else {
+            console.log('[InAppBrowser] Electron not found, using fallback');
+            // Fallback for dev/browser without electron
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                updateTab(tabId, { actualIp: data.ip + ' (Local)' });
+            } catch (e) {
+                updateTab(tabId, { actualIp: 'Check Failed' });
+            }
         }
     };
+
+    // Listen for IP Code Result
+    useEffect(() => {
+        if (!(window as any).electron) return;
+
+        const handleIpResult = (_: any, data: { partition: string, ip?: string, error?: string }) => {
+            console.log(`[InAppBrowser] IP Result received for ${data.partition}:`, data);
+            setTabs(prev => prev.map(t => {
+                if (t.partition === data.partition) {
+                    return { ...t, actualIp: data.ip || 'Error' };
+                }
+                return t;
+            }));
+        };
+
+        const removeListener = (window as any).electron.on('ip-info-result', handleIpResult);
+        return () => { if (removeListener) removeListener(); };
+    }, []); // Empty dependency array to prevent listener flapping
+
+    // Listen for open-url-in-tab from main process (intercepted window.open / target="_blank")
+    useEffect(() => {
+        if (!(window as any).electron) return;
+
+        const handleOpenUrl = (_: any, data: { url: string }) => {
+            console.log(`[InAppBrowser] Received open-url-in-tab:`, data.url);
+
+            // Find active tab to inherit partition (session)
+            const currentTab = tabs.find(t => t.id === activeTabId);
+
+            if (data.url && data.url !== 'about:blank') {
+                const newTabId = `tab-${Date.now()}`;
+                const newTab: BrowserTab = {
+                    id: newTabId,
+                    title: 'Loading...',
+                    url: data.url,
+                    initialUrl: data.url,
+                    loading: true,
+                    partition: currentTab?.partition, // Inherit session from current tab
+                    accountId: currentTab?.accountId,
+                    platform: currentTab?.platform,
+                    actualIp: currentTab?.actualIp
+                };
+                setTabs(prev => [...prev, newTab]);
+                setActiveTabId(newTabId);
+            }
+        };
+
+        const removeListener = (window as any).electron.on('open-url-in-tab', handleOpenUrl);
+        return () => { if (removeListener) removeListener(); };
+    }, [tabs, activeTabId]); // Depend on tabs and activeTabId to get current session
 
     const createNewTab = async (account?: Account, platform?: Platform) => {
         const newTabId = `tab-${Date.now()}`;
@@ -180,9 +255,28 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
         if (isSpecificSession && account) {
             partition = `persist:${account.id}`;
 
-            // Inject cookies before opening functionality
+            // Open with current assigned proxy (no rotation prompt)
+            // User can rotate IP using the dedicated button in header
+
+            // Inject cookies & PROXY before opening functionality
             if ((window as any).electron && platform) {
                 try {
+                    // 1. Get Proxy
+                    try {
+                        const proxyRes = await api.get<{ success: boolean; proxy: string | null }>(`/accounts/${account.id}/proxy`);
+                        if (proxyRes.data.success && proxyRes.data.proxy) {
+                            const proxyHost = proxyRes.data.proxy.split('@')[1] || proxyRes.data.proxy;
+                            console.log(`%c[InAppBrowser] 🌐 PROXY SET for ${partition}: ${proxyHost}`, 'color: cyan; font-weight: bold; font-size: 14px');
+                            (window as any).electron.setProxy(partition, proxyRes.data.proxy);
+                        } else {
+                            console.log(`%c[InAppBrowser] ⚠️ No proxy assigned for ${partition} - using direct connection`, 'color: orange');
+                            (window as any).electron.setProxy(partition, "");
+                        }
+                    } catch (e) {
+                        console.error('Failed to fetch proxy settings', e);
+                    }
+
+                    // 2. Cookies
                     const cookies = await api.getCookies(account.id, platform);
                     if (cookies && cookies.length > 0) {
                         console.log(`[InAppBrowser] Injecting ${cookies.length} cookies for ${partition}`);
@@ -191,7 +285,7 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
                         await new Promise(r => setTimeout(r, 200));
                     }
                 } catch (e) {
-                    console.error('[InAppBrowser] Failed to inject cookies:', e);
+                    console.error('[InAppBrowser] Failed to inject session data:', e);
                 }
             }
         }
@@ -298,6 +392,55 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
                             <span className="text-[10px] font-bold font-mono">{activeTab.actualIp}</span>
                         </div>
                     )}
+
+                    {/* Rotate IP Button */}
+                    {activeTab?.accountId && (
+                        <button
+                            onClick={async () => {
+                                try {
+                                    console.log('%c[InAppBrowser] 🔄 Rotating IP...', 'color: magenta; font-weight: bold');
+
+                                    // 1. Rotate Offset
+                                    await api.post(`/accounts/${activeTab.accountId}/rotate-ip`, { skipLaunch: true });
+
+                                    // 2. Set New Proxy
+                                    if ((window as any).electron && activeTab.partition) {
+                                        const proxyRes = await api.get<{ success: boolean; proxy: string | null }>(`/accounts/${activeTab.accountId}/proxy`);
+                                        if (proxyRes.data.success && proxyRes.data.proxy) {
+                                            const proxyHost = proxyRes.data.proxy.split('@')[1] || proxyRes.data.proxy;
+                                            console.log(`%c[InAppBrowser] 🌐 NEW PROXY: ${proxyHost}`, 'color: lime; font-weight: bold; font-size: 14px');
+                                            (window as any).electron.setProxy(activeTab.partition, proxyRes.data.proxy);
+                                        } else {
+                                            console.log('%c[InAppBrowser] ⚠️ No proxy - using direct connection', 'color: orange');
+                                            (window as any).electron.setProxy(activeTab.partition, "");
+                                        }
+                                    }
+
+                                    // 3. Reload
+                                    webviewRefs.current[activeTabId]?.reload();
+
+                                    // 4. Check IP again
+                                    updateTab(activeTabId, { actualIp: 'Rotating...' });
+                                    const partition = activeTab.partition;
+                                    setTimeout(() => {
+                                        if ((window as any).electron && partition) {
+                                            console.log(`[InAppBrowser] Checking new IP for ${partition}...`);
+                                            (window as any).electron.getIpInfo(partition);
+                                        }
+                                    }, 3000);
+
+                                } catch (e) {
+                                    console.error('[InAppBrowser] Rotation failed:', e);
+                                }
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors font-semibold text-xs"
+                            title="Rotate to a new IP address"
+                        >
+                            <RefreshCw size={14} />
+                            <span>Rotate IP</span>
+                        </button>
+                    )}
+
                     <button onClick={onClose} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-lg transition-colors"><LogOut size={18} /></button>
                 </div>
             </div>
@@ -363,42 +506,54 @@ export const InAppBrowser: React.FC<InAppBrowserProps> = ({ savedAccounts, onClo
 
                                     {/* Accounts List (Tree View style) */}
                                     <div className="bg-white border border-slate-100 rounded-3xl shadow-float overflow-hidden">
-                                        {platforms.map(platform => (
-                                            <div key={platform} className="border-b border-slate-50 last:border-none">
-                                                <button
-                                                    onClick={() => togglePlatform(platform)}
-                                                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors text-left"
-                                                >
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100">
-                                                            <GenericPlatformIcon name={platform} className="w-5 h-5" />
-                                                        </div>
-                                                        <span className="font-bold text-slate-900 capitalize">{platform}</span>
-                                                        <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-md">{groupedAccounts[platform].length}</span>
-                                                    </div>
-                                                    <ChevronDown size={16} className={`text-slate-400 transition-transform ${expandedPlatforms[platform] ? 'rotate-180' : ''}`} />
-                                                </button>
+                                        {platforms.map(platform => {
+                                            // Filter accounts by search term
+                                            const filteredAccounts = groupedAccounts[platform].filter(acc =>
+                                                searchTerm.trim() === '' ||
+                                                acc.identifier.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                acc.id.toLowerCase().includes(searchTerm.toLowerCase())
+                                            );
 
-                                                {/* Accounts Inside */}
-                                                {expandedPlatforms[platform] && (
-                                                    <div className="bg-slate-50/50 px-6 py-2 space-y-1 border-t border-slate-50">
-                                                        {groupedAccounts[platform].map(acc => (
-                                                            <button
-                                                                key={acc.id}
-                                                                onClick={() => createNewTab(acc, acc.platform)}
-                                                                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-100 transition-all text-left group"
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                                                                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{acc.identifier}</span>
-                                                                </div>
-                                                                <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-900 opacity-0 group-hover:opacity-100 transition-all" />
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
+                                            // Don't show platform if no matching accounts
+                                            if (filteredAccounts.length === 0) return null;
+
+                                            return (
+                                                <div key={platform} className="border-b border-slate-50 last:border-none">
+                                                    <button
+                                                        onClick={() => togglePlatform(platform)}
+                                                        className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors text-left"
+                                                    >
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100">
+                                                                <GenericPlatformIcon name={platform} className="w-5 h-5" />
+                                                            </div>
+                                                            <span className="font-bold text-slate-900 capitalize">{platform}</span>
+                                                            <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-md">{filteredAccounts.length}</span>
+                                                        </div>
+                                                        <ChevronDown size={16} className={`text-slate-400 transition-transform ${expandedPlatforms[platform] ? 'rotate-180' : ''}`} />
+                                                    </button>
+
+                                                    {/* Accounts Inside */}
+                                                    {expandedPlatforms[platform] && (
+                                                        <div className="bg-slate-50/50 px-6 py-2 space-y-1 border-t border-slate-50">
+                                                            {filteredAccounts.map(acc => (
+                                                                <button
+                                                                    key={acc.id}
+                                                                    onClick={() => createNewTab(acc, acc.platform)}
+                                                                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-100 transition-all text-left group"
+                                                                >
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                                                                        <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{acc.identifier}</span>
+                                                                    </div>
+                                                                    <ArrowRight size={14} className="text-slate-300 group-hover:text-slate-900 opacity-0 group-hover:opacity-100 transition-all" />
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
 
                                         {savedAccounts.length === 0 && (
                                             <div className="p-8 text-center text-slate-400 text-sm">No accounts found. Add one from the Dashboard.</div>

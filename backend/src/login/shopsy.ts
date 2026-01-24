@@ -10,6 +10,7 @@ import { injectFlipkartCookiesIntoShopsy } from '../cookies.js';
 import { updateLastLogin, updateAccountStatus } from '../accounts.js';
 import { browsers } from '../browserManager.js';
 import { pushCookies } from '../cloud.js';
+import { getProxyForAccount } from '../proxy.js';
 
 export interface LoginOptions {
     accountId: string;
@@ -39,6 +40,12 @@ export async function loginShopsy(options: LoginOptions) {
         }
     } catch (err) { }
 
+    // Get Proxy
+    const proxyConfig = await getProxyForAccount(accountId);
+    if (proxyConfig) {
+        log.info(`Using proxy for ${accountId}: ${proxyConfig.server}`);
+    }
+
     try {
         context = await chromium.launchPersistentContext(profilePath, {
             headless: headless,
@@ -48,6 +55,7 @@ export async function loginShopsy(options: LoginOptions) {
             locale: fingerprint.locale,
             timezoneId: fingerprint.timezoneId,
             permissions: ['geolocation', 'notifications'],
+            proxy: proxyConfig, // Inject proxy
             args: [
                 '--disable-blink-features=AutomationControlled',
                 '--no-sandbox',
@@ -74,6 +82,7 @@ export async function loginShopsy(options: LoginOptions) {
                 locale: fingerprint.locale,
                 timezoneId: fingerprint.timezoneId,
                 permissions: ['geolocation', 'notifications'],
+                proxy: proxyConfig, // Inject proxy
                 args: [
                     '--disable-blink-features=AutomationControlled',
                     '--no-sandbox',
@@ -148,8 +157,8 @@ export async function loginShopsy(options: LoginOptions) {
 
         // Wait for typical "My Account" or "Profile" indicator on mobile
         await Promise.race([
-            page.waitForURL(/.*\/account.*/, { timeout: 180000 }), // Navigate to account page
-            page.waitForSelector('text=My Orders', { timeout: 180000 })
+            page.waitForURL(/.*\/account.*/, { timeout: 300000 }), // 5 minutes
+            page.waitForSelector('text=My Orders', { timeout: 300000 })
         ]);
 
         log.info('Login detected successfully!');

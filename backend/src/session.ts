@@ -9,6 +9,8 @@ import { browsers } from './browserManager.js';
 import { pushCookies, fetchCookiesFromCloud, fetchLocalStorage, pushLocalStorage, getSupabase } from './cloud.js';
 import { loadLocalStorage, saveLocalStorage } from './localStorage.js';
 import { upsertAccount } from './accounts.js';
+import { getProxyForAccount } from './proxy.js';
+import { injectOverlay } from './overlay.js';
 
 export interface SessionOptions {
     accountId: string;
@@ -58,6 +60,13 @@ export async function openSession(options: SessionOptions) {
 
     let context: BrowserContext;
 
+    // Get Proxy
+    const proxyConfig = await getProxyForAccount(accountId);
+    if (proxyConfig) {
+        log.info(`Using proxy for session ${accountId}: ${proxyConfig.server}`);
+        console.log(`[Session] Using proxy: ${proxyConfig.server}`);
+    }
+
     try {
         log.info(`[DEBUG-ANTIGRAVITY] Launching with UA: ${fingerprint.userAgent}`);
 
@@ -70,6 +79,7 @@ export async function openSession(options: SessionOptions) {
             userAgent: fingerprint.userAgent, // Ensure this is a Desktop UA from fingerprint.ts
             locale: fingerprint.locale,
             timezoneId: fingerprint.timezoneId,
+            proxy: proxyConfig, // Inject Proxy
             args: [
                 '--disable-blink-features=AutomationControlled',
                 '--no-sandbox',
@@ -95,6 +105,7 @@ export async function openSession(options: SessionOptions) {
                 userAgent: fingerprint.userAgent,
                 locale: fingerprint.locale,
                 timezoneId: fingerprint.timezoneId,
+                proxy: proxyConfig, // Inject Proxy
                 args: [
                     '--disable-blink-features=AutomationControlled',
                     '--no-sandbox',
@@ -240,8 +251,64 @@ export async function openSession(options: SessionOptions) {
             }, lsData);
         }
     } catch (e: any) {
-        log.warn(`Failed to inject Local Storage: ${e.message}`);
+        log.warn(`[Session] LS injection failed: ${e.message}`);
     }
+
+    // Inject Overlay for IP Rotation (Context-wide)
+    // We rewrite injectOverlay logic here for Context since original tool takes Page
+    await context.addInitScript(({ platform, id }) => {
+        const initOverlay = () => {
+            const container = document.createElement('div');
+            container.id = 'fsa-overlay-ctx';
+            Object.assign(container.style, {
+                position: 'fixed', top: '10px', right: '10px', zIndex: '2147483647',
+                display: 'flex', gap: '10px', fontFamily: 'system-ui, sans-serif', pointerEvents: 'none'
+            });
+
+            const createBtn = (text, url, color) => {
+                const btn = document.createElement('a');
+                btn.href = url;
+                btn.target = '_blank';
+                btn.textContent = text;
+                Object.assign(btn.style, {
+                    display: 'inline-block', padding: '8px 16px', backgroundColor: color, color: 'white',
+                    textDecoration: 'none', borderRadius: '20px', fontSize: '14px', fontWeight: 'bold',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)', cursor: 'pointer', pointerEvents: 'auto', transition: 'transform 0.2s'
+                });
+                btn.onmouseover = () => { btn.style.transform = 'scale(1.05)'; };
+                btn.onmouseout = () => { btn.style.transform = 'scale(1)'; };
+                return btn;
+            };
+
+            if (platform === 'shopsy') {
+                container.appendChild(createBtn('Open Flipkart', 'https://www.flipkart.com', '#2874f0'));
+            } else {
+                container.appendChild(createBtn('Open Shopsy', 'https://www.shopsy.in', '#d32f2f'));
+            }
+
+            const ipBtn = createBtn('Change IP', '#', '#4caf50');
+            ipBtn.onclick = async (e) => {
+                e.preventDefault();
+                if (!confirm('Restart browser to rotate IP?')) return;
+                ipBtn.textContent = 'Rotating...';
+                ipBtn.style.backgroundColor = '#9e9e9e';
+                ipBtn.style.pointerEvents = 'none';
+                try {
+                    const res = await fetch(`http://localhost:3001/api/accounts/${id}/rotate-ip`, { method: 'POST' });
+                    const d = await res.json();
+                    if (d.success) alert('IP Rotated! Browser restarting...');
+                    else { alert('Failed: ' + d.message); ipBtn.textContent = 'Change IP'; ipBtn.style.backgroundColor = '#4caf50'; ipBtn.style.pointerEvents = 'auto'; }
+                } catch (err) { alert('Error contacting backend.'); ipBtn.textContent = 'Change IP'; ipBtn.style.backgroundColor = '#4caf50'; ipBtn.style.pointerEvents = 'auto'; }
+            };
+            container.appendChild(ipBtn);
+
+            if (document.body) document.body.appendChild(container);
+            else setTimeout(initOverlay, 100);
+        };
+        initOverlay();
+    }, { platform, id: accountId });
+
+
 
     // Navigate to platform
     const page = await context.newPage();

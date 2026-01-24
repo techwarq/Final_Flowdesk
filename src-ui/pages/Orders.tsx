@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ArrowUpRight, Copy, Truck, ShoppingBag, Clock, Check } from 'lucide-react';
+import { Search, Filter, ArrowUpRight, Copy, Truck, ShoppingBag, Clock, Check, RefreshCw, Loader } from 'lucide-react';
 import { Account, Platform, Order } from '../types';
 import { FlipkartIcon, ShopsyIcon, AmazonIcon, GenericPlatformIcon } from '../components/Icons';
 import { FetchState } from '../hooks/useDataFetcher';
@@ -9,6 +9,7 @@ interface OrdersProps {
     isLoading?: boolean;
     fetchingAccountId?: string | null;
     orderStates?: Record<string, FetchState>;
+    onFetchOrders?: () => void;
 }
 
 // Extended Order type for UI display with Account info
@@ -17,7 +18,7 @@ interface DisplayOrder extends Order {
     platform: Platform;
 }
 
-export const Orders: React.FC<OrdersProps> = ({ accounts, isLoading, fetchingAccountId, orderStates }) => {
+export const Orders: React.FC<OrdersProps> = ({ accounts, isLoading, fetchingAccountId, orderStates, onFetchOrders }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -134,6 +135,15 @@ export const Orders: React.FC<OrdersProps> = ({ accounts, isLoading, fetchingAcc
                     <p className="text-text-secondary text-sm mt-1">Track and process orders across {accounts.length} connected accounts.</p>
                 </div>
                 <div className="flex gap-3">
+                    {/* Fetch Orders Button */}
+                    <button
+                        onClick={onFetchOrders}
+                        disabled={isLoading || !onFetchOrders}
+                        className="px-4 py-2.5 bg-brand-primary text-white font-bold text-xs rounded-xl hover:opacity-90 transition-colors shadow-lg shadow-brand-primary/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? <Loader size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                        {isLoading ? 'FETCHING...' : 'FETCH ORDERS'}
+                    </button>
                     <div className="relative">
                         <button
                             onClick={() => setIsFilterOpen(!isFilterOpen)}

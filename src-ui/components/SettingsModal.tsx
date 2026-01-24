@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
-import { X, Mail, Lock, Server, Cloud, Database, Key, Save, RefreshCw, Loader2 } from 'lucide-react';
+import { X, Mail, Lock, Server, Cloud, Database, Key, Save, RefreshCw, Loader2, Globe } from 'lucide-react';
 
 interface Props {
     isOpen: boolean;
@@ -15,12 +15,23 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
     const [cloudEnabled, setCloudEnabled] = useState(false);
     const [cloudUrl, setCloudUrl] = useState('');
     const [cloudKey, setCloudKey] = useState('');
+    const [proxies, setProxies] = useState('');
 
     useEffect(() => {
         if (isOpen) {
             loadSettings();
+            loadProxies();
         }
     }, [isOpen]);
+
+    const loadProxies = async () => {
+        try {
+            const list = await api.getProxies();
+            if (Array.isArray(list)) {
+                setProxies(list.join('\n'));
+            }
+        } catch (e) { console.error('Failed to load proxies', e); }
+    };
 
     const loadSettings = async () => {
         try {
@@ -45,6 +56,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
         setLoading(true);
 
         try {
+            // Save Settings
             const current = await api.getSettings();
             const finalMasterEmail = {
                 ...current.masterEmail,
@@ -65,9 +77,14 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
             };
 
             await api.saveSettings(finalSettings);
+
+            // Save Proxies
+            const proxyList = proxies.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+            await api.saveProxies(proxyList);
+
             onClose();
             // TODO: Use a proper toast notification system instead of alert
-            alert('Settings Saved');
+            alert('Settings & Proxies Saved');
         } catch (err) {
             console.error(err);
             alert('Failed to save settings');
@@ -148,7 +165,34 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
                         <div className="border-t border-border-subtle" />
 
-                        {/* Section 2: Cloud Sync */}
+                        {/* Section 2: Proxy Configuration */}
+                        <section className="space-y-4">
+                            <div>
+                                <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
+                                    <Globe size={16} className="text-emerald-500" />
+                                    PROXY CONFIGURATION
+                                </h3>
+                                <p className="text-xs text-text-secondary mt-1 ml-6">Manage your rotating proxy pool. Enter one proxy per line.</p>
+                                <p className="text-[10px] text-text-tertiary ml-6 font-mono">Format: http://user:pass@host:port</p>
+                            </div>
+
+                            <div className="ml-6 space-y-1.5">
+                                <textarea
+                                    value={proxies}
+                                    onChange={e => setProxies(e.target.value)}
+                                    placeholder={`http://user:pass@host:port\nhttp://host:port`}
+                                    className="block w-full h-32 rounded-xl border-border-subtle shadow-sm focus:border-brand-primary focus:ring-brand-primary text-xs font-mono py-3 px-3 transition-shadow bg-bg-canvas text-text-primary resize-none"
+                                />
+                                <div className="text-[10px] text-text-tertiary flex justify-between">
+                                    <span>Supports HTTP/HTTPS proxies.</span>
+                                    <span>{proxies.split('\n').filter(p => p.trim()).length} proxies loaded</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div className="border-t border-border-subtle" />
+
+                        {/* Section 3: Cloud Sync */}
                         <section className="space-y-4">
                             <div>
                                 <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">

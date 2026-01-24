@@ -9,7 +9,7 @@
 import { chromium, BrowserContext } from 'playwright';
 import path from 'path';
 import fs from 'fs-extra';
-import { loadCookiesFromDisk } from './src/cookies.js';
+import { loadCookiesFromDB } from './src/cookies.js';
 import { PROFILES_DIR } from './src/config.js';
 import { generateFingerprint } from './src/fingerprint.js';
 
@@ -22,7 +22,7 @@ async function exploreDom(accountId: string, platform: 'flipkart' | 'shopsy') {
     const fingerprint = generateFingerprint(platform, accountId);
 
     // Load cookies
-    const cookies = await loadCookiesFromDisk(accountId, platform);
+    const cookies = await loadCookiesFromDB(accountId, platform);
     if (cookies.length === 0) {
         console.error('❌ No saved cookies found. Please log in first via the UI.');
         return;

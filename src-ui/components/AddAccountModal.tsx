@@ -7,7 +7,7 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    onInitialize: (account: any) => void;
+    onInitialize?: (account: any) => void;
 }
 
 export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, onInitialize }) => {
@@ -39,21 +39,43 @@ export const AddAccountModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, o
 
             await api.addAccount(newAccount);
 
-            onSuccess(); // Refresh list list
+            setStatusText('Opening external browser for login...');
 
-            setStatusText('Opening browser...');
+            // Start external login session (Visual/Interactive)
+            // This waits until the user logs in and the browser closes
+            const loginRes = await api.startLoginSession(accountId, platform, false);
 
-            // Hand off to parent for In-App Browser initialization
-            // Short delay to let the animation play
-            setTimeout(() => {
-                onInitialize(newAccount);
-                onClose();
-            }, 800);
+            if (loginRes.status === 'success') {
+                setStatusText('✓ Login Successful!');
+                // Refresh list and close
+                setTimeout(() => {
+                    try {
+                        if (onInitialize) {
+                            onInitialize(newAccount);
+                        } else {
+                            onSuccess();
+                        }
+                    } catch (e) {
+                        console.error('Error in success callback:', e);
+                    }
+                    setLoading(false);
+                    onClose();
+                }, 1000);
+            } else if (loginRes.status === 'cancelled') {
+                setStatusText('⚠ Cancelled');
+                setTimeout(() => {
+                    setLoading(false);
+                    onClose();
+                }, 1000);
+            } else {
+                throw new Error(loginRes.message || 'Login failed');
+            }
 
-        } catch (err) {
-            alert('Failed to add account');
+        } catch (err: any) {
+            alert(`Failed to add account: ${err.message || err}`);
             console.error(err);
             setLoading(false);
+            setStatusText('');
         }
     };
 

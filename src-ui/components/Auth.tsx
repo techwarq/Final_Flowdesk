@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../api/client';
-import { Eye, EyeOff, LayoutDashboard, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, LayoutDashboard, AlertCircle, CheckCircle2, UserPlus } from 'lucide-react';
 import { ConnectivityBackground } from './ConnectivityBackground';
 
 interface AuthProps {
@@ -11,10 +11,12 @@ interface AuthProps {
 export const Auth: React.FC<AuthProps> = ({ onSuccess, onSupportClick }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
+    const [isSignup, setIsSignup] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,18 +25,47 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onSupportClick }) => {
         setSuccessMsg('');
 
         try {
-            // Login Only
-            const res = await api.signIn(username, password);
-            if (res.success) {
-                onSuccess(res.profile);
+            if (isSignup) {
+                // Signup Flow
+                if (password !== confirmPassword) {
+                    setError('Passwords do not match');
+                    setLoading(false);
+                    return;
+                }
+                if (password.length < 6) {
+                    setError('Password must be at least 6 characters');
+                    setLoading(false);
+                    return;
+                }
+                const res = await api.signUp(username, password);
+                if (res.success) {
+                    setSuccessMsg('Account created! Signing you in...');
+                    // Auto-login after signup (signUp already does this)
+                    onSuccess(res.profile);
+                } else {
+                    setError(res.message || 'Signup failed');
+                }
             } else {
-                setError(res.message || 'Login failed');
+                // Login Flow
+                const res = await api.signIn(username, password);
+                if (res.success) {
+                    onSuccess(res.profile);
+                } else {
+                    setError(res.message || 'Login failed');
+                }
             }
         } catch (e: any) {
             setError(e.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const toggleMode = () => {
+        setIsSignup(!isSignup);
+        setError('');
+        setSuccessMsg('');
+        setConfirmPassword('');
     };
 
     return (
@@ -75,13 +106,13 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onSupportClick }) => {
                         {/* Header */}
                         <div className="mb-10">
                             <div className="w-14 h-14 mb-6 bg-bg-surface-hover rounded-2xl flex items-center justify-center text-text-primary shadow-sm border border-border-subtle">
-                                <LayoutDashboard size={32} strokeWidth={1.5} />
+                                {isSignup ? <UserPlus size={32} strokeWidth={1.5} /> : <LayoutDashboard size={32} strokeWidth={1.5} />}
                             </div>
                             <h1 className="text-3xl font-bold text-text-primary mb-2 tracking-tight">
-                                Welcome Back
+                                {isSignup ? 'Create Account' : 'Welcome Back'}
                             </h1>
                             <p className="text-text-secondary text-sm">
-                                Sign in to access your ASTRA workspace.
+                                {isSignup ? 'Set up your ASTRA workspace credentials.' : 'Sign in to access your ASTRA workspace.'}
                             </p>
                         </div>
 
@@ -127,6 +158,23 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onSupportClick }) => {
                                 </div>
                             </div>
 
+                            {/* Confirm Password (Signup only) */}
+                            {isSignup && (
+                                <div className="space-y-1.5">
+                                    <label className="block text-xs font-bold text-text-secondary uppercase tracking-wide">
+                                        Confirm Password
+                                    </label>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="w-full px-4 py-3.5 bg-bg-canvas border border-border-subtle rounded-xl text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/5 transition-all font-medium hover:bg-bg-surface"
+                                        placeholder="••••••••••••"
+                                    />
+                                </div>
+                            )}
+
                             {/* Messages */}
                             {error && (
                                 <div className="flex items-center gap-3 text-red-600 text-sm font-medium bg-red-50 p-4 rounded-xl border border-red-100">
@@ -152,13 +200,27 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onSupportClick }) => {
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         Processing...
                                     </span>
-                                ) : 'Sign In'}
+                                ) : isSignup ? 'Create Account' : 'Sign In'}
                             </button>
                         </form>
 
+                        {/* Toggle Login/Signup */}
+                        <div className="mt-6 text-center">
+                            <button
+                                onClick={toggleMode}
+                                className="text-sm text-text-tertiary hover:text-text-primary transition-colors"
+                            >
+                                {isSignup ? (
+                                    <>Already have an account? <span className="font-semibold text-text-secondary">Sign In</span></>
+                                ) : (
+                                    <>Need an account? <span className="font-semibold text-text-secondary">Create</span></>
+                                )}
+                            </button>
+                        </div>
+
                         {/* Footer Help */}
-                        <div className="mt-8 text-center text-sm text-text-secondary">
-                            Having trouble signing in? <button onClick={onSupportClick} className="text-text-primary font-bold cursor-pointer hover:underline">Contact Support</button>
+                        <div className="mt-4 text-center text-sm text-text-secondary">
+                            Having trouble? <button onClick={onSupportClick} className="text-text-primary font-bold cursor-pointer hover:underline">Contact Support</button>
                         </div>
 
                     </div>

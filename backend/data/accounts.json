@@ -54,13 +54,25 @@
       "identifier": "DineshPandey17@emobilee.com",
       "status": "Error",
       "createdAt": "2026-01-15T15:44:34.834Z",
-      "updatedAt": "2026-01-21T19:49:02.855Z",
+      "updatedAt": "2026-01-23T16:52:21.453Z",
       "id": "dineshpandey17@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "DineshPandey17@emobilee.com",
       "userId": "fc42f086-ede9-42c1-aa23-5dcdd5fa22d1",
       "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/flowdesk-app/backend/data/profiles/flipkart/dineshpandey17@emobilee.com/userDataDir/RunningChromeVersion'",
       "orders": [
+        {
+          "orderId": "OD436602497911341100",
+          "productName": "CMF by Nothing Phone 2 Pro (White, 128 G...",
+          "price": "₹17,325",
+          "status": "Arriving tomorrow by 11 pm",
+          "deliveryDate": "",
+          "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/mobile/s/b/q/-original-imahc7eztvdjqgza.jpeg?q=90",
+          "orderUrl": "https://www.flipkart.com/order_details?order_id=OD436602497911341100&item_id=436602497911341100&unit_id=436602497911341100000",
+          "otp": "436602",
+          "receiverName": "Home",
+          "deliveryDetails": "Explore Plus\nMy Account\nBecome a Seller\nMore\n1\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD436602497911341100\n\nCMF by Nothing Phone 2 Pro (White, 128 GB)\nWhite\nSeller: Clostail\n₹17,325\n1 offer\n\nOrder Received, Today, Jan 23\nOrder Confirmed, Today, Jan 23\nShipped, Today\nYour item has left a Flipkart Facility, FARUKHNAGAR, Fri 23rd Jan\nOut For Delivery\nDelivery, Tomorrow, Jan 24 By 11 PM\nChange Date\nSee All Updates\nDelivery Executive details will be available once the order is out for delivery\nCancel\nChat with us\nKeep in mind at doorstep\nOpen box delivery\nVerify item before sharing OTP\nRate your experience\nDid you find this page helpful?\nSend Order Details\nGST & EWB details\nGST Number07AAMCG6511H1ZK\nGIGA GADGETS (OPC) PRIVATE LIMITED\nEWB Number891634361726\nOrder #OD436602497911341100\nDelivery details\nHome\n2ND FLOOR, FLAT NO 127 PKT-1 SEC-24 ROHINI, Rithala, civil lines, DineshPandey17 New Delhi Delhi 110054\nGIGA GADGETS\n6589745123\nPrice details\nListing price\n₹22,999\nSpecial price\n₹17,999\nTotal fees\n₹326\nOther discount\n−₹1,000\nTotal amount\n₹17,325\nPayment method\nCredit Card\nOffers earned\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
+        },
         {
           "orderId": "gen_4_More_Items_276_5 Delivered",
           "productName": "4 More Items",
@@ -74,7 +86,8 @@
       ],
       "details": {
         "gvBalance": "₹0"
-      }
+      },
+      "proxyOffset": 16
     },
     {
       "loginType": "email",
@@ -91,24 +104,25 @@
     {
       "loginType": "email",
       "identifier": "sunil806upadhyay@emobilee.com",
-      "status": "Error",
+      "status": "Healthy",
       "createdAt": "2026-01-19T09:03:35.249Z",
-      "updatedAt": "2026-01-21T19:49:19.985Z",
+      "updatedAt": "2026-01-23T16:54:12.903Z",
       "id": "sunil806upadhyay@emobilee.com",
       "platform": "flipkart",
       "assignedTo": "sunil806upadhyay@emobilee.com",
       "userId": "fc42f086-ede9-42c1-aa23-5dcdd5fa22d1",
-      "errorCode": "Error: ENOENT: no such file or directory, stat '/Users/sonalinayak/Downloads/flowdesk/backend/data/profiles/flipkart/sunil806upadhyay@emobilee.com/userDataDir/RunningChromeVersion'",
       "orders": [
         {
           "orderId": "OD436561239670613100",
           "productName": "OnePlus Nord Buds 3r TWS Earbud, 10min c...",
           "price": "₹1,518",
-          "status": "Delivery expected by Sat Jan 24",
+          "status": "Arriving tomorrow by 11 pm",
           "deliveryDate": "",
           "imageUrl": "https://rukminim2.flixcart.com/image/200/200/xif0q/headphone/7/n/o/-original-imahfsg7chmgrugu.jpeg?q=90",
           "orderUrl": "https://www.flipkart.com/order_details?order_id=OD436561239670613100&item_id=436561239670613100&unit_id=436561239670613100000",
-          "otp": ""
+          "otp": "436561",
+          "receiverName": "Work",
+          "deliveryDetails": "Explore Plus\nMy Account\nBecome a Seller\nMore\n1\nCart\nElectronics\nTVs & Appliances\nMen\nWomen\nBaby & Kids\nHome & Furniture\nSports, Books & More\nFlights\nOffer Zone\nHomeMy AccountMy Orders\n\nOD436561239670613100\n\nPay online for a smooth doorstep experience\nPay ₹1518\nOnePlus Nord Buds 3r TWS Earbud, 10min charge for 8hr Music, 3D Audio, 2-mic call Bluetooth\nBlack\nSeller: SVPeripherals\n₹1,518\n\nOrder Confirmed, Sun Jan 18\nShipped\nYour item has left a Flipkart Facility, Delhi, Fri 23rd Jan\nOut For Delivery\nDelivery, Tomorrow, Jan 24 By 11 PM\nChange Date\nSee All Updates\nDelivery Executive details will be available once the order is out for delivery\nCancel\nChat with us\nKeep in mind at doorstep\nOpen box delivery\nVerify item before sharing OTP\nRate your experience\nDid you find this page helpful?\nSend Order Details\nOrder #OD436561239670613100\nDelivery details\nWork\nSham nursing home and heart centre Railway road, moga, New Delhi Delhi 110085\nRenu\n7986360147\nPrice details\nListing price\n₹1,999\nSpecial price\n₹1,499\nTotal fees\n₹19\nTotal amount\n₹1,518\nPayment method\nCash On Delivery\nABOUT\nContact Us\nAbout Us\nCareers\nFlipkart Stories\nPress\nCorporate Information\nGROUP COMPANIES\nMyntra\nCleartrip\nShopsy\nHELP\nPayments\nShipping\nCancellation & Returns\nFAQ\nCONSUMER POLICY\nCancellation & Returns\nTerms Of Use\nSecurity\nPrivacy\nSitemap\nGrievance Redressal\nEPR Compliance\nFSSAI Food Safety Connect App\nMail Us:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nSocial\nRegistered Office Address:\n\nFlipkart Internet Private Limited,\n\nBuildings Alyssa, Begonia &\n\nClove Embassy Tech Village,\n\nOuter Ring Road, Devarabeesanahalli Village,\n\nBengaluru, 560103,\n\nKarnataka, India\n\nCIN : U51109KA2012PTC066107\n\nTelephone: 044-45614700 / 044-67415800\n\nBecome a Seller\nAdvertise\nGift Cards\nHelp Center\n© 2007-2026 Flipkart.com"
         },
         {
           "orderId": "OD125070937550702000",
@@ -133,7 +147,10 @@
       ],
       "details": {
         "gvBalance": "₹50"
-      }
+      },
+      "proxyOffset": 7,
+      "lastLoginAt": "2026-01-23T12:02:57.210Z",
+      "lastValidateAt": "2026-01-23T12:02:57.210Z"
     },
     {
       "loginType": "mobile",
@@ -351,6 +368,16 @@
           "otp": ""
         }
       ]
+    },
+    {
+      "loginType": "mobile",
+      "identifier": "",
+      "status": "New",
+      "createdAt": "2026-01-23T11:38:12.346Z",
+      "updatedAt": "2026-01-23T11:38:12.350Z",
+      "id": "TestRotationUser",
+      "platform": "flipkart",
+      "proxyOffset": 1
     }
   ]
 }

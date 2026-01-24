@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { DATA_DIR } from './config.js';
-import { pushLocalStorage } from './cloud.js';
+import { pushLocalStorage, fetchLocalStorage as fetchLocalStorageFromCloud } from './cloud.js';
 
 const STORAGE_DIR = path.join(DATA_DIR, 'storage');
 
@@ -15,23 +15,28 @@ export function getStorageFilePath(accountId: string, platform: 'flipkart' | 'sh
 }
 
 /**
- * Save Local Storage data to disk
+ * Save Local Storage data - saves to DB directly
  */
 export async function saveLocalStorage(accountId: string, data: Record<string, string>, platform: 'flipkart' | 'shopsy' = 'flipkart') {
-    await ensureStorageDir();
-    const file = getStorageFilePath(accountId, platform);
-    await fs.writeJSON(file, data, { spaces: 2 });
-    // Attempt cloud sync
-    // pushLocalStorage(accountId, platform); // DISABLED
+    // Save to cloud DB
+    await pushLocalStorage(accountId, platform);
 }
 
 /**
- * Load Local Storage data from disk
+ * Load Local Storage data from database ONLY (no file fallback)
  */
 export async function loadLocalStorage(accountId: string, platform: 'flipkart' | 'shopsy' = 'flipkart'): Promise<Record<string, string> | null> {
-    const file = getStorageFilePath(accountId, platform);
-    if (await fs.pathExists(file)) {
-        return await fs.readJSON(file);
+    try {
+        const data = await fetchLocalStorageFromCloud(accountId, platform);
+        if (data) {
+            console.log(`[LocalStorage] Loaded from DB for ${accountId} (${platform})`);
+            return data;
+        }
+        console.log(`[LocalStorage] No data found in DB for ${accountId} (${platform})`);
+        return null;
+    } catch (e: any) {
+        console.error(`[LocalStorage] DB fetch failed for ${accountId}: ${e.message}`);
+        return null;
     }
-    return null;
 }
+

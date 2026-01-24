@@ -30,6 +30,22 @@ export class BrowserManager {
         }
         return false;
     }
+
+    async closeAccount(accountId: string) {
+        const prefix = accountId + '-';
+        console.log(`[BrowserManager] Closing sessions for ${accountId}...`);
+        for (const [key, context] of this.contexts.entries()) {
+            if (key.startsWith(prefix) || key === accountId) {
+                try {
+                    await context.close();
+                    this.contexts.delete(key);
+                    console.log(`[BrowserManager] Closed ${key}`);
+                } catch (e) {
+                    console.error(`[BrowserManager] Failed to close ${key}:`, e);
+                }
+            }
+        }
+    }
 }
 
 export const browsers = new BrowserManager();

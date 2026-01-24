@@ -38,7 +38,7 @@ interface Props {
 
 type ViewMode = 'dashboard' | 'browse' | 'id_portal' | 'orders' | 'wallet' | 'settings' | 'browser_1' | 'browser_2' | 'notifications' | 'support';
 
-export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, onSwitchToAdmin }) => {
+export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin: _isAdmin, onSwitchToAdmin }) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [activeAccountId, setActiveAccountId] = useState<string | undefined>();
     const [loading, setLoading] = useState(true);
@@ -112,32 +112,28 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
     const hasFetchedRef = useRef(false);
 
     // Trigger data fetching when accounts are loaded (only once per session)
-    useEffect(() => {
-        if (accounts.length > 0 && !loading && !hasFetchedRef.current) {
-            hasFetchedRef.current = true;
-            triggerOrdersFetch(accounts);
-            triggerGVFetch(accounts);
-        }
-    }, [accounts, loading]);
+    // COMMENTED OUT: Auto-fetch on login disabled - use buttons on Orders/Wallet pages instead
+    // useEffect(() => {
+    //     if (accounts.length > 0 && !loading && !hasFetchedRef.current) {
+    //         hasFetchedRef.current = true;
+    //         triggerOrdersFetch(accounts);
+    //         triggerGVFetch(accounts);
+    //     }
+    // }, [accounts, loading]);
+
+    const [launchTarget, setLaunchTarget] = useState<{ accountId: string; platform: Platform } | null>(null);
+
+    // ...
 
     const handleOpenBrowser = async (platform: Platform) => {
         if (!activeAccountId) {
             alert('Please select an account first');
             return;
         }
-        setBrowserLoading(true);
-        try {
-            const res = await api.openSession(activeAccountId, platform);
-            if (res?.status === 'error') {
-                throw new Error(res.message);
-            }
-            setCurrentView('browse');
-        } catch (e: any) {
-            console.error(`Failed to open ${platform}:`, e);
-            alert(`Failed to open ${platform}: ${e.message}`);
-        } finally {
-            setBrowserLoading(false);
-        }
+
+        // Launch Internal Browser
+        setLaunchTarget({ accountId: activeAccountId, platform });
+        setCurrentView('browser_1');
     };
 
     const handleRemoveAccount = async (accountId: string) => {
@@ -161,7 +157,8 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
         // 1. Set this new account as active
         setActiveAccountId(newAccount.id);
 
-        // 2. Switch to browser view to start session
+        // 2. Launch Session internally
+        setLaunchTarget({ accountId: newAccount.id, platform: newAccount.platform });
         setCurrentView('browser_1');
     };
 
@@ -248,6 +245,7 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
                     isLoading={isOrdersFetching}
                     fetchingAccountId={currentOrderAccountId}
                     orderStates={orderStates}
+                    onFetchOrders={() => triggerOrdersFetch(accounts)}
                 />;
             case 'wallet':
                 return <Wallet
@@ -857,10 +855,20 @@ export const UserDashboard: React.FC<Props> = ({ username, onLogout, isAdmin, on
 
                 {/* Persistent Browsers - Hidden when not active, preserves state */}
                 <div className={`absolute inset-0 z-50 ${currentView === 'browser_1' ? 'block' : 'hidden'}`}>
-                    <InAppBrowser savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />
+                    <InAppBrowser
+                        savedAccounts={accounts}
+                        onClose={() => setCurrentView('dashboard')}
+                        onAddAccount={() => setIsAddModalOpen(true)}
+                        launchTarget={launchTarget}
+                    />
                 </div>
                 <div className={`absolute inset-0 z-50 ${currentView === 'browser_2' ? 'block' : 'hidden'}`}>
-                    <InAppBrowser savedAccounts={accounts} onClose={() => setCurrentView('dashboard')} onAddAccount={() => setIsAddModalOpen(true)} />
+                    <InAppBrowser
+                        savedAccounts={accounts}
+                        onClose={() => setCurrentView('dashboard')}
+                        onAddAccount={() => setIsAddModalOpen(true)}
+                        launchTarget={launchTarget}
+                    />
                 </div>
             </Layout>
 

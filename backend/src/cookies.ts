@@ -19,24 +19,36 @@ export function getCookieFilePath(accountId: string, platform: 'flipkart' | 'sho
 }
 
 /**
- * Load cookies from database first, falling back to local disk
+ * Load cookies from database ONLY (no file fallback)
  * This is the preferred method for loading cookies.
+ * 
+ * Note: Flipkart and Shopsy share authentication, so if Shopsy cookies are not found,
+ * we fall back to Flipkart cookies (and vice versa).
  */
 export async function loadCookiesFromDB(accountId: string, platform: 'flipkart' | 'shopsy' = 'flipkart') {
-    // Try cloud database first
+    // Try cloud database - NO FALLBACK to disk
     try {
-        const dbCookies = await fetchCookiesFromCloud(accountId, platform);
+        // First try to get cookies for the requested platform
+        let dbCookies = await fetchCookiesFromCloud(accountId, platform);
         if (dbCookies && dbCookies.length > 0) {
-            console.log(`[Cookies] Loaded ${dbCookies.length} cookies from DB for ${accountId}`);
+            console.log(`[Cookies] Loaded ${dbCookies.length} cookies from DB for ${accountId} (${platform})`);
             return dbCookies;
         }
-    } catch (e: any) {
-        console.warn(`[Cookies] DB fetch failed for ${accountId}, falling back to disk: ${e.message}`);
-    }
 
-    // Fallback to local disk
-    console.log(`[Cookies] No DB cookies found for ${accountId}, trying local disk...`);
-    return loadCookiesFromDisk(accountId, platform);
+        // Flipkart and Shopsy share authentication - try the other platform as fallback
+        const fallbackPlatform = platform === 'shopsy' ? 'flipkart' : 'shopsy';
+        dbCookies = await fetchCookiesFromCloud(accountId, fallbackPlatform);
+        if (dbCookies && dbCookies.length > 0) {
+            console.log(`[Cookies] Loaded ${dbCookies.length} cookies from DB for ${accountId} (fallback from ${fallbackPlatform})`);
+            return dbCookies;
+        }
+
+        console.log(`[Cookies] No cookies found in DB for ${accountId} (${platform} or ${fallbackPlatform})`);
+        return [];
+    } catch (e: any) {
+        console.error(`[Cookies] DB fetch failed for ${accountId}: ${e.message}`);
+        return [];
+    }
 }
 
 /**
@@ -44,10 +56,10 @@ export async function loadCookiesFromDB(accountId: string, platform: 'flipkart' 
  */
 export async function loadCookiesFromDisk(accountId: string, platform: 'flipkart' | 'shopsy' = 'flipkart') {
     const file = getCookieFilePath(accountId, platform);
-    console.log(`[DEBUG-ANTIGRAVITY] loadCookiesFromDisk reading from: ${file}`);
+    console.log(`[Cookies] loadCookiesFromDisk reading from: ${file}`);
     if (await fs.pathExists(file)) {
         const cookies = await fs.readJSON(file);
-        console.log(`[DEBUG-ANTIGRAVITY] Read ${cookies.length} raw cookies from disk.`);
+        console.log(`[Cookies] Read ${cookies.length} raw cookies from disk.`);
         // Sanitize cookies for Playwright - sameSite must be "Strict", "Lax", or "None"
         return cookies.map((c: any) => {
             const sanitized = { ...c };
@@ -80,14 +92,13 @@ export async function saveCookiesToDisk(accountId: string, cookies: any[], platf
     const file = getCookieFilePath(accountId, platform);
     await fs.writeJSON(file, cookies, { spaces: 2 });
     // Attempt cloud sync
-    // pushCookies(accountId, platform); // DISABLED
+    pushCookies(accountId, platform);
 }
 
 /**
- * Extracts cookies from the context (Flipkart) and saves them.
+ * Extracts cookies from the context and saves them directly to DB (DB-only)
  */
 export async function extractAndSaveCookies(context: BrowserContext, accountId: string, platform: 'flipkart' | 'shopsy' = 'flipkart') {
-    await ensureCookiesDir();
     const id = accountId.toLowerCase().trim();
 
     let cookies: any[] = [];
@@ -107,12 +118,9 @@ export async function extractAndSaveCookies(context: BrowserContext, accountId: 
         throw new Error(`No cookies found in browser context for ${id} on ${platform}.`);
     }
 
-    const cookieFile = getCookieFilePath(id, platform);
-    console.log(`[Cookies] Saving ${cookies.length} cookies to: ${cookieFile}`);
-    await fs.writeJSON(cookieFile, cookies, { spaces: 2 });
-
-    // Attempt cloud sync
-    // pushCookies(id, platform); // DISABLED
+    // Push directly to DB - no local file write
+    await pushCookies(id, platform, cookies);
+    console.log(`[Cookies] Saved ${cookies.length} cookies to Cloud DB for ${id} (${platform})`);
 
     return cookies;
 }
@@ -121,10 +129,10 @@ export async function extractAndSaveCookies(context: BrowserContext, accountId: 
  * Loads Flipkart cookies, adapts them for Shopsy, and injects them.
  */
 export async function injectFlipkartCookiesIntoShopsy(context: BrowserContext, accountId: string) {
-    const file = getCookieFilePath(accountId, 'flipkart');
-    if (!await fs.pathExists(file)) return false;
+    // Load from DB instead of disk
+    const flipkartCookies = await loadCookiesFromDB(accountId, 'flipkart');
+    if (!flipkartCookies || flipkartCookies.length === 0) return false;
 
-    const flipkartCookies = await fs.readJSON(file);
     const shopsyCookies = adaptCookiesForShopsy(flipkartCookies);
     await context.addCookies(shopsyCookies);
     return true;

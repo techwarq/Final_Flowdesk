@@ -1,7 +1,138 @@
-const { app, BrowserWindow, dialog, session, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, session, ipcMain, net } = require('electron');
+
+// Disable Autofill and Password Manager to prevent console errors and interference
+app.commandLine.appendSwitch('disable-features', 'Autofill,PasswordManager');
+app.commandLine.appendSwitch('disable-save-password-bubble');
+
+const proxyAuthMap = new Map();
+
+// ...
+
+app.on('login', (event, webContents, request, authInfo, callback) => {
+  const logMsg = `Login event: isProxy=${authInfo.isProxy} scheme=${authInfo.scheme} host=${authInfo.host} port=${authInfo.port} realm=${authInfo.realm}`;
+  logToFile(logMsg);
+  console.log(logMsg); // Show in terminal for debugging
+
+  if (authInfo.isProxy) {
+    const key = `${authInfo.host}:${authInfo.port}`;
+    logToFile(`Looking for credentials for ${key}`);
+
+    let creds = proxyAuthMap.get(key);
+
+    // Fallback: If exact match fails, try matching by PORT (assuming unique ports for rotating proxies)
+    if (!creds) {
+      logToFile(`Exact match failed for ${key}. Checking by port ${authInfo.port}...`);
+      for (const [mapKey, mapCreds] of proxyAuthMap.entries()) {
+        if (mapKey.endsWith(`:${authInfo.port}`)) {
+          logToFile(`Found credentials by port match: ${mapKey}`);
+          creds = mapCreds;
+          break;
+        }
+      }
+    }
+
+    if (creds) {
+      logToFile(`Authenticating... (User: ${creds.username})`);
+      event.preventDefault();
+      callback(creds.username, creds.password);
+    } else {
+      logToFile(`No credentials found for ${key}`);
+      console.log(`[ProxyAuth] Failed to find credentials for ${key}`);
+    }
+  }
+});
+
+// ...
+
+ipcMain.on('set-proxy', async (event, { partition, proxyRules }) => {
+  // Remove trailing slash from proxy URL if present
+  const cleanProxyRules = proxyRules.replace(/\/$/, '');
+  logToFile(`Setting proxy for partition ${partition} to ${cleanProxyRules}`);
+
+  try {
+    let finalProxy = cleanProxyRules;
+    const match = cleanProxyRules.match(/^(?:https?:\/\/)?([^:]+):([^@]+)@(.+)$/);
+
+    if (match) {
+      const username = match[1];
+      const password = match[2];
+      let hostAndPort = match[3];
+
+      // Remove trailing slash if present
+      if (hostAndPort.endsWith('/')) {
+        hostAndPort = hostAndPort.slice(0, -1);
+      }
+
+      logToFile(`Parsed credentials - User: ${username}, Host: ${hostAndPort}`);
+
+      const hasProtocol = cleanProxyRules.includes('://');
+      const protocol = hasProtocol ? cleanProxyRules.split('://')[0] + '://' : '';
+      finalProxy = `${protocol}${hostAndPort}`;
+
+      proxyAuthMap.set(hostAndPort, { username, password });
+    } else {
+      logToFile(`No credentials matched in ${cleanProxyRules}`);
+    }
+
+    const ses = session.fromPartition(partition);
+    await ses.setProxy({ proxyRules: finalProxy });
+    logToFile(`Proxy set successfully for ${partition} (Sanitized: ${finalProxy})`);
+    event.sender.send('proxy-set-complete', { partition }); // Ack
+  } catch (e) {
+    logToFile(`Error setting proxy: ${e.message}`);
+  }
+});
+
+ipcMain.on('get-ip-info', (event, { partition }) => {
+  const msg = `[IPCheck] Checking IP for partition ${partition}`;
+  logToFile(msg);
+  console.log(msg);
+
+  const ses = session.fromPartition(partition);
+  const req = net.request({
+    url: 'https://api.ipify.org',
+    session: ses,
+    useSessionCookies: true
+  });
+
+  // Set a timeout for the request (e.g., 10 seconds)
+  const timeout = setTimeout(() => {
+    if (req) {
+      req.abort();
+      const timeoutMsg = `[IPCheck] Timed Out for ${partition}`;
+      logToFile(timeoutMsg);
+      console.log(timeoutMsg);
+      event.sender.send('ip-info-result', { partition, error: 'Timeout' });
+    }
+  }, 10000);
+
+  req.on('response', (response) => {
+    clearTimeout(timeout);
+    console.log(`[IPCheck] Response received, status: ${response.statusCode}`);
+    let data = '';
+    response.on('data', (chunk) => { data += chunk; });
+    response.on('end', () => {
+      const successMsg = `[IPCheck] IP Found: ${data}`;
+      logToFile(successMsg);
+      console.log(successMsg);
+      event.sender.send('ip-info-result', { partition, ip: data });
+    });
+  });
+
+  req.on('error', (err) => {
+    clearTimeout(timeout);
+    const errMsg = `[IPCheck] Failed: ${err.message}`;
+    logToFile(errMsg);
+    console.log(errMsg);
+    event.sender.send('ip-info-result', { partition, error: err.message });
+  });
+
+  req.end();
+  console.log(`[IPCheck] Request sent for ${partition}`);
+});
 const path = require('path');
 const { spawn } = require('child_process');
-const isDev = require('electron-is-dev');
+const isDev = !app.isPackaged;
 const waitOn = require('wait-on');
 const fs = require('fs');
 
@@ -72,13 +203,15 @@ function startBackend() {
       }
 
       // Use pipe specifically to capture logs
-      backendProcess = spawn(process.execPath, [serverPath], {
+      // Native .env loading for Node 20+
+      backendProcess = spawn(process.execPath, ['--env-file=.env', serverPath], {
         cwd: backendPath,
         env: {
           ...process.env,
           PORT: BACKEND_PORT,
           NODE_ENV: 'production',
-          PLAYWRIGHT_BROWSERS_PATH: browsersPath
+          PLAYWRIGHT_BROWSERS_PATH: browsersPath,
+          ELECTRON_RUN_AS_NODE: '1'
         },
         stdio: 'pipe'
       });
@@ -125,6 +258,21 @@ function createWindow() {
       webviewTag: true,
       preload: path.join(__dirname, 'preload.cjs')
     },
+  });
+
+  // Intercept window.open / target="_blank" from webviews and send back to renderer
+  // This prevents opening new Electron windows and instead signals renderer to create new tab
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    logToFile(`[WindowOpen] Intercepted window.open for URL: ${url}`);
+    console.log(`[WindowOpen] Intercepted: ${url}`);
+
+    // Send URL to renderer to open as new tab in InAppBrowser
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('open-url-in-tab', { url });
+    }
+
+    // Deny opening new window - renderer will handle it
+    return { action: 'deny' };
   });
 
   const frontendUrl = isDev
@@ -190,6 +338,34 @@ function createSplashWindow() {
   splashWindow.center();
 }
 
+
+
+// Handle ALL new window requests from webviews - redirect to renderer as new tabs
+// This intercepts target="_blank" links and window.open() calls from webview content
+app.on('web-contents-created', (event, contents) => {
+  // Only handle webview guest contents
+  if (contents.getType() === 'webview') {
+    // Modern Electron: use setWindowOpenHandler on webview contents
+    contents.setWindowOpenHandler(({ url }) => {
+      logToFile(`[Webview] Intercepted new window request: ${url}`);
+      console.log(`[Webview] Intercepted popup: ${url}`);
+
+      // Send URL to renderer to open as new tab
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send('open-url-in-tab', { url });
+      }
+
+      // Deny opening new window - renderer will handle it as new tab
+      return { action: 'deny' };
+    });
+
+    // Also handle navigation events for webviews
+    contents.on('will-navigate', (event, url) => {
+      logToFile(`[Webview] Navigation to: ${url}`);
+    });
+  }
+});
+
 app.on('ready', () => {
   logToFile('Electron Ready event fired');
   createSplashWindow();
@@ -210,18 +386,8 @@ app.on('ready', () => {
         }
       }, 300); // Small buffer to ensure smooth transition
     }
-    ipcMain.on('set-proxy', async (event, { partition, proxyRules }) => {
-      logToFile(`Setting proxy for partition ${partition} to ${proxyRules}`);
-      const ses = session.fromPartition(partition);
-      await ses.setProxy({ proxyRules });
-      logToFile(`Proxy set successfully for ${partition}`);
-    });
 
-    ipcMain.on('get-ip-info', async (event, { partition }) => {
-      // This is a helper to verify IP from the main process side if needed, 
-      // but we can also just do it in the renderer via fetch() if proxy is set correctly.
-      // For now we just ack.
-    });
+
 
     ipcMain.on('set-cookies', async (event, { partition, cookies }) => {
       // logToFile(`Setting ${cookies.length} cookies for partition ${partition}`);

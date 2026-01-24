@@ -12,6 +12,22 @@ const getHeaders = () => {
 };
 
 export const api = {
+    // Generic Helpers
+    get: async <T>(url: string): Promise<{ data: T }> => {
+        const res = await fetch(`${API_BASE}${url}`, { headers: getHeaders() });
+        const data = await res.json();
+        return { data };
+    },
+    post: async <T>(url: string, body?: any): Promise<{ data: T }> => {
+        const res = await fetch(`${API_BASE}${url}`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: body ? JSON.stringify(body) : undefined
+        });
+        const data = await res.json();
+        return { data };
+    },
+
     // Auth
     signUp: async (username: string, password: string): Promise<any> => {
         const res = await fetch(`${API_BASE}/auth/signup`, {
@@ -164,6 +180,30 @@ export const api = {
     getSettings: async (): Promise<any> => {
         const res = await fetch(`${API_BASE}/settings`, { headers: getHeaders() });
         if (!res.ok) return {};
+        return res.json();
+    },
+
+    getProxies: async (): Promise<string[]> => {
+        const res = await fetch(`${API_BASE}/proxies`, { headers: getHeaders() });
+        if (!res.ok) return [];
+        return res.json();
+    },
+
+    saveProxies: async (proxies: string[]): Promise<any> => {
+        const res = await fetch(`${API_BASE}/proxies`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ proxies })
+        });
+        return res.json();
+    },
+
+    startLoginSession: async (id: string, platform: Platform, headless: boolean = false): Promise<any> => {
+        const res = await fetch(`${API_BASE}/accounts/${encodeURIComponent(id)}/login-session`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ platform, headless })
+        });
         return res.json();
     },
 

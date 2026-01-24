@@ -502,12 +502,6 @@ export const Dashboard: React.FC<Props> = ({ username, onLogout, onSwitchToUser 
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSuccess={load}
-                onInitialize={() => {
-                    // For Admin dashboard, just reload for now. 
-                    // Admin might want to open browser too, but they can do it from the list.
-                    load();
-                    alert('Account added. You can launch it from the list.');
-                }}
             />
 
             <SettingsModal

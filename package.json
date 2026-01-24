@@ -12,8 +12,8 @@
     "preview": "vite preview",
     "electron:dev": "concurrently \"vite\" \"electron .\"",
     "electron:build": "npm run build:backend && npm run build:frontend && electron-builder",
-    "build:backend": "cd backend && npm install && npm run build && node install-browsers.cjs",
-    "build:backend:win": "cd backend && npm install && npm run build && cross-env BROWSER_PLATFORM=win32 node install-browsers.cjs",
+    "build:backend": "cd backend && npm install --legacy-peer-deps && npm run build && node install-browsers.cjs",
+    "build:backend:win": "cd backend && npm install --legacy-peer-deps && npm run build && cross-env BROWSER_PLATFORM=win32 node install-browsers.cjs",
     "build:frontend": "tsc && vite build",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -21,7 +21,10 @@
     "appId": "com.flowdesk.app",
     "productName": "FlowDesk",
     "mac": {
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "target": [
+        "dmg"
+      ]
     },
     "win": {
       "target": [
@@ -47,15 +50,11 @@
         "from": "backend",
         "to": "backend",
         "filter": [
-          "**/*",
-          "!src",
-          "!tsconfig.json",
-          "!*.ts",
+          "package.json",
+          ".env",
           "dist/**/*",
           "node_modules/**/*",
-          "browsers/**/*",
-          "package.json",
-          ".env"
+          "browsers/**/*"
         ]
       }
     ]

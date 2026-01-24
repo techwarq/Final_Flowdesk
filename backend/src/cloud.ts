@@ -166,98 +166,145 @@ export async function pushAccount(acc: any) {
 }
 
 /**
- * Push accounts.json to cloud (SQL Table: accounts)
+ * Fetch all accounts from cloud database
  */
-export async function pushAccounts() {
+export async function fetchAccountsFromCloud(): Promise<any[]> {
     const client = getSupabaseAdminClient();
     if (!client) {
-        logger.debug('[Cloud] pushAccounts: Cloud sync not enabled or configured.');
-        return;
+        logger.warn('[Cloud] fetchAccountsFromCloud: Cloud not configured');
+        return [];
     }
 
     try {
-        if (!await fs.pathExists(ACCOUNTS_FILE)) return;
-        const data = await fs.readJSON(ACCOUNTS_FILE);
-        const accounts = data.accounts || [];
+        const { data: dbAccounts, error } = await client
+            .from('accounts')
+            .select('*');
 
-        for (const acc of accounts) {
-            // Flatten/Structure data for SQL
-            const payload: any = {
-                id: acc.id.toLowerCase(),
-                platform: acc.platform,
-                identifier: acc.identifier,
-                status: acc.status,
-                last_login_at: acc.lastLoginAt || null,
-                details: {
-                    loginType: acc.loginType,
-                    emailConfig: acc.emailConfig,
-                    assignedTo: acc.assignedTo,
-                    createdAt: acc.createdAt,
-                    updatedAt: acc.updatedAt,
-                    errorCode: acc.errorCode
-                },
-                updated_at: new Date().toISOString()
-            };
+        if (error) throw error;
 
-            // Only send user_id if we have it, otherwise let DB default or keep existing
-            if (acc.userId) {
-                payload.user_id = acc.userId;
-            }
-
-            const { error } = await client
-                .from('accounts')
-                .upsert(payload);
-
-            if (error) throw error;
+        if (dbAccounts && dbAccounts.length > 0) {
+            // Map DB format to Account format
+            const accounts = dbAccounts.map((row: any) => ({
+                id: row.id,
+                userId: row.user_id,
+                platform: row.platform,
+                identifier: row.identifier,
+                status: row.status,
+                lastLoginAt: row.last_login_at,
+                // Spread details back
+                ...(row.details || {})
+            }));
+            logger.info(`[Cloud] Fetched ${accounts.length} accounts from DB`);
+            return accounts;
         }
-
-        logger.info(`[Cloud] Synced ${accounts.length} accounts to SQL.`);
+        return [];
     } catch (e: any) {
-        logger.error(`[Cloud] Account sync failed: ${e.message}`);
+        logger.error(`[Cloud] fetchAccountsFromCloud failed: ${e.message}`);
+        return [];
     }
 }
 
 /**
- * Push ALL cookies from local files to cloud (for initial sync)
+ * Fetch single account from cloud database
  */
-export async function pushAllCookies() {
+export async function fetchAccountFromCloud(accountId: string): Promise<any | null> {
     const client = getSupabaseAdminClient();
-    if (!client) {
-        logger.debug('[Cloud] pushAllCookies: Cloud sync not enabled.');
-        return;
-    }
+    if (!client) return null;
 
     try {
-        if (!await fs.pathExists(ACCOUNTS_FILE)) return;
-        const data = await fs.readJSON(ACCOUNTS_FILE);
-        const accounts = data.accounts || [];
+        const { data: row, error } = await client
+            .from('accounts')
+            .select('*')
+            .eq('id', accountId.toLowerCase())
+            .single();
 
-        let totalSynced = 0;
-        for (const acc of accounts) {
-            const platform = acc.platform as 'flipkart' | 'shopsy';
-            await pushCookies(acc.id, platform);
-            totalSynced++;
+        if (error) {
+            if (error.code === 'PGRST116') return null; // Not found
+            throw error;
         }
 
-        logger.info(`[Cloud] Attempted cookie sync for ${totalSynced} accounts.`);
+        if (row) {
+            return {
+                id: row.id,
+                userId: row.user_id,
+                platform: row.platform,
+                identifier: row.identifier,
+                status: row.status,
+                lastLoginAt: row.last_login_at,
+                ...(row.details || {})
+            };
+        }
+        return null;
     } catch (e: any) {
-        logger.error(`[Cloud] pushAllCookies failed: ${e.message}`);
+        logger.error(`[Cloud] fetchAccountFromCloud failed for ${accountId}: ${e.message}`);
+        return null;
     }
+}
+
+/**
+ * Delete account from cloud database
+ */
+export async function deleteAccountFromCloud(accountId: string): Promise<boolean> {
+    const client = getSupabaseAdminClient();
+    if (!client) return false;
+
+    try {
+        const id = accountId.toLowerCase();
+
+        // Delete cookies first
+        await client.from('cookies').delete().eq('account_id', id);
+
+        // Delete local storage
+        await client.from('local_storage').delete().eq('account_id', id);
+
+        // Delete account
+        const { error } = await client.from('accounts').delete().eq('id', id);
+
+        if (error) throw error;
+
+        logger.info(`[Cloud] Deleted account ${id} from DB`);
+        return true;
+    } catch (e: any) {
+        logger.error(`[Cloud] deleteAccountFromCloud failed: ${e.message}`);
+        return false;
+    }
+}
+
+/**
+ * @deprecated Legacy function - no longer used. Individual account operations now use pushAccount() directly.
+ * This function was previously used to sync accounts.json to DB, but we no longer use local files.
+ */
+export async function pushAccounts() {
+    // Deprecated - all account operations now use pushAccount() directly for DB writes
+    logger.debug('[Cloud] pushAccounts: DEPRECATED - Use pushAccount() for individual account operations');
+}
+
+/**
+ * @deprecated Legacy function - no longer used. Cookie operations now use pushCookies() directly.
+ * This function was previously used for initial sync from local files to DB.
+ */
+export async function pushAllCookies() {
+    // Deprecated - cookies are now saved directly to DB via pushCookies() during login
+    logger.debug('[Cloud] pushAllCookies: DEPRECATED - Cookies are synced directly to DB during login');
 }
 
 /**
  * Push specific cookie file to cloud (SQL Table: cookies)
  */
-export async function pushCookies(accountId: string, platform: 'flipkart' | 'shopsy') {
+export async function pushCookies(accountId: string, platform: 'flipkart' | 'shopsy', directCookies?: any[]) {
     const client = getSupabaseAdminClient();
     if (!client) return;
 
     try {
-        const filePath = getCookieFilePath(accountId, platform);
-        if (!await fs.pathExists(filePath)) return;
+        let cookies = directCookies;
+        if (!cookies) {
+            const filePath = getCookieFilePath(accountId, platform);
+            if (await fs.pathExists(filePath)) {
+                cookies = await fs.readJSON(filePath);
+            }
+        }
 
-        const cookies = await fs.readJSON(filePath);
-        if (!Array.isArray(cookies)) return;
+        if (!cookies || !Array.isArray(cookies)) return;
 
         // 1. Delete existing cookies for this account/platform to avoid duplicates
         // Note: Using a transaction or carefully defined deletion is safer
@@ -271,9 +318,26 @@ export async function pushCookies(accountId: string, platform: 'flipkart' | 'sho
 
         // 2. Insert new cookies
         // Map playright/extension cookie format to DB schema
+        // Lookup userId from DB (Strict DB extraction as requested)
+        let userId: string | null = null;
+        try {
+            const { data: accData } = await client
+                .from('accounts')
+                .select('user_id')
+                .eq('id', accountId.toLowerCase())
+                .single();
+
+            if (accData?.user_id) {
+                userId = accData.user_id;
+            }
+        } catch (err) {
+            // ignore
+        }
+
         const rows = cookies.map((c: any) => ({
             account_id: accountId.toLowerCase(),
             platform: platform,
+            user_id: userId, // Add user_id foreign key
             name: c.name,
             value: c.value,
             domain: c.domain,
@@ -288,15 +352,36 @@ export async function pushCookies(accountId: string, platform: 'flipkart' | 'sho
         }));
 
         if (rows.length > 0) {
-            const { error: insError } = await client
-                .from('cookies')
-                .insert(rows);
+            // Attempt insert
+            // Optimistic approach: Try with user_id first if we have it.
+            // If it fails due to missing column, we fallback silently.
 
-            if (insError) throw insError;
-            logger.info(`[Cloud] Synced ${rows.length} cookies for ${accountId} (${platform}).`);
+            try {
+                const { error: insError } = await client
+                    .from('cookies')
+                    .insert(rows);
+
+                if (insError) throw insError;
+                logger.info(`[Cloud] Synced ${rows.length} cookies for ${accountId} (${platform}).`);
+            } catch (err: any) {
+                // Check for missing column error (42703) or generic schema error
+                if (err.message?.includes('user_id') || err.code === '42703') {
+                    // Retry without user_id silently
+                    const fallbackRows = rows.map((r: any) => {
+                        const { user_id, ...rest } = r;
+                        return rest;
+                    });
+                    const { error: fallbackError } = await client.from('cookies').insert(fallbackRows);
+                    if (fallbackError) throw fallbackError;
+
+                    // Log only as debug/info, not warn, to reduce noise if this is expected
+                    logger.debug(`[Cloud] Synced ${rows.length} cookies (schema has no user_id).`);
+                } else {
+                    throw err;
+                }
+            }
         }
     } catch (e: any) {
-        logger.error(`[Cloud] Cookie sync failed for ${accountId}: ${e.message}`);
         logger.error(`[Cloud] Cookie sync failed for ${accountId}: ${e.message}`);
     }
 }
@@ -314,21 +399,54 @@ export async function pushLocalStorage(accountId: string, platform: 'flipkart' |
 
         const data = await fs.readJSON(filePath);
 
+        // Lookup userId from DB (Strict DB extraction as requested)
+        let userId: string | null = null;
+        try {
+            const { data: accData } = await client
+                .from('accounts')
+                .select('user_id')
+                .eq('id', accountId.toLowerCase())
+                .single();
+
+            if (accData?.user_id) {
+                userId = accData.user_id;
+            }
+        } catch (err) {
+            // ignore
+        }
+
         // Upsert to local_storage table
         // Schema assumed: account_id, platform, data (jsonb), updated_at
         const payload = {
             account_id: accountId.toLowerCase(),
             platform: platform,
+            user_id: userId,
             data: data,
             updated_at: new Date().toISOString()
         };
 
-        const { error } = await client
-            .from('local_storage')
-            .upsert(payload, { onConflict: 'account_id, platform' });
+        try {
+            const { error } = await client
+                .from('local_storage')
+                .upsert(payload, { onConflict: 'account_id, platform' });
 
-        if (error) throw error;
-        logger.info(`[Cloud] Synced Local Storage for ${accountId} (${platform}).`);
+            if (error) throw error;
+            logger.info(`[Cloud] Synced Local Storage for ${accountId} (${platform}).`);
+
+        } catch (err: any) {
+            if (err.message?.includes('user_id') || err.code === '42703') {
+                // Retry without user_id silently
+                const { user_id, ...fallbackPayload } = payload;
+                const { error: fallbackError } = await client
+                    .from('local_storage')
+                    .upsert(fallbackPayload, { onConflict: 'account_id, platform' });
+
+                if (fallbackError) throw fallbackError;
+                logger.debug(`[Cloud] Synced Local Storage (schema has no user_id).`);
+            } else {
+                throw err;
+            }
+        }
     } catch (e: any) {
         logger.error(`[Cloud] LS sync failed for ${accountId}: ${e.message}`);
     }

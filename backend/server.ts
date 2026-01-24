@@ -1,6 +1,5 @@
 
-import dotenv from 'dotenv';
-dotenv.config();
+
 
 if (process.env.OPENAI_API_KEY) {
     console.log('OpenAI API Key loaded.');
@@ -151,6 +150,159 @@ fastify.delete('/api/accounts/:id', async (request, reply) => {
     }
 });
 
+fastify.post('/api/accounts/:id/login-session', async (request, reply) => {
+    // Auth Check
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session) {
+        return reply.status(401).send({ success: false, message: 'Invalid session' });
+    }
+
+    const { id } = request.params as { id: string };
+    const { platform = 'flipkart', headless = false } = request.body as { platform: 'flipkart' | 'shopsy', headless?: boolean };
+    const decodedId = decodeURIComponent(id);
+
+    try {
+        // Verify account exists and ownership
+        const account = await getAccount(decodedId);
+        if (!account) {
+            return reply.status(404).send({ success: false, message: 'Account not found' });
+        }
+        if (session.role !== 'admin' && account.userId && account.userId !== session.id) {
+            return reply.status(403).send({ success: false, message: 'Forbidden' });
+        }
+
+        console.log(`[API] Starting login session for ${decodedId} on ${platform} (Visible Browser)`);
+
+        let result;
+        if (platform === 'shopsy') {
+            result = await loginShopsy({
+                accountId: decodedId,
+                identifier: account.identifier, // Use identifier from account
+                headless: headless,
+                keepOpen: true // Keep open until user manually closes
+            });
+        } else {
+            result = await loginFlipkart({
+                accountId: decodedId,
+                identifier: account.identifier,
+                headless: headless,
+                keepOpen: true // Keep open until user manually closes
+            });
+        }
+
+        return result;
+    } catch (e: any) {
+        console.error('[API] Login session error:', e);
+        return reply.status(500).send({ success: false, error: e.message });
+    }
+});
+
+fastify.post('/api/accounts/:id/rotate-ip', async (request, reply) => {
+    // Note: this endpoint is called from the browser overlay, which might not have the auth token.
+    // For local usage, we allow it. In production, we should inject a one-time token or session key.
+
+    const { id } = request.params as { id: string };
+    const decodedId = decodeURIComponent(id);
+
+    try {
+        const account = await getAccount(decodedId);
+        if (!account) {
+            return reply.status(404).send({ success: false, message: 'Account not found' });
+        }
+
+        // 1. Update Offset
+        const currentOffset = account.proxyOffset || 0;
+        await upsertAccount({
+            id: decodedId,
+            platform: account.platform,
+            proxyOffset: currentOffset + 1
+        });
+
+        console.log(`[API] Rotating IP for ${decodedId} (New Offset: ${currentOffset + 1})`);
+
+        // 2. Close active browsers
+        // We need to find the active context and close it.
+        // navigate to browserManager to find how to close specific. 
+        // actually browsers.register uses `${accountId}-flipkart-login` etc.
+        // We can just iterate or use browserManager if exposed. 
+        // Let's use `browsers.closeAll()`? No, that closes ALL accounts.
+        // We need `browsers.close(id)`. 
+        // Let's import browsers and see if we can close specific. 
+        // Helper: Access private map? No.
+        // Let's just do: try close activeContexts in flipkart.ts if we could? 
+        // We can't access flipkart.ts internals here easily.
+        // But `browsers` is exported from `browserManager.ts`.
+        // Let's check `browserManager.ts` content.
+        // It has `contexts: Map<string, BrowserContext>`.
+        // We can iterate and close keys starting with accountId.
+
+        // 3. Restart Session (unless skipped)
+        const { skipLaunch } = request.body as { skipLaunch?: boolean } || {};
+
+        if (!skipLaunch) {
+            setTimeout(async () => {
+                // Close
+                await browsers.closeAccount(decodedId);
+
+                // Reopen
+                console.log(`[API] Restarting session for ${decodedId}...`);
+                if (account.platform === 'shopsy') {
+                    await loginShopsy({ accountId: decodedId, identifier: account.identifier, headless: false, keepOpen: true });
+                } else {
+                    await loginFlipkart({ accountId: decodedId, identifier: account.identifier, headless: false, keepOpen: true });
+                }
+            }, 1000);
+        }
+
+        return { success: true, message: 'Rotation initiated' };
+
+    } catch (e: any) {
+        console.error('[API] Rotate IP error:', e);
+        return reply.status(500).send({ success: false, error: e.message });
+    }
+});
+
+import { getProxyForAccount } from './src/proxy.js';
+fastify.get('/api/accounts/:id/proxy', async (request, reply) => {
+    // Auth Check
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        // Loose auth for local dev overlay usage if needed, but safer to enforce
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session) return reply.status(403).send({ success: false, message: 'Forbidden' });
+
+    const { id } = request.params as { id: string };
+    const decodedId = decodeURIComponent(id);
+
+    const proxy = await getProxyForAccount(decodedId);
+
+    let proxyString: string | null = null;
+    if (proxy) {
+        if (proxy.username && proxy.password) {
+            // Manually construct URL to avoid trailing slash from url.toString()
+            const serverUrl = new URL(proxy.server);
+            const protocol = serverUrl.protocol; // e.g., 'http:'
+            const host = serverUrl.hostname;
+            const port = serverUrl.port;
+            // Format: protocol://username:password@host:port (NO trailing slash)
+            proxyString = `${protocol}//${encodeURIComponent(proxy.username)}:${encodeURIComponent(proxy.password)}@${host}:${port}`;
+        } else {
+            // Remove any trailing slash from server
+            proxyString = proxy.server.replace(/\/$/, '');
+        }
+    }
+
+    return { success: true, proxy: proxyString };
+});
+
 // Settings
 import { getSettings, saveSettings, loadSettings } from './src/settings.js';
 
@@ -162,6 +314,45 @@ fastify.post('/api/settings', async (request, reply) => {
     const body = request.body as any;
     saveSettings(body);
     return { success: true };
+});
+
+// Proxies
+import { loadProxies, saveProxies } from './src/proxy.js';
+
+fastify.get('/api/proxies', async (request, reply) => {
+    // Auth Check
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session || session.role !== 'admin') {
+        return reply.status(403).send({ success: false, message: 'Forbidden' });
+    }
+
+    return await loadProxies();
+});
+
+fastify.post('/api/proxies', async (request, reply) => {
+    // Auth Check
+    const authHeader = request.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return reply.status(401).send({ success: false, message: 'Unauthorized' });
+    }
+    const token = authHeader.split(' ')[1];
+    const session = await verifySession(token);
+    if (!session || session.role !== 'admin') {
+        return reply.status(403).send({ success: false, message: 'Forbidden' });
+    }
+
+    const { proxies } = request.body as { proxies: string[] };
+    if (!Array.isArray(proxies)) {
+        return reply.status(400).send({ success: false, message: 'Proxies must be an array of strings' });
+    }
+
+    await saveProxies(proxies);
+    return { success: true, count: proxies.length };
 });
 
 // Auth (Supabase)
@@ -422,11 +613,11 @@ fastify.post('/api/cloud/sync', async (request, reply) => {
 
 // Admin: Logs
 import { getActivityLogs, getAppErrors } from './src/log.js';
-import { loadCookiesFromDisk } from './src/cookies.js';
+import { loadCookiesFromDB } from './src/cookies.js';
 
 fastify.get('/api/accounts/:id/:platform/cookies', async (request, reply) => {
     const { id, platform } = request.params as { id: string, platform: 'flipkart' | 'shopsy' };
-    return await loadCookiesFromDisk(id, platform);
+    return await loadCookiesFromDB(id, platform);
 });
 
 fastify.get('/api/logs/activity', async (request, reply) => {

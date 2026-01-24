@@ -13,6 +13,7 @@ import { getSettings } from '../settings.js';
 import { browsers } from '../browserManager.js';
 import { pushCookies, pushLocalStorage } from '../cloud.js';
 import { saveLocalStorage } from '../localStorage.js';
+import { getProxyForAccount } from '../proxy.js';
 
 export interface LoginOptions {
     accountId: string;
@@ -61,8 +62,12 @@ export async function loginFlipkart(options: LoginOptions) {
             log.info('New account - clearing old profile for fresh login...');
             await fs.remove(profilePath);
         }
+        // Always ensure the profile directory exists
+        await fs.ensureDir(profilePath);
     } catch (e: any) {
         log.warn(`Could not check/clear profile: ${e.message}`);
+        // Ensure directory exists even on error
+        await fs.ensureDir(profilePath);
     }
 
     let context: BrowserContext;
@@ -76,6 +81,12 @@ export async function loginFlipkart(options: LoginOptions) {
         }
     } catch (err) { }
 
+    // Get Proxy
+    const proxyConfig = await getProxyForAccount(accountId);
+    if (proxyConfig) {
+        log.info(`Using proxy for ${accountId}: ${proxyConfig.server}`);
+    }
+
     try {
         context = await chromium.launchPersistentContext(profilePath, {
             headless: headless,
@@ -84,11 +95,14 @@ export async function loginFlipkart(options: LoginOptions) {
             locale: fingerprint.locale,
             timezoneId: fingerprint.timezoneId,
             permissions: ['geolocation', 'notifications'],
+            proxy: proxyConfig, // Inject Proxy
             args: [
                 '--disable-blink-features=AutomationControlled',
                 '--no-sandbox',
                 '--window-size=1280,720',
-                '--window-position=50,50'
+                '--window-position=50,50',
+                '--disable-features=Autofill,PasswordManager',
+                '--disable-save-password-bubble'
             ]
         });
     } catch (e: any) {
@@ -109,11 +123,14 @@ export async function loginFlipkart(options: LoginOptions) {
                 locale: fingerprint.locale,
                 timezoneId: fingerprint.timezoneId,
                 permissions: ['geolocation', 'notifications'],
+                proxy: proxyConfig, // Inject Proxy
                 args: [
                     '--disable-blink-features=AutomationControlled',
                     '--no-sandbox',
                     '--window-size=1280,720',
-                    '--window-position=50,50'
+                    '--window-position=50,50',
+                    '--disable-features=Autofill,PasswordManager',
+                    '--disable-save-password-bubble'
                 ]
             });
         } else {
@@ -135,31 +152,32 @@ export async function loginFlipkart(options: LoginOptions) {
 
     // Strategy: Inject cookies from JSON if available, BUT NOT for new accounts
     // New accounts should go through fresh login flow
+    let forceLoginFlow = false;
     try {
         const account = await getAccount(accountId);
         const isNewAccount = !account || account.status === 'New';
+        forceLoginFlow = isNewAccount;
 
         if (isNewAccount) {
-            log.info('New account detected - skipping cookie injection for fresh login flow.');
+            log.info('New account detected - skipping cookie injection, will force login flow.');
         } else {
-            console.log(`[DEBUG-ANTIGRAVITY] Attempting to load cookies for ${accountId}...`);
+            console.log(`[DEBUG] Attempting to load cookies for ${accountId}...`);
             const cookies = await loadCookiesFromDB(accountId, platform);
             if (cookies.length > 0) {
                 log.info(`Injecting ${cookies.length} cookies from storage...`);
-                console.log(`[DEBUG-ANTIGRAVITY] Cookies to inject: ${cookies.map((c: { name: any; }) => c.name).join(', ')}`);
 
                 await context.addCookies(cookies);
 
                 const contextCookies = await context.cookies();
-                console.log(`[DEBUG-ANTIGRAVITY] Verification - Cookies present in context: ${contextCookies.length}`);
-                console.log(`[DEBUG-ANTIGRAVITY] Context Cookie Names: ${contextCookies.map(c => c.name).join(', ')}`);
+                console.log(`[DEBUG] Verification - Cookies present in context: ${contextCookies.length}`);
             } else {
-                console.log(`[DEBUG-ANTIGRAVITY] No cookies found on disk for ${accountId}`);
+                console.log(`[DEBUG] No cookies found for ${accountId}`);
+                forceLoginFlow = true; // No cookies means we need login
             }
         }
     } catch (e) {
         log.warn('Failed to inject cookies', e);
-        console.error('[DEBUG-ANTIGRAVITY] Cookie injection error:', e);
+        forceLoginFlow = true; // Error means we should try login
     }
 
     try {
@@ -168,21 +186,24 @@ export async function loginFlipkart(options: LoginOptions) {
         await page.goto('https://www.flipkart.com/', { waitUntil: 'domcontentloaded' });
 
         // Check if already logged in via simple selector check
-        const isLoggedIn = await Promise.race([
-            page.waitForSelector('text=My Profile', { timeout: 3000 }).then(() => true).catch(() => false),
-            page.waitForSelector('text=Logout', { timeout: 3000 }).then(() => true).catch(() => false),
-            page.waitForSelector('text=Orders', { timeout: 3000 }).then(() => true).catch(() => false),
-            page.waitForSelector('._28p97w', { timeout: 3000 }).then(() => true).catch(() => false), // Class for header user name
-            new Promise(r => setTimeout(() => r(false), 3500))
-        ]);
+        // BUT if forceLoginFlow is true (new account), we skip this check entirely
+        let isLoggedIn = false;
+        if (!forceLoginFlow) {
+            isLoggedIn = await Promise.race([
+                page.waitForSelector('text=My Profile', { timeout: 3000 }).then(() => true).catch(() => false),
+                page.waitForSelector('text=Logout', { timeout: 3000 }).then(() => true).catch(() => false),
+                page.waitForSelector('text=Orders', { timeout: 3000 }).then(() => true).catch(() => false),
+                page.waitForSelector('._28p97w', { timeout: 3000 }).then(() => true).catch(() => false), // Class for header user name
+                new Promise(r => setTimeout(() => r(false), 3500))
+            ]) as boolean;
+        }
 
-        if (isLoggedIn) {
+        if (isLoggedIn && !forceLoginFlow) {
             log.info('Session is valid. No login required.');
             // Do NOT return early. Proceed to capture cookies to ensure DB is up to date.
         } else {
-            // Only perform login steps if NOT logged in
-
-            log.info('Session invalid or expired. Initiating login flow...');
+            // ALWAYS perform login steps for new accounts or if not logged in
+            log.info('Initiating manual login flow... Waiting for user to enter OTP.');
 
             // Click Login button if visible
             try {
@@ -216,10 +237,10 @@ export async function loginFlipkart(options: LoginOptions) {
             // Wait for user or automation to complete login
             try {
                 await Promise.race([
-                    page.waitForSelector('text=My Profile', { timeout: keepOpen ? 0 : 60000 }),
-                    page.waitForSelector('div._28p97w', { timeout: keepOpen ? 0 : 60000 }),
-                    page.waitForSelector('text=Logout', { timeout: keepOpen ? 0 : 60000 }),
-                    page.waitForSelector('text=Account', { timeout: keepOpen ? 0 : 60000 })
+                    page.waitForSelector('text=My Profile', { timeout: keepOpen ? 0 : 300000 }), // 5 minutes
+                    page.waitForSelector('div._28p97w', { timeout: keepOpen ? 0 : 300000 }),
+                    page.waitForSelector('text=Logout', { timeout: keepOpen ? 0 : 300000 }),
+                    page.waitForSelector('text=Account', { timeout: keepOpen ? 0 : 300000 })
                 ]);
 
                 log.info('Login detected successfully! Waiting for session to settle...');
